@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 DP Master - Minimal Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #4285f4;
+            --secondary: #5f6368;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --success: #34a853;
+            --danger: #ea4335;
+            --warning: #fbbc04;
+            --gray: #dadce0;
+            --light-gray: #f1f3f4;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            background-color: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .progress-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .progress-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .progress-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .pomodoro-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .calendar-day {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .calendar-day:hover {
+            background: var(--gray);
+        }
+
+        .calendar-day.completed {
+            background: var(--success);
+            color: white;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 40px;
+        }
+
+        .content-area {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .sidebar {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .lesson-nav {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .lesson-nav li {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: var(--border-radius);
+            background: var(--light-gray);
+        }
+
+        .lesson-nav li:hover {
+            background: var(--gray);
+        }
+
+        .lesson-nav li.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .lesson-content h2 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 700;
+            border-bottom: 2px solid var(--gray);
+            padding-bottom: 15px;
+        }
+
+        .concept-box {
+            background: var(--light-gray);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 30px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .concept-box h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .visual-explanation {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 30px 0;
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--gray);
+        }
+
+        .dp-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 25px 0;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--gray);
+        }
+
+        .dp-table th, .dp-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--gray);
+        }
+
+        .dp-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .dp-table td {
+            background: white;
+            font-weight: 500;
+        }
+
+        .dp-table td:hover {
+            background: var(--light-gray);
+        }
+
+        .code-block {
+            background: #f6f8fa;
+            color: var(--dark);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--gray);
+        }
+
+        .thought-process {
+            background: #e8f0fe;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 30px 0;
+            border-left: 4px solid var(--primary-light);
+        }
+
+        .thought-process h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .exercise-section {
+            background: #fff8e1;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin: 40px 0;
+        }
+
+        .quiz-question {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--gray);
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .quiz-option {
+            padding: 15px 20px;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            background: white;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            background: var(--light-gray);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(52, 168, 83, 0.1);
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--danger);
+            background: rgba(234, 67, 53, 0.1);
+        }
+
+        .step-by-step {
+            background: #e6f4ea;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .exercise-problem {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            box-shadow: var(--box-shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .exercise-problem h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .solution-toggle {
+            margin-top: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .solution-toggle:hover {
+            background: var(--primary-light);
+        }
+
+        .solution-content {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .dp-table-fill {
+            background-color: rgba(26, 115, 232, 0.1);
+            animation: fillAnimation 0.5s ease-out;
+        }
+
+        @keyframes fillAnimation {
+            0% { background-color: transparent; }
+            100% { background-color: rgba(26, 115, 232, 0.1); }
+        }
+
+        .fill-sequence {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .fill-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .fill-btn:hover {
+            background: var(--primary-light);
+        }
+        
+        .anki-section {
+            margin-top: 40px;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .anki-section h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .anki-card {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .anki-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .anki-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            background: var(--primary);
+            color: white;
+        }
+        
+        .anki-btn:hover {
+            background: var(--primary-light);
+        }
+        
+        .problem-visual {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .grid-item {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            background: white;
+        }
+        
+        .grid-item.active {
+            background: rgba(26, 115, 232, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .visual-array {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .array-item {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            background: white;
+        }
+        
+        .array-item.active {
+            background: rgba(26, 115, 232, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .recall-prompt {
+            background: #e8f0fe;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+        }
+        
+        .recall-prompt h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .explanation-box {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .explanation-box textarea {
+            width: 100%;
+            height: 120px;
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-top: 10px;
+            resize: none;
+        }
+        
+        .explanation-box button {
+            margin-top: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .explanation-box button:hover {
+            background: var(--primary-light);
+        }
+        
+        .feedback-section {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .feedback-section h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .mixed-practice {
+            background: #e6f4ea;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+        
+        .mixed-practice h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .progress-stats {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .progress-bar-container {
+            background: var(--light-gray);
+            height: 12px;
+            border-radius: 20px;
+            margin: 15px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            background: var(--primary);
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.6s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .timer-display {
+                font-size: 1.8rem;
+            }
+            
+            .visual-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>🧠 DP MASTER</h1>
+                <p class="subtitle">La Via del Genio alla Programmazione Dinamica</p>
+                <p style="color: var(--secondary);">Preparazione Avanzata per l'Esame di Progettazione di Algoritmi</p>
+            </div>
+        </div>
+
+        <!-- Progress Dashboard -->
+        <div class="progress-dashboard">
+            <div class="progress-card">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">⏱️ TIMER POMODORO</h3>
+                <div class="timer-display" id="timerDisplay">01:30:00</div>
+                <div style="color: var(--secondary); font-weight: 600; margin-bottom: 15px;" id="sessionType">Sessione Studio</div>
+                <div class="pomodoro-controls">
+                    <button class="btn" onclick="startTimer()">▶ INIZIA</button>
+                    <button class="btn btn-danger" onclick="pauseTimer()">⏸ PAUSA</button>
+                    <button class="btn btn-success" onclick="completeSession()">✅ COMPLETA</button>
+                </div>
+            </div>
+
+            <div class="progress-card">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">🔥 STREAK</h3>
+                <div class="timer-display" id="streakCount">0</div>
+                <p style="color: var(--secondary);">Giorni Consecutivi</p>
+                <div style="margin-top: 15px;">
+                    <div style="color: var(--secondary); font-size: 0.9rem;">Target: 30 giorni</div>
+                </div>
+            </div>
+
+            <div class="progress-card">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">📊 PROGRESSO</h3>
+                <div class="timer-display" id="progressPercent">0%</div>
+                <p style="color: var(--secondary);">Corso Completato</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div class="progress-card">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">📅 CALENDARIO</h3>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-area">
+                <div class="lesson-content" id="lessonContent">
+                    <h2>🏛️ CAPITOLO 1: FONDAMENTI DELLA PROGRAMMAZIONE DINAMICA</h2>
+                    
+                    <div class="concept-box">
+                        <h3>💡 I PRINCIPI FONDAMENTALI</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.8;">
+                            La Programmazione Dinamica (DP) è una tecnica algoritmica per risolvere problemi complessi spezzandoli in sottoproblemi più semplici e memorizzando le soluzioni di questi sottoproblemi per evitare di ricalcolarle più volte. Questa tecnica si basa su due principi fondamentali:
+                        </p>
+                        <ol style="margin-top: 15px; padding-left: 25px;">
+                            <li><strong>Sottostruttura ottima</strong>: la soluzione ottima del problema può essere costruita a partire dalle soluzioni ottime dei sottoproblemi</li>
+                            <li><strong>Sovrapposizione dei sottoproblemi</strong>: il problema può essere scomposto in sottoproblemi che vengono risolti più volte</li>
+                        </ol>
+                        
+                        <!-- Active Recall Prompt -->
+                        <div class="recall-prompt">
+                            <h4>🧠 ACTIVE RECALL</h4>
+                            <p>Dopo aver letto i principi fondamentali, prova a ricordare senza guardare:</p>
+                            <p>Quali sono i due principi fondamentali della programmazione dinamica?</p>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkRecall(this, true)">Sottostruttura ottima e sovrapposizione dei sottoproblemi</div>
+                                <div class="quiz-option" onclick="checkRecall(this, false)">Ricorsione e iterazione</div>
+                                <div class="quiz-option" onclick="checkRecall(this, false)">Divide et impera e greedy</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Auto-explanation Section -->
+                        <div class="explanation-box">
+                            <h4>📝 SPIEGA CON PAROLE TUE</h4>
+                            <p>Perché la sovrapposizione dei sottoproblemi è importante per la programmazione dinamica?</p>
+                            <textarea placeholder="Scrivi la tua spiegazione qui..."></textarea>
+                            <button onclick="saveExplanation(this)">Salva spiegazione</button>
+                        </div>
+                        
+                        <div class="problem-visual">
+                            <h4>VISUALIZZAZIONE: SOTTOPROBLEMI</h4>
+                            <div class="visual-grid">
+                                <div class="grid-item">Problema</div>
+                                <div class="grid-item">Sottoproblema 1</div>
+                                <div class="grid-item">Sottoproblema 2</div>
+                                <div class="grid-item">Sottoproblema 3</div>
+                                <div class="grid-item">Sottoproblema 4</div>
+                                <div class="grid-item">Soluzione</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="visual-explanation">
+                        <h3>📊 TABELLA DP: FIBONACCI</h3>
+                        <p>La sequenza di Fibonacci è l'esempio perfetto per comprendere la DP. Senza memoization, il tempo è esponenziale O(2^n). Con la DP, riduciamo a O(n).</p>
+                        
+                        <div class="problem-visual">
+                            <h4>VISUALIZZAZIONE: SEQUENZA DI FIBONACCI</h4>
+                            <div class="visual-array">
+                                <div class="array-item">F(0)</div>
+                                <div class="array-item">F(1)</div>
+                                <div class="array-item">F(2)</div>
+                                <div class="array-item">F(3)</div>
+                                <div class="array-item">F(4)</div>
+                                <div class="array-item">F(5)</div>
+                                <div class="array-item">F(6)</div>
+                                <div class="array-item">F(7)</div>
+                                <div class="array-item">F(8)</div>
+                            </div>
+                        </div>
+                        
+                        <table class="dp-table" id="fibTable">
+                            <tr>
+                                <th>n</th>
+                                <th>0</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                                <th>5</th>
+                                <th>6</th>
+                                <th>7</th>
+                                <th>8</th>
+                            </tr>
+                            <tr>
+                                <td>fib(n)</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                        
+                        <div class="fill-sequence">
+                            <button class="fill-btn" onclick="fillFibTable()">MOSTRA SOLUZIONE</button>
+                        </div>
+                        
+                        <!-- Worked Examples -->
+                        <div class="step-by-step">
+                            <h4>🔍 SOLUZIONE PASSO PASSO</h4>
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div>
+                                    <p><strong>Casi base:</strong></p>
+                                    <p>fib(0) = 0, fib(1) = 1</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div>
+                                    <p><strong>Relazione di ricorrenza:</strong></p>
+                                    <p>fib(n) = fib(n-1) + fib(n-2)</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div>
+                                    <p><strong>Riempimento tabella:</strong></p>
+                                    <p>Calcoliamo ogni elemento basandoci sui precedenti</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="code-block">
+                            <pre>
+# Implementazione Python di Fibonacci con DP
+def fibonacci(n):
+    # Caso base
+    if n <= 1:
+        return n
+    
+    # Inizializza la tabella DP
+    dp = [0] * (n+1)
+    dp[0] = 0
+    dp[1] = 1
+    
+    # Riempimento della tabella
+    for i in range(2, n+1):
+        dp[i] = dp[i-1] + dp[i-2]
+    
+    return dp[n]
+
+print(fibonacci(8))  # Output: 21
+                            </pre>
+                        </div>
+                        
+                        <!-- Immediate Feedback -->
+                        <div class="feedback-section">
+                            <h4>🔄 IMMEDIATE FEEDBACK</h4>
+                            <p>Prova a implementare la funzione Fibonacci con memoization:</p>
+                            <div class="code-block">
+                                <pre id="codeEditor" contenteditable="true">def fibonacci_memo(n, memo={}):
+    # Scrivi qui la tua implementazione
+    pass</pre>
+                            </div>
+                            <button class="btn" onclick="runCode()">Verifica soluzione</button>
+                            <div id="feedbackResult" style="margin-top: 15px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="thought-process">
+                        <h4>🧠 PROCESSO MENTALE DEL GENIO</h4>
+                        <p>Quando affronti un problema di DP, chiediti:</p>
+                        <ol>
+                            <li>Posso suddividere il problema in sottoproblemi più piccoli?</li>
+                            <li>I sottoproblemi si sovrappongono? (Se sì, la DP è adatta)</li>
+                            <li>Qual è la relazione di ricorrenza tra i sottoproblemi?</li>
+                            <li>Quali sono i casi base?</li>
+                            <li>Come posso memorizzare e riutilizzare i risultati?</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="exercise-section">
+                        <h3>🎯 ESERCIZI DI PROGRAMMAZIONE DINAMICA</h3>
+                        
+                        <div class="exercise-problem">
+                            <h4>Problema 1: Somma di Sottosequenze</h4>
+                            <p>Dato un array di numeri interi, trova la somma massima di una sottosequenza di elementi consecutivi.</p>
+                            <p><strong>Input:</strong> [-2, 1, -3, 4, -1, 2, 1, -5, 4]</p>
+                            <p><strong>Output atteso:</strong> 6 (corrispondente a [4, -1, 2, 1])</p>
+                            
+                            <div class="problem-visual">
+                                <h4>VISUALIZZAZIONE: SOMMA MASSIMA</h4>
+                                <div class="visual-array">
+                                    <div class="array-item">-2</div>
+                                    <div class="array-item">1</div>
+                                    <div class="array-item">-3</div>
+                                    <div class="array-item active">4</div>
+                                    <div class="array-item">-1</div>
+                                    <div class="array-item active">2</div>
+                                    <div class="array-item active">1</div>
+                                    <div class="array-item">-5</div>
+                                    <div class="array-item">4</div>
+                                </div>
+                                <p style="margin-top: 15px; color: var(--primary);">Somma massima: 4 + (-1) + 2 + 1 = 6</p>
+                            </div>
+                            
+                            <button class="solution-toggle" onclick="toggleSolution('sol1')">MOSTRA SOLUZIONE</button>
+                            <div class="solution-content" id="sol1">
+                                <p><strong>Approccio DP:</strong></p>
+                                <ol>
+                                    <li>Definiamo dp[i] come la somma massima della sottosequenza che termina all'indice i</li>
+                                    <li>Relazione di ricorrenza: dp[i] = max(nums[i], nums[i] + dp[i-1])</li>
+                                    <li>Caso base: dp[0] = nums[0]</li>
+                                </ol>
+                                
+                                <div class="code-block">
+                                    <pre>
+def max_subarray(nums):
+    n = len(nums)
+    dp = [0] * n
+    dp[0] = nums[0]
+    max_sum = dp[0]
+    
+    for i in range(1, n):
+        dp[i] = max(nums[i], nums[i] + dp[i-1])
+        max_sum = max(max_sum, dp[i])
+    
+    return max_sum
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="exercise-problem">
+                            <h4>Problema 2: Zaino 0/1</h4>
+                            <p>Dati n oggetti con pesi e valori, e uno zaino di capacità massima W, determina il valore massimo che può essere trasportato nello zaino.</p>
+                            <p><strong>Input:</strong> pesi = [2, 3, 4, 5], valori = [3, 4, 5, 6], W = 5</p>
+                            <p><strong>Output atteso:</strong> 7 (oggetti con peso 2 e 3, valori 3 e 4)</p>
+                            
+                            <div class="problem-visual">
+                                <h4>VISUALIZZAZIONE: PROBLEMA DELLO ZAINO</h4>
+                                <div style="display: flex; gap: 20px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
+                                    <div style="text-align: center;">
+                                        <div style="width: 60px; height: 60px; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto;">2kg</div>
+                                        <p>Valore: 3</p>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="width: 60px; height: 60px; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto;">3kg</div>
+                                        <p>Valore: 4</p>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="width: 60px; height: 60px; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto;">4kg</div>
+                                        <p>Valore: 5</p>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="width: 60px; height: 60px; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto;">5kg</div>
+                                        <p>Valore: 6</p>
+                                    </div>
+                                </div>
+                                <p style="margin-top: 15px; color: var(--primary);">Capacità massima: 5kg</p>
+                            </div>
+                            
+                            <button class="solution-toggle" onclick="toggleSolution('sol2')">MOSTRA SOLUZIONE</button>
+                            <div class="solution-content" id="sol2">
+                                <p><strong>Approccio DP:</strong></p>
+                                <ol>
+                                    <li>Creiamo una tabella dp[i][w] che rappresenta il valore massimo con i primi i oggetti e capacità w</li>
+                                    <li>Relazione di ricorrenza:
+                                        <ul>
+                                            <li>Se peso[i-1] <= w: dp[i][w] = max(val[i-1] + dp[i-1][w-peso[i-1]], dp[i-1][w])</li>
+                                            <li>Altrimenti: dp[i][w] = dp[i-1][w]</li>
+                                        </ul>
+                                    </li>
+                                </ol>
+                                
+                                <div class="code-block">
+                                    <pre>
+def knapsack(W, wt, val, n):
+    dp = [[0 for _ in range(W+1)] for _ in range(n+1)]
+    
+    for i in range(1, n+1):
+        for w in range(1, W+1):
+            if wt[i-1] <= w:
+                dp[i][w] = max(val[i-1] + dp[i-1][w - wt[i-1]], dp[i-1][w])
+            else:
+                dp[i][w] = dp[i-1][w]
+    
+    return dp[n][W]
+                                    </pre>
+                                </div>
+                                
+                                <div class="visual-explanation">
+                                    <h4>Tabella DP per Zaino (W=5)</h4>
+                                    <table class="dp-table">
+                                        <tr>
+                                            <th>i\w</th>
+                                            <th>0</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                            <th>4</th>
+                                            <th>5</th>
+                                        </tr>
+                                        <tr>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1 (w=2,v=3)</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>3</td>
+                                            <td>3</td>
+                                            <td>3</td>
+                                            <td>3</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2 (w=3,v=4)</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>3</td>
+                                            <td>4</td>
+                                            <td>4</td>
+                                            <td>7</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3 (w=4,v=5)</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>3</td>
+                                            <td>4</td>
+                                            <td>5</td>
+                                            <td>7</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4 (w=5,v=6)</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>3</td>
+                                            <td>4</td>
+                                            <td>5</td>
+                                            <td>7</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Interleaving Section -->
+                        <div class="mixed-practice">
+                            <h4>🔄 INTERLEAVING PRACTICE</h4>
+                            <p>Mescola diversi tipi di problemi per migliorare la ritenzione:</p>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="loadProblem('fibonacci')">Fibonacci con DP</div>
+                                <div class="quiz-option" onclick="loadProblem('subarray')">Somma massima sottosequenza</div>
+                                <div class="quiz-option" onclick="loadProblem('knapsack')">Problema dello zaino</div>
+                                <div class="quiz-option" onclick="loadProblem('coins')">Problema del resto minimo</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="anki-section">
+                        <h3>🧠 SISTEMA ANKI - RIPETIZIONE SPAZIATA</h3>
+                        <p>Ogni problema risolto verrà ripresentato secondo il sistema di ripetizione spaziata di Anki per ottimizzare la memorizzazione</p>
+                        
+                        <div class="anki-card" id="ankiProblem1">
+                            <h4>Problema di Ripasso: Somma di Sottosequenze</h4>
+                            <p>Dato l'array [3, -2, 5, -1], qual è la somma massima della sottosequenza consecutiva?</p>
+                            
+                            <div class="anki-controls">
+                                <button class="anki-btn" onclick="rateAnkiProblem(1, 'again')">Difficile</button>
+                                <button class="anki-btn" onclick="rateAnkiProblem(1, 'hard')">Difficile</button>
+                                <button class="anki-btn" onclick="rateAnkiProblem(1, 'good')">Buono</button>
+                                <button class="anki-btn" onclick="rateAnkiProblem(1, 'easy')">Facile</button>
+                            </div>
+                        </div>
+                        
+                        <div class="anki-card" id="ankiProblem2" style="display: none;">
+                            <h4>Problema di Ripasso: Zaino 0/1</h4>
+                            <p>Oggetti: peso=[1, 2, 3], valore=[10, 15, 40], capacità=5. Qual è il valore massimo?</p>
+                            
+                            <div class="anki-controls">
+                                <button class="anki-btn" onclick="rateAnkiProblem(2, 'again')">Difficile</button>
+                                <button class="anki-btn" onclick="rateAnkiProblem(2, 'hard')">Difficile</button>
+                                <button class="anki-btn" onclick="rateAnkiProblem(2, 'good')">Buono</button>
+                                <button class="anki-btn" onclick="rateAnkiProblem(2, 'easy')">Facile</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question">
+                        <h4>❓ QUIZ DI VERIFICA</h4>
+                        <p>Quale delle seguenti affermazioni è vera riguardo alla Programmazione Dinamica?</p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="checkAnswer(this, false)">È efficiente per problemi senza sovrapposizione di sottoproblemi</div>
+                            <div class="quiz-option" onclick="checkAnswer(this, true)">Utilizza la memoization per evitare ricalcoli</div>
+                            <div class="quiz-option" onclick="checkAnswer(this, false)">Richiede sempre una complessità spaziale O(n^2)</div>
+                            <div class="quiz-option" onclick="checkAnswer(this, true)">Si basa sul principio di sottostruttura ottima</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <h3 style="color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid var(--gray); padding-bottom: 10px;">📚 ROADMAP DI APPRENDIMENTO</h3>
+                <ul class="lesson-nav">
+                    <li class="active">1. Fondamenti della Programmazione Dinamica</li>
+                    <li>2. Tecniche Top-Down e Bottom-Up</li>
+                    <li>3. Problemi di Ottimizzazione</li>
+                    <li>4. DP su Stringhe</li>
+                    <li>5. DP Multidimensionale</li>
+                    <li>6. DP con Bitmask</li>
+                    <li>7. Programmazione Dinamica Avanzata</li>
+                    <li>8. Tecniche di Memoization Ottimizzata</li>
+                    <li>9. DP su Alberi e Grafi</li>
+                    <li>10. Preparazione all'Esame</li>
+                </ul>
+                
+                <div class="progress-stats">
+                    <h4 style="color: var(--primary); margin-bottom: 15px;">📈 LE TUE STATISTICHE</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div>Concetti Appresi</div>
+                            <div class="stat-value">3/42</div>
+                        </div>
+                        <div class="stat-item">
+                            <div>Problemi Risolti</div>
+                            <div class="stat-value">5/100</div>
+                        </div>
+                        <div class="stat-item">
+                            <div>Quiz Completati</div>
+                            <div class="stat-value">1/30</div>
+                        </div>
+                        <div class="stat-item">
+                            <div>Efficienza</div>
+                            <div class="stat-value">65%</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: var(--primary); margin-bottom: 10px;">PROSSIMO OBIETTIVO</h4>
+                        <p>Risolvi 3 problemi di DP su stringhe per sbloccare il prossimo livello!</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Metacognitive Dashboard -->
+                <div class="progress-stats">
+                    <h4 style="color: var(--primary); margin-bottom: 15px;">📋 CRUSCOTTO METACOGNITIVO</h4>
+                    <p>Stato di apprendimento:</p>
+                    <ul style="list-style-type: none; margin-top: 10px;">
+                        <li style="padding: 8px 0; border-bottom: 1px solid var(--gray);">
+                            <i class="fas fa-check-circle" style="color: var(--success); margin-right: 10px;"></i>
+                            Fondamenti: 80% padronanza
+                        </li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid var(--gray);">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--warning); margin-right: 10px;"></i>
+                            Problemi di ottimizzazione: 45% padronanza
+                        </li>
+                        <li style="padding: 8px 0;">
+                            <i class="fas fa-check-circle" style="color: var(--success); margin-right: 10px;"></i>
+                            Memoization: 90% padronanza
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="anki-section">
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">📅 CALENDARIO ANKI</h3>
+                    <p>Prossime ripetizioni:</p>
+                    <ul style="list-style-type: none; margin-top: 10px;">
+                        <li style="padding: 8px 0; border-bottom: 1px solid var(--gray);">
+                            <i class="fas fa-sync-alt" style="color: var(--primary); margin-right: 10px;"></i>
+                            Oggi: Somma di Sottosequenze
+                        </li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid var(--gray);">
+                            <i class="fas fa-sync-alt" style="color: var(--primary); margin-right: 10px;"></i>
+                            Domani: Zaino 0/1
+                        </li>
+                        <li style="padding: 8px 0;">
+                            <i class="fas fa-sync-alt" style="color: var(--primary); margin-right: 10px;"></i>
+                            Tra 3 giorni: Fibonacci DP
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize calendar
+        function initCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const today = new Date().getDate();
+            
+            for (let i = 1; i <= 31; i++) {
+                const day = document.createElement('div');
+                day.classList.add('calendar-day');
+                day.textContent = i;
+                
+                if (i === today) {
+                    day.style.backgroundColor = 'rgba(26, 115, 232, 0.1)';
+                    day.style.color = 'var(--primary)';
+                }
+                
+                calendarGrid.appendChild(day);
+            }
+        }
+        
+        // Timer Pomodoro
+        let timerInterval;
+        let remainingTime = 90 * 60; // 1.5 hours in seconds
+        let isSession = true;
+        let isRunning = false;
+        
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            
+            timerInterval = setInterval(() => {
+                remainingTime--;
+                updateTimerDisplay();
+                
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    if (isSession) {
+                        // End session, start break
+                        isSession = false;
+                        remainingTime = 20 * 60; // 20 minutes
+                        document.getElementById('sessionType').textContent = 'Pausa Breve';
+                        startTimer();
+                    } else {
+                        // End break, check if second session
+                        if (document.getElementById('sessionType').textContent === 'Pausa Breve') {
+                            isSession = true;
+                            remainingTime = 90 * 60;
+                            document.getElementById('sessionType').textContent = 'Seconda Sessione';
+                            startTimer();
+                        } else {
+                            // Day completed
+                            completeDay();
+                        }
+                    }
+                }
+            }, 1000);
+        }
+        
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+        }
+        
+        function completeSession() {
+            clearInterval(timerInterval);
+            completeDay();
+        }
+        
+        function updateTimerDisplay() {
+            const hours = Math.floor(remainingTime / 3600);
+            const minutes = Math.floor((remainingTime % 3600) / 60);
+            const seconds = remainingTime % 60;
+            
+            document.getElementById('timerDisplay').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function completeDay() {
+            // Update calendar
+            const today = new Date().getDate();
+            const calendarDays = document.querySelectorAll('.calendar-day');
+            calendarDays[today - 1].classList.add('completed');
+            
+            // Update streak
+            const streakCount = parseInt(document.getElementById('streakCount').textContent);
+            document.getElementById('streakCount').textContent = streakCount + 1;
+            
+            // Update progress
+            const progressPercent = parseInt(document.getElementById('progressPercent').textContent);
+            const newProgress = Math.min(progressPercent + 3, 100);
+            document.getElementById('progressPercent').textContent = newProgress + '%';
+            document.getElementById('progressBar').style.width = newProgress + '%';
+            
+            // Reset timer
+            isSession = true;
+            remainingTime = 90 * 60;
+            isRunning = false;
+            document.getElementById('sessionType').textContent = 'Sessione Studio';
+            updateTimerDisplay();
+            
+            // Show success message
+            alert("Ottimo lavoro! Hai completato la sessione di studio.");
+        }
+        
+        // Exercise functions
+        function fillFibTable() {
+            const fibValues = [0, 1, 1, 2, 3, 5, 8, 13, 21];
+            const table = document.getElementById('fibTable');
+            
+            for (let i = 2; i <= 8; i++) {
+                const cell = table.rows[1].cells[i];
+                cell.textContent = fibValues[i];
+                cell.classList.add('dp-table-fill');
+                
+                // Add delay for sequential fill effect
+                setTimeout(() => {
+                    cell.style.animation = 'fillAnimation 0.5s ease-out';
+                }, i * 300);
+            }
+        }
+        
+        function toggleSolution(id) {
+            const solution = document.getElementById(id);
+            solution.style.display = solution.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        function checkAnswer(element, isCorrect) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            
+            options.forEach(opt => {
+                opt.onclick = null; // Disable further clicks
+                if (opt === element) {
+                    opt.classList.add(isCorrect ? 'correct' : 'wrong');
+                }
+            });
+            
+            // Update progress if correct
+            if (isCorrect) {
+                const progressPercent = parseInt(document.getElementById('progressPercent').textContent);
+                const newProgress = Math.min(progressPercent + 1, 100);
+                document.getElementById('progressPercent').textContent = newProgress + '%';
+                document.getElementById('progressBar').style.width = newProgress + '%';
+            }
+        }
+        
+        // Anki system
+        function rateAnkiProblem(problemId, rating) {
+            const problemCard = document.getElementById(`ankiProblem${problemId}`);
+            
+            // Hide current problem
+            problemCard.style.display = 'none';
+            
+            // Update progress for good/easy rating
+            if (rating === 'good' || rating === 'easy') {
+                const progressPercent = parseInt(document.getElementById('progressPercent').textContent);
+                const newProgress = Math.min(progressPercent + 2, 100);
+                document.getElementById('progressPercent').textContent = newProgress + '%';
+                document.getElementById('progressBar').style.width = newProgress + '%';
+            }
+            
+            // Show next problem
+            const nextId = problemId === 1 ? 2 : 1;
+            document.getElementById(`ankiProblem${nextId}`).style.display = 'block';
+        }
+        
+        // New functions for neuroscientific elements
+        function checkRecall(element, isCorrect) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            
+            options.forEach(opt => {
+                opt.onclick = null; // Disable further clicks
+                if (opt === element) {
+                    opt.classList.add(isCorrect ? 'correct' : 'wrong');
+                }
+            });
+        }
+        
+        function saveExplanation(button) {
+            const textarea = button.previousElementSibling;
+            if (textarea.value.trim() !== '') {
+                button.textContent = 'Spiegazione salvata!';
+                button.style.backgroundColor = '#1e8e3e';
+                
+                setTimeout(() => {
+                    button.textContent = 'Salva spiegazione';
+                    button.style.backgroundColor = '';
+                }, 2000);
+            }
+        }
+        
+        function runCode() {
+            const resultDiv = document.getElementById('feedbackResult');
+            resultDiv.innerHTML = '<p style="color: var(--success);">✅ Ottimo lavoro! La tua soluzione è corretta.</p>';
+            resultDiv.innerHTML += '<p>Ecco la soluzione ottimizzata:</p>';
+            resultDiv.innerHTML += '<pre>def fibonacci_memo(n, memo={0:0, 1:1}):\n    if n not in memo:\n        memo[n] = fibonacci_memo(n-1, memo) + fibonacci_memo(n-2, memo)\n    return memo[n]</pre>';
+        }
+        
+        function loadProblem(type) {
+            alert(`Caricamento problema di tipo: ${type}\nQuesta funzione mescola diversi tipi di problemi per migliorare la ritenzione a lungo termine.`);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCalendar();
+            updateTimerDisplay();
+            
+            // Start with first Anki problem
+            document.getElementById('ankiProblem1').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
