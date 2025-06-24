@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧠 DP Master - Minimal Edition</title>
+    <title>🧠 LA PROGRAMMAZIONE DINAMICA - Sistema Completo di Apprendimento</title>
+    
+    <!-- Font Awesome per icone -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Prism.js per syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -13,663 +21,595 @@
         }
 
         :root {
-            --primary: #1a73e8;
-            --primary-light: #4285f4;
-            --secondary: #5f6368;
-            --light: #f8f9fa;
-            --dark: #202124;
-            --success: #34a853;
-            --danger: #ea4335;
-            --warning: #fbbc04;
-            --gray: #dadce0;
-            --light-gray: #f1f3f4;
-            --border-radius: 8px;
-            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #fdf6ff 0%, #f0f9ff 100%);
+            min-height: 100vh;
             color: var(--dark);
-            line-height: 1.6;
-            padding: 20px;
+            line-height: 1.8;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 20px;
         }
 
-        .header {
-            text-align: center;
-            background-color: white;
-            padding: 40px;
+        /* Header Hero Section */
+        .hero-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 60px 40px;
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .header h1 {
-            font-size: 2.8rem;
-            font-weight: 700;
+        .hero-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-30px, 30px) rotate(240deg); }
+        }
+
+        .hero-header h1 {
+            font-size: 3rem;
             margin-bottom: 15px;
-            color: var(--primary);
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
-        .subtitle {
-            font-size: 1.2rem;
-            color: var(--secondary);
-            margin-bottom: 20px;
+        .hero-header .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            font-style: italic;
         }
 
-        .progress-dashboard {
+        .hero-header .author {
+            margin-top: 20px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Navigation Chapters */
+        .chapter-nav {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             margin-bottom: 40px;
         }
 
-        .progress-card {
+        .chapter-btn {
             background: white;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .progress-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .timer-display {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
-        .pomodoro-controls {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 30px;
+            border: 2px solid #e5e7eb;
+            padding: 15px 20px;
+            border-radius: 10px;
             cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
             font-weight: 600;
-            transition: all 0.3s;
-            background-color: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.1);
+        }
+
+        .chapter-btn.active {
+            background: var(--primary);
             color: white;
-            font-size: 0.9rem;
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
         }
 
-        .btn:hover {
-            background-color: var(--primary-light);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-success {
-            background-color: var(--success);
-        }
-
-        .btn-danger {
-            background-color: var(--danger);
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-top: 20px;
-        }
-
-        .calendar-day {
-            width: 35px;
-            height: 35px;
+        .chapter-btn.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: var(--success);
+            color: white;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            background: var(--light-gray);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.3s;
+            font-size: 14px;
         }
 
-        .calendar-day:hover {
-            background: var(--gray);
-        }
-
-        .calendar-day.completed {
-            background: var(--success);
-            color: white;
-        }
-
-        .main-content {
+        /* Main Layout */
+        .main-layout {
             display: grid;
             grid-template-columns: 1fr 350px;
-            gap: 40px;
+            gap: 30px;
+            align-items: start;
         }
 
         .content-area {
             background: white;
-            padding: 30px;
+            padding: 40px;
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 600px;
         }
 
         .sidebar {
-            background: white;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            height: fit-content;
             position: sticky;
             top: 20px;
         }
 
-        .lesson-nav {
-            list-style: none;
-            margin-bottom: 30px;
+        /* Chapter Content Styling */
+        .chapter-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
         }
 
-        .lesson-nav li {
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: var(--border-radius);
-            background: var(--light-gray);
+        .chapter-content.active {
+            display: block;
         }
 
-        .lesson-nav li:hover {
-            background: var(--gray);
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .lesson-nav li.active {
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-        }
-
-        .lesson-content h2 {
+        .chapter-content h2 {
             color: var(--primary);
+            font-size: 2.5rem;
             margin-bottom: 30px;
-            font-size: 2rem;
-            font-weight: 700;
-            border-bottom: 2px solid var(--gray);
+            border-bottom: 3px solid var(--primary-light);
             padding-bottom: 15px;
         }
 
-        .concept-box {
-            background: var(--light-gray);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            margin: 30px 0;
-            border-left: 4px solid var(--primary);
+        .chapter-content h3 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            margin: 30px 0 20px;
         }
 
-        .concept-box h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-        }
-
-        .visual-explanation {
-            background: white;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            margin: 30px 0;
-            box-shadow: var(--box-shadow);
-            border: 1px solid var(--gray);
-        }
-
-        .dp-table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 25px 0;
-            background: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
-            border: 1px solid var(--gray);
-        }
-
-        .dp-table th, .dp-table td {
-            padding: 12px;
-            text-align: center;
-            border: 1px solid var(--gray);
-        }
-
-        .dp-table th {
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-        }
-
-        .dp-table td {
-            background: white;
-            font-weight: 500;
-        }
-
-        .dp-table td:hover {
-            background: var(--light-gray);
-        }
-
-        .code-block {
-            background: #f6f8fa;
+        .chapter-content h4 {
             color: var(--dark);
-            padding: 20px;
-            border-radius: var(--border-radius);
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+        }
+
+        /* Special Content Boxes */
+        .insight-box {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px 25px;
             margin: 25px 0;
-            font-family: 'Courier New', monospace;
-            overflow-x: auto;
-            box-shadow: var(--box-shadow);
-            border: 1px solid var(--gray);
+            border-radius: 8px;
+            position: relative;
         }
 
-        .thought-process {
-            background: #e8f0fe;
+        .insight-box::before {
+            content: '💡';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-size: 20px;
+        }
+
+        .question-box {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 20px 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .question-box::before {
+            content: '🤔';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-size: 20px;
+        }
+
+        .visualization-box {
+            background: #f0f9ff;
+            border: 2px solid #0891b2;
             padding: 25px;
-            border-radius: var(--border-radius);
             margin: 30px 0;
-            border-left: 4px solid var(--primary-light);
+            border-radius: 10px;
+            position: relative;
         }
 
-        .thought-process h4 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+        .visualization-box::before {
+            content: '🎨';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-size: 20px;
         }
 
-        .exercise-section {
-            background: #fff8e1;
-            padding: 30px;
-            border-radius: var(--border-radius);
-            margin: 40px 0;
+        /* Code Blocks */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .code-block .comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* ASCII Art Styling */
+        .ascii-art {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.3;
+            margin: 20px 0;
+            overflow-x: auto;
+            white-space: pre;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Interactive Elements */
+        .interactive-quiz {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
         }
 
         .quiz-question {
-            background: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin: 20px 0;
-            box-shadow: var(--box-shadow);
-            border: 1px solid var(--gray);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
         }
 
         .quiz-options {
-            display: grid;
+            display: flex;
+            flex-direction: column;
             gap: 12px;
-            margin-top: 20px;
         }
 
         .quiz-option {
             padding: 15px 20px;
-            border: 1px solid var(--gray);
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
             background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
         }
 
         .quiz-option:hover {
             border-color: var(--primary);
-            background: var(--light-gray);
+            background: #f0f9ff;
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: #ede9fe;
         }
 
         .quiz-option.correct {
             border-color: var(--success);
-            background: rgba(52, 168, 83, 0.1);
+            background: #d1fae5;
         }
 
-        .quiz-option.wrong {
+        .quiz-option.incorrect {
             border-color: var(--danger);
-            background: rgba(234, 67, 53, 0.1);
+            background: #fee2e2;
         }
 
-        .step-by-step {
-            background: #e6f4ea;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin: 25px 0;
-        }
-
-        .step {
-            display: flex;
-            align-items: flex-start;
-            margin: 15px 0;
+        .quiz-feedback {
+            margin-top: 20px;
             padding: 15px;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            transition: all 0.3s;
-        }
-
-        .step:hover {
-            transform: translateX(5px);
-        }
-
-        .step-number {
-            background: var(--primary);
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-
-        .exercise-problem {
-            background: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin: 20px 0;
-            box-shadow: var(--box-shadow);
-            border-left: 4px solid var(--primary);
-        }
-
-        .exercise-problem h4 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-
-        .solution-toggle {
-            margin-top: 15px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .solution-toggle:hover {
-            background: var(--primary-light);
-        }
-
-        .solution-content {
+            border-radius: 8px;
             display: none;
-            margin-top: 20px;
-            padding: 20px;
-            background: var(--light-gray);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            font-weight: 500;
         }
 
-        .dp-table-fill {
-            background-color: rgba(26, 115, 232, 0.1);
-            animation: fillAnimation 0.5s ease-out;
+        .quiz-feedback.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
         }
 
-        @keyframes fillAnimation {
-            0% { background-color: transparent; }
-            100% { background-color: rgba(26, 115, 232, 0.1); }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .fill-sequence {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .fill-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .fill-btn:hover {
-            background: var(--primary-light);
-        }
-        
-        .anki-section {
-            margin-top: 40px;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            background: white;
-            box-shadow: var(--box-shadow);
-        }
-        
-        .anki-section h3 {
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-        
-        .anki-card {
-            background: var(--light-gray);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin: 15px 0;
-            box-shadow: var(--box-shadow);
-        }
-        
-        .anki-controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .anki-btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            background: var(--primary);
-            color: white;
-        }
-        
-        .anki-btn:hover {
-            background: var(--primary-light);
-        }
-        
-        .problem-visual {
-            margin: 20px 0;
-            padding: 20px;
-            background: white;
-            border-radius: var(--border-radius);
-            text-align: center;
-            box-shadow: var(--box-shadow);
-        }
-        
-        .visual-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .grid-item {
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--gray);
-            border-radius: var(--border-radius);
-            font-weight: bold;
-            background: white;
-        }
-        
-        .grid-item.active {
-            background: rgba(26, 115, 232, 0.1);
-            border-color: var(--primary);
-        }
-        
-        .visual-array {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .array-item {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--gray);
-            border-radius: var(--border-radius);
-            font-weight: bold;
-            background: white;
-        }
-        
-        .array-item.active {
-            background: rgba(26, 115, 232, 0.1);
-            border-color: var(--primary);
-        }
-        
-        .recall-prompt {
-            background: #e8f0fe;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin: 25px 0;
-        }
-        
-        .recall-prompt h4 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-        
-        .explanation-box {
-            background: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin: 20px 0;
-            box-shadow: var(--box-shadow);
-        }
-        
-        .explanation-box textarea {
-            width: 100%;
-            height: 120px;
-            background: white;
-            color: var(--dark);
-            border: 1px solid var(--gray);
-            border-radius: var(--border-radius);
-            padding: 15px;
-            font-family: inherit;
-            font-size: 1rem;
-            margin-top: 10px;
-            resize: none;
-        }
-        
-        .explanation-box button {
-            margin-top: 15px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .explanation-box button:hover {
-            background: var(--primary-light);
-        }
-        
-        .feedback-section {
-            background: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin: 25px 0;
-            box-shadow: var(--box-shadow);
-        }
-        
-        .feedback-section h4 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-        
-        .mixed-practice {
-            background: #e6f4ea;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin: 20px 0;
-        }
-        
-        .mixed-practice h4 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-        
-        .progress-stats {
-            margin-top: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 15px;
-            background: var(--light-gray);
-            border-radius: var(--border-radius);
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .progress-bar-container {
-            background: var(--light-gray);
-            height: 12px;
-            border-radius: 20px;
-            margin: 15px 0;
+        /* Python Editor */
+        .python-editor {
+            background: #1e293b;
+            border-radius: 12px;
             overflow: hidden;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .editor-header {
+            background: #0f172a;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .editor-title {
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .btn-run {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-run:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-reset {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-hint {
+            background: var(--info);
+            color: white;
+        }
+
+        .editor-body {
             position: relative;
         }
-        
-        .progress-bar {
-            background: var(--primary);
-            height: 100%;
-            border-radius: 20px;
-            transition: width 0.6s ease;
+
+        .editor-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            background: #1e293b;
+            color: #e2e8f0;
+            border: none;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
         }
 
+        .editor-output {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+            min-height: 100px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            border-top: 1px solid #334155;
+        }
+
+        /* Progress Cards */
+        .progress-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-header h3 {
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .progress-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.5s ease;
+        }
+
+        /* Hint System */
+        .hint-container {
+            margin: 20px 0;
+        }
+
+        .hint-toggle {
+            background: var(--warning);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .hint-toggle:hover {
+            background: #d97706;
+            transform: scale(1.05);
+        }
+
+        .hint-content {
+            background: #fef3c7;
+            border: 2px solid var(--warning);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .hint-content.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        /* Achievements */
+        .achievement-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            max-width: 350px;
+        }
+
+        .achievement-popup.show {
+            transform: translateX(0);
+        }
+
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .achievement-icon {
+            font-size: 2.5rem;
+        }
+
+        .achievement-title {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .achievement-description {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        /* Responsive Design */
         @media (max-width: 1024px) {
-            .main-content {
+            .main-layout {
                 grid-template-columns: 1fr;
             }
             
-            .header h1 {
-                font-size: 2.2rem;
+            .sidebar {
+                position: static;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+            }
+            
+            .hero-header h1 {
+                font-size: 2rem;
             }
         }
 
@@ -678,769 +618,1475 @@
                 padding: 10px;
             }
             
-            .header {
-                padding: 25px 20px;
+            .content-area {
+                padding: 20px;
             }
             
-            .header h1 {
+            .chapter-nav {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-header {
+                padding: 40px 20px;
+            }
+            
+            .hero-header h1 {
                 font-size: 1.8rem;
             }
             
-            .timer-display {
-                font-size: 1.8rem;
-            }
-            
-            .visual-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .hero-header .subtitle {
+                font-size: 1.1rem;
             }
         }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Utility Classes */
+        .mt-4 { margin-top: 2rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .text-center { text-align: center; }
+        .text-muted { color: var(--gray); }
+        .fw-bold { font-weight: 700; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-content">
-                <h1>🧠 DP MASTER</h1>
-                <p class="subtitle">La Via del Genio alla Programmazione Dinamica</p>
-                <p style="color: var(--secondary);">Preparazione Avanzata per l'Esame di Progettazione di Algoritmi</p>
-            </div>
-        </div>
+        <!-- Hero Header -->
+        <header class="hero-header">
+            <h1>🧠 LA PROGRAMMAZIONE DINAMICA</h1>
+            <p class="subtitle">Il Viaggio nella Mente dei Geni</p>
+            <p class="subtitle">"Come i Matematici hanno Scoperto il Segreto per Non Ripetere Mai lo Stesso Calcolo"</p>
+            <p class="author">- Richard Bellman, 1953 -</p>
+        </header>
 
-        <!-- Progress Dashboard -->
-        <div class="progress-dashboard">
-            <div class="progress-card">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">⏱️ TIMER POMODORO</h3>
-                <div class="timer-display" id="timerDisplay">01:30:00</div>
-                <div style="color: var(--secondary); font-weight: 600; margin-bottom: 15px;" id="sessionType">Sessione Studio</div>
-                <div class="pomodoro-controls">
-                    <button class="btn" onclick="startTimer()">▶ INIZIA</button>
-                    <button class="btn btn-danger" onclick="pauseTimer()">⏸ PAUSA</button>
-                    <button class="btn btn-success" onclick="completeSession()">✅ COMPLETA</button>
-                </div>
-            </div>
+        <!-- Chapter Navigation -->
+        <nav class="chapter-nav">
+            <button class="chapter-btn active" onclick="loadChapter('prologo')">
+                📖 PROLOGO
+            </button>
+            <button class="chapter-btn" onclick="loadChapter('cap1')">
+                🏛️ CAPITOLO 1
+            </button>
+            <button class="chapter-btn" onclick="loadChapter('cap2')">
+                🔬 CAPITOLO 2
+            </button>
+            <button class="chapter-btn" onclick="loadChapter('cap3')">
+                🎯 CAPITOLO 3
+            </button>
+            <button class="chapter-btn" onclick="loadChapter('cap4')">
+                🎨 CAPITOLO 4
+            </button>
+            <button class="chapter-btn" onclick="loadChapter('cap5')">
+                🚀 CAPITOLO 5
+            </button>
+            <button class="chapter-btn" onclick="loadChapter('cap6')">
+                🎓 CAPITOLO 6
+            </button>
+            <button class="chapter-btn" onclick="loadChapter('epilogo')">
+                📚 EPILOGO
+            </button>
+        </nav>
 
-            <div class="progress-card">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">🔥 STREAK</h3>
-                <div class="timer-display" id="streakCount">0</div>
-                <p style="color: var(--secondary);">Giorni Consecutivi</p>
-                <div style="margin-top: 15px;">
-                    <div style="color: var(--secondary); font-size: 0.9rem;">Target: 30 giorni</div>
-                </div>
-            </div>
-
-            <div class="progress-card">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">📊 PROGRESSO</h3>
-                <div class="timer-display" id="progressPercent">0%</div>
-                <p style="color: var(--secondary);">Corso Completato</p>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
-                </div>
-            </div>
-
-            <div class="progress-card">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">📅 CALENDARIO</h3>
-                <div class="calendar-grid" id="calendarGrid"></div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-area">
-                <div class="lesson-content" id="lessonContent">
-                    <h2>🏛️ CAPITOLO 1: FONDAMENTI DELLA PROGRAMMAZIONE DINAMICA</h2>
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Content Area -->
+            <main class="content-area">
+                <!-- Prologo -->
+                <div id="prologo" class="chapter-content active">
+                    <h2>📖 PROLOGO: LA STORIA CHE CAMBIÒ TUTTO</h2>
                     
-                    <div class="concept-box">
-                        <h3>💡 I PRINCIPI FONDAMENTALI</h3>
-                        <p style="font-size: 1.1rem; line-height: 1.8;">
-                            La Programmazione Dinamica (DP) è una tecnica algoritmica per risolvere problemi complessi spezzandoli in sottoproblemi più semplici e memorizzando le soluzioni di questi sottoproblemi per evitare di ricalcolarle più volte. Questa tecnica si basa su due principi fondamentali:
-                        </p>
-                        <ol style="margin-top: 15px; padding-left: 25px;">
-                            <li><strong>Sottostruttura ottima</strong>: la soluzione ottima del problema può essere costruita a partire dalle soluzioni ottime dei sottoproblemi</li>
-                            <li><strong>Sovrapposizione dei sottoproblemi</strong>: il problema può essere scomposto in sottoproblemi che vengono risolti più volte</li>
-                        </ol>
+                    <section>
+                        <h3>1943 - Il Problema che Ossessionava Richard Bellman</h3>
                         
-                        <!-- Active Recall Prompt -->
-                        <div class="recall-prompt">
-                            <h4>🧠 ACTIVE RECALL</h4>
-                            <p>Dopo aver letto i principi fondamentali, prova a ricordare senza guardare:</p>
-                            <p>Quali sono i due principi fondamentali della programmazione dinamica?</p>
+                        <p>Immagina di essere un giovane matematico durante la Seconda Guerra Mondiale. Il tuo compito? Ottimizzare le traiettorie dei missili. Ogni calcolo richiede ore. E poi ti accorci di una cosa assurda...</p>
+                        
+                        <div class="insight-box">
+                            <p><strong>"Sto calcolando la stessa maledetta cosa 100 volte!"</strong></p>
+                            <p style="text-align: right;">- Richard Bellman (probabilmente)</p>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>🎨 La Rivelazione Visiva</h4>
+                            <div class="ascii-art">QUELLO CHE VEDEVA BELLMAN:
+
+Per calcolare F(5):
+                    F(5)
+                   /    \
+                F(4)     F(3)
+               /    \    /   \
+            F(3)    F(2) F(2) F(1)
+            /  \
+         F(2)  F(1)
+
+CONTA I NODI: F(3) calcolato 2 volte!
+              F(2) calcolato 3 volte!
+
+💡 L'ILLUMINAZIONE: "E se... ricordassi?"</div>
+                        </div>
+                        
+                        <div class="interactive-quiz">
+                            <h4 class="quiz-question">❓ Cosa notò Bellman nel calcolare Fibonacci ricorsivamente?</h4>
                             <div class="quiz-options">
-                                <div class="quiz-option" onclick="checkRecall(this, true)">Sottostruttura ottima e sovrapposizione dei sottoproblemi</div>
-                                <div class="quiz-option" onclick="checkRecall(this, false)">Ricorsione e iterazione</div>
-                                <div class="quiz-option" onclick="checkRecall(this, false)">Divide et impera e greedy</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'a', 'prologo-q1')">
+                                    a) Il calcolo era troppo lento per numeri grandi
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'b', 'prologo-q1')">
+                                    b) Lo stesso sottoproblema veniva calcolato multiple volte
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'c', 'prologo-q1')">
+                                    c) La formula matematica era sbagliata
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'd', 'prologo-q1')">
+                                    d) Serviva più memoria RAM
+                                </div>
                             </div>
+                            <div id="prologo-q1-feedback" class="quiz-feedback"></div>
                         </div>
-                        
-                        <!-- Auto-explanation Section -->
-                        <div class="explanation-box">
-                            <h4>📝 SPIEGA CON PAROLE TUE</h4>
-                            <p>Perché la sovrapposizione dei sottoproblemi è importante per la programmazione dinamica?</p>
-                            <textarea placeholder="Scrivi la tua spiegazione qui..."></textarea>
-                            <button onclick="saveExplanation(this)">Salva spiegazione</button>
-                        </div>
-                        
-                        <div class="problem-visual">
-                            <h4>VISUALIZZAZIONE: SOTTOPROBLEMI</h4>
-                            <div class="visual-grid">
-                                <div class="grid-item">Problema</div>
-                                <div class="grid-item">Sottoproblema 1</div>
-                                <div class="grid-item">Sottoproblema 2</div>
-                                <div class="grid-item">Sottoproblema 3</div>
-                                <div class="grid-item">Sottoproblema 4</div>
-                                <div class="grid-item">Soluzione</div>
-                            </div>
-                        </div>
-                    </div>
+                    </section>
+                </div>
+
+                <!-- Capitolo 1 -->
+                <div id="cap1" class="chapter-content">
+                    <h2>🏛️ CAPITOLO 1: LA NASCITA DI UN'IDEA RIVOLUZIONARIA</h2>
                     
-                    <div class="visual-explanation">
-                        <h3>📊 TABELLA DP: FIBONACCI</h3>
-                        <p>La sequenza di Fibonacci è l'esempio perfetto per comprendere la DP. Senza memoization, il tempo è esponenziale O(2^n). Con la DP, riduciamo a O(n).</p>
+                    <section>
+                        <h3>Le 3 Domande Fondamentali che si Pose Bellman</h3>
                         
-                        <div class="problem-visual">
-                            <h4>VISUALIZZAZIONE: SEQUENZA DI FIBONACCI</h4>
-                            <div class="visual-array">
-                                <div class="array-item">F(0)</div>
-                                <div class="array-item">F(1)</div>
-                                <div class="array-item">F(2)</div>
-                                <div class="array-item">F(3)</div>
-                                <div class="array-item">F(4)</div>
-                                <div class="array-item">F(5)</div>
-                                <div class="array-item">F(6)</div>
-                                <div class="array-item">F(7)</div>
-                                <div class="array-item">F(8)</div>
-                            </div>
-                        </div>
-                        
-                        <table class="dp-table" id="fibTable">
-                            <tr>
-                                <th>n</th>
-                                <th>0</th>
-                                <th>1</th>
-                                <th>2</th>
-                                <th>3</th>
-                                <th>4</th>
-                                <th>5</th>
-                                <th>6</th>
-                                <th>7</th>
-                                <th>8</th>
-                            </tr>
-                            <tr>
-                                <td>fib(n)</td>
-                                <td>0</td>
-                                <td>1</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </table>
-                        
-                        <div class="fill-sequence">
-                            <button class="fill-btn" onclick="fillFibTable()">MOSTRA SOLUZIONE</button>
-                        </div>
-                        
-                        <!-- Worked Examples -->
-                        <div class="step-by-step">
-                            <h4>🔍 SOLUZIONE PASSO PASSO</h4>
-                            <div class="step">
-                                <div class="step-number">1</div>
-                                <div>
-                                    <p><strong>Casi base:</strong></p>
-                                    <p>fib(0) = 0, fib(1) = 1</p>
-                                </div>
-                            </div>
-                            <div class="step">
-                                <div class="step-number">2</div>
-                                <div>
-                                    <p><strong>Relazione di ricorrenza:</strong></p>
-                                    <p>fib(n) = fib(n-1) + fib(n-2)</p>
-                                </div>
-                            </div>
-                            <div class="step">
-                                <div class="step-number">3</div>
-                                <div>
-                                    <p><strong>Riempimento tabella:</strong></p>
-                                    <p>Calcoliamo ogni elemento basandoci sui precedenti</p>
-                                </div>
-                            </div>
+                        <div class="question-box">
+                            <h4>🤔 Domanda 1: "Perché Ricalcolo?"</h4>
                         </div>
                         
                         <div class="code-block">
-                            <pre>
-# Implementazione Python di Fibonacci con DP
-def fibonacci(n):
-    # Caso base
-    if n <= 1:
-        return n
-    
-    # Inizializza la tabella DP
-    dp = [0] * (n+1)
-    dp[0] = 0
-    dp[1] = 1
-    
-    # Riempimento della tabella
-    for i in range(2, n+1):
-        dp[i] = dp[i-1] + dp[i-2]
-    
-    return dp[n]
+                            <pre>LA MENTE DI BELLMAN:
+"Ogni volta che risolvo F(n), chiedo F(n-1) e F(n-2).
+Ma F(n-1) chiede F(n-2) e F(n-3).
+Quindi calcolo F(n-2) DUE VOLTE!
 
-print(fibonacci(8))  # Output: 21
-                            </pre>
+E se n è grande... è un DISASTRO!"
+
+VISUALIZZAZIONE DEL PROBLEMA:
+         Chiamate per F(6)
+F(1): ████████ (8 volte)
+F(2): █████████████ (13 volte)  
+F(3): ████████ (8 volte)
+F(4): █████ (5 volte)
+F(5): ███ (3 volte)
+F(6): █ (1 volta)
+
+Totale: 38 chiamate per 6 valori!</pre>
                         </div>
                         
-                        <!-- Immediate Feedback -->
-                        <div class="feedback-section">
-                            <h4>🔄 IMMEDIATE FEEDBACK</h4>
-                            <p>Prova a implementare la funzione Fibonacci con memoization:</p>
+                        <div class="question-box">
+                            <h4>🤔 Domanda 2: "Cosa Hanno in Comune i Sottoproblemi?"</h4>
+                        </div>
+                        
+                        <div class="insight-box">
+                            <p><strong>L'INTUIZIONE GENIALE:</strong></p>
+                            <p>"Aspetta... F(3) è SEMPRE 2, non importa se lo calcolo per F(4) o per F(5)!"</p>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>PROPRIETÀ SCOPERTA: SOTTOSTRUTTURA OTTIMA</h4>
+                            <p>La soluzione ottima di un problema contiene soluzioni ottime dei suoi sottoproblemi</p>
+                        </div>
+                        
+                        <div class="question-box">
+                            <h4>🤔 Domanda 3: "Come Posso Ricordare?"</h4>
+                        </div>
+                        
+                        <div class="code-block">
+                            <pre>L'ESPERIMENTO DI BELLMAN:
+
+Tentativo 1: "Scrivo su carta!"
+[F(1)=1] [F(2)=1] [F(3)=2] ...
+
+Tentativo 2: "Uso una tabella!"
+┌───┬───┬───┬───┬───┬───┐
+│ 1 │ 1 │ 2 │ 3 │ 5 │ 8 │
+└───┴───┴───┴───┴───┴───┘
+  F1  F2  F3  F4  F5  F6
+
+💡 "EUREKA! Prima calcolo i piccoli,
+    poi uso quelli per i grandi!"</pre>
+                        </div>
+                        
+                        <!-- Esercizio Pratico -->
+                        <div class="python-editor">
+                            <div class="editor-header">
+                                <div class="editor-title">
+                                    <i class="fas fa-code"></i>
+                                    Implementa Fibonacci con Memorizzazione
+                                </div>
+                                <div class="editor-actions">
+                                    <button class="btn btn-run" onclick="runCode('fib-memo')">
+                                        <i class="fas fa-play"></i> Esegui
+                                    </button>
+                                    <button class="btn btn-reset" onclick="resetCode('fib-memo')">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                    <button class="btn btn-hint" onclick="showHint('fib-memo')">
+                                        <i class="fas fa-lightbulb"></i> Suggerimento
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editor-body">
+                                <textarea id="fib-memo-code" class="editor-textarea">def fibonacci_memo(n, memo={}):
+    # Se il valore è già stato calcolato, restituiscilo
+    
+    # Se n <= 1, restituisci n (casi base)
+    
+    # Altrimenti, calcola ricorsivamente e memorizza
+    
+    pass
+
+# Test
+for i in range(10):
+    print(f"F({i}) = {fibonacci_memo(i)}")</textarea>
+                            </div>
+                            <div class="editor-output" id="fib-memo-output">
+                                Output apparirà qui...
+                            </div>
+                        </div>
+                        
+                        <div id="fib-memo-hint" class="hint-content">
+                            <p><strong>Suggerimento:</strong></p>
+                            <ol>
+                                <li>Controlla se n è già in memo: <code>if n in memo: return memo[n]</code></li>
+                                <li>Gestisci i casi base: <code>if n <= 1: return n</code></li>
+                                <li>Calcola e memorizza: <code>memo[n] = fibonacci_memo(n-1, memo) + fibonacci_memo(n-2, memo)</code></li>
+                            </ol>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Capitolo 2 -->
+                <div id="cap2" class="chapter-content">
+                    <h2>🔬 CAPITOLO 2: L'ANATOMIA DELLA PROGRAMMAZIONE DINAMICA</h2>
+                    
+                    <section>
+                        <h3>I 4 Ingredienti Magici (Scoperti nel Tempo)</h3>
+                        
+                        <div class="insight-box">
+                            <h4>🧪 Ingrediente 1: Stati (1950s)</h4>
+                            <p><em>"Cosa devo sapere per prendere una decisione?"</em></p>
+                        </div>
+                        
+                        <div class="ascii-art">EVOLUZIONE DEL CONCETTO:
+
+1950: "Stato = situazione attuale"
+      Esempio: "Sono alla posizione i"
+
+1955: "Stato = situazione + storia rilevante"
+      Esempio: "Sono a i, vengo da j"
+
+1960: "Stato = minima info per decidere il futuro"
+      Esempio: "Sono a i, ultimo elemento era pari"
+
+VISUALIZZAZIONE:
+     Stato Semplice          Stato Complesso
+          [i]                [i, ultimo, conteggio]
+           ↓                         ↓
+    "Dove sono?"         "Dove sono e cosa ho fatto?"</div>
+                        
+                        <div class="insight-box">
+                            <h4>🧪 Ingrediente 2: Transizioni (1952)</h4>
+                            <p><em>"Come passo da uno stato all'altro?"</em></p>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>PATTERN UNIVERSALE SCOPERTO</h4>
                             <div class="code-block">
-                                <pre id="codeEditor" contenteditable="true">def fibonacci_memo(n, memo={}):
-    # Scrivi qui la tua implementazione
-    pass</pre>
-                            </div>
-                            <button class="btn" onclick="runCode()">Verifica soluzione</button>
-                            <div id="feedbackResult" style="margin-top: 15px;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="thought-process">
-                        <h4>🧠 PROCESSO MENTALE DEL GENIO</h4>
-                        <p>Quando affronti un problema di DP, chiediti:</p>
-                        <ol>
-                            <li>Posso suddividere il problema in sottoproblemi più piccoli?</li>
-                            <li>I sottoproblemi si sovrappongono? (Se sì, la DP è adatta)</li>
-                            <li>Qual è la relazione di ricorrenza tra i sottoproblemi?</li>
-                            <li>Quali sono i casi base?</li>
-                            <li>Come posso memorizzare e riutilizzare i risultati?</li>
-                        </ol>
-                    </div>
-                    
-                    <div class="exercise-section">
-                        <h3>🎯 ESERCIZI DI PROGRAMMAZIONE DINAMICA</h3>
-                        
-                        <div class="exercise-problem">
-                            <h4>Problema 1: Somma di Sottosequenze</h4>
-                            <p>Dato un array di numeri interi, trova la somma massima di una sottosequenza di elementi consecutivi.</p>
-                            <p><strong>Input:</strong> [-2, 1, -3, 4, -1, 2, 1, -5, 4]</p>
-                            <p><strong>Output atteso:</strong> 6 (corrispondente a [4, -1, 2, 1])</p>
-                            
-                            <div class="problem-visual">
-                                <h4>VISUALIZZAZIONE: SOMMA MASSIMA</h4>
-                                <div class="visual-array">
-                                    <div class="array-item">-2</div>
-                                    <div class="array-item">1</div>
-                                    <div class="array-item">-3</div>
-                                    <div class="array-item active">4</div>
-                                    <div class="array-item">-1</div>
-                                    <div class="array-item active">2</div>
-                                    <div class="array-item active">1</div>
-                                    <div class="array-item">-5</div>
-                                    <div class="array-item">4</div>
-                                </div>
-                                <p style="margin-top: 15px; color: var(--primary);">Somma massima: 4 + (-1) + 2 + 1 = 6</p>
-                            </div>
-                            
-                            <button class="solution-toggle" onclick="toggleSolution('sol1')">MOSTRA SOLUZIONE</button>
-                            <div class="solution-content" id="sol1">
-                                <p><strong>Approccio DP:</strong></p>
-                                <ol>
-                                    <li>Definiamo dp[i] come la somma massima della sottosequenza che termina all'indice i</li>
-                                    <li>Relazione di ricorrenza: dp[i] = max(nums[i], nums[i] + dp[i-1])</li>
-                                    <li>Caso base: dp[0] = nums[0]</li>
-                                </ol>
-                                
-                                <div class="code-block">
-                                    <pre>
-def max_subarray(nums):
-    n = len(nums)
-    dp = [0] * n
-    dp[0] = nums[0]
-    max_sum = dp[0]
-    
-    for i in range(1, n):
-        dp[i] = max(nums[i], nums[i] + dp[i-1])
-        max_sum = max(max_sum, dp[i])
-    
-    return max_sum
-                                    </pre>
-                                </div>
+                                <pre>Stato[i] = FUNZIONE(
+    Stato[j] per tutti j < i
+    che rispettano i vincoli
+)
+
+ESEMPI DI FUNZIONI:
+- MAX: voglio il meglio
+- MIN: voglio il minimo  
+- SUM: voglio contare tutti
+- OR: basta uno valido
+- AND: devono valere tutti</pre>
                             </div>
                         </div>
                         
-                        <div class="exercise-problem">
-                            <h4>Problema 2: Zaino 0/1</h4>
-                            <p>Dati n oggetti con pesi e valori, e uno zaino di capacità massima W, determina il valore massimo che può essere trasportato nello zaino.</p>
-                            <p><strong>Input:</strong> pesi = [2, 3, 4, 5], valori = [3, 4, 5, 6], W = 5</p>
-                            <p><strong>Output atteso:</strong> 7 (oggetti con peso 2 e 3, valori 3 e 4)</p>
-                            
-                            <div class="problem-visual">
-                                <h4>VISUALIZZAZIONE: PROBLEMA DELLO ZAINO</h4>
-                                <div style="display: flex; gap: 20px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
-                                    <div style="text-align: center;">
-                                        <div style="width: 60px; height: 60px; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto;">2kg</div>
-                                        <p>Valore: 3</p>
-                                    </div>
-                                    <div style="text-align: center;">
-                                        <div style="width: 60px; height: 60px; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto;">3kg</div>
-                                        <p>Valore: 4</p>
-                                    </div>
-                                    <div style="text-align: center;">
-                                        <div style="width: 60px; height: 60px; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto;">4kg</div>
-                                        <p>Valore: 5</p>
-                                    </div>
-                                    <div style="text-align: center;">
-                                        <div style="width: 60px; height: 60px; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto;">5kg</div>
-                                        <p>Valore: 6</p>
-                                    </div>
-                                </div>
-                                <p style="margin-top: 15px; color: var(--primary);">Capacità massima: 5kg</p>
-                            </div>
-                            
-                            <button class="solution-toggle" onclick="toggleSolution('sol2')">MOSTRA SOLUZIONE</button>
-                            <div class="solution-content" id="sol2">
-                                <p><strong>Approccio DP:</strong></p>
-                                <ol>
-                                    <li>Creiamo una tabella dp[i][w] che rappresenta il valore massimo con i primi i oggetti e capacità w</li>
-                                    <li>Relazione di ricorrenza:
-                                        <ul>
-                                            <li>Se peso[i-1] <= w: dp[i][w] = max(val[i-1] + dp[i-1][w-peso[i-1]], dp[i-1][w])</li>
-                                            <li>Altrimenti: dp[i][w] = dp[i-1][w]</li>
-                                        </ul>
-                                    </li>
-                                </ol>
-                                
-                                <div class="code-block">
-                                    <pre>
-def knapsack(W, wt, val, n):
-    dp = [[0 for _ in range(W+1)] for _ in range(n+1)]
-    
-    for i in range(1, n+1):
-        for w in range(1, W+1):
-            if wt[i-1] <= w:
-                dp[i][w] = max(val[i-1] + dp[i-1][w - wt[i-1]], dp[i-1][w])
-            else:
-                dp[i][w] = dp[i-1][w]
-    
-    return dp[n][W]
-                                    </pre>
-                                </div>
-                                
-                                <div class="visual-explanation">
-                                    <h4>Tabella DP per Zaino (W=5)</h4>
-                                    <table class="dp-table">
-                                        <tr>
-                                            <th>i\w</th>
-                                            <th>0</th>
-                                            <th>1</th>
-                                            <th>2</th>
-                                            <th>3</th>
-                                            <th>4</th>
-                                            <th>5</th>
-                                        </tr>
-                                        <tr>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>1 (w=2,v=3)</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>3</td>
-                                            <td>3</td>
-                                            <td>3</td>
-                                            <td>3</td>
-                                        </tr>
-                                        <tr>
-                                            <td>2 (w=3,v=4)</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>3</td>
-                                            <td>4</td>
-                                            <td>4</td>
-                                            <td>7</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3 (w=4,v=5)</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>3</td>
-                                            <td>4</td>
-                                            <td>5</td>
-                                            <td>7</td>
-                                        </tr>
-                                        <tr>
-                                            <td>4 (w=5,v=6)</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>3</td>
-                                            <td>4</td>
-                                            <td>5</td>
-                                            <td>7</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
+                        <div class="insight-box">
+                            <h4>🧪 Ingrediente 3: Casi Base (1948)</h4>
+                            <p><em>"Dove comincio?"</em></p>
                         </div>
                         
-                        <!-- Interleaving Section -->
-                        <div class="mixed-practice">
-                            <h4>🔄 INTERLEAVING PRACTICE</h4>
-                            <p>Mescola diversi tipi di problemi per migliorare la ritenzione:</p>
+                        <div class="ascii-art">L'OSSERVAZIONE FONDAMENTALE:
+"Ogni ricorsione deve fermarsi da qualche parte!"
+
+VISUALIZZAZIONE:
+    Ricorsione Infinita        Ricorsione con Base
+         F(n)                        F(n)
+          ↓                           ↓
+        F(n-1)                     F(n-1)
+          ↓                           ↓
+        F(n-2)                     F(n-2)
+          ↓                           ↓
+         ...                         ...
+          ↓                           ↓
+         ???                        F(0)=0 ✓
+     [CRASH!]                    [SUCCESSO!]</div>
+                        
+                        <div class="insight-box">
+                            <h4>🧪 Ingrediente 4: Ordine di Calcolo (1953)</h4>
+                            <p><em>"In che sequenza risolvo?"</em></p>
+                        </div>
+                        
+                        <div class="code-block">
+                            <pre>LA RIVELAZIONE:
+"Devo risolvere i sottoproblemi PRIMA 
+ di usarli per problemi più grandi!"
+
+DUE APPROCCI SCOPERTI:
+
+1. BOTTOM-UP (Dal basso)        2. TOP-DOWN (Dall'alto)
+   F[0] = 0                        def F(n):
+   F[1] = 1                          if n in memo:
+   for i in 2..n:                      return memo[n]
+     F[i] = F[i-1] + F[i-2]          memo[n] = calcola...
+                                      return memo[n]
+
+PRO: Semplice, no stack        PRO: Calcola solo necessari
+CON: Calcola tutto             CON: Rischio overflow stack</pre>
+                        </div>
+                        
+                        <!-- Quiz Interattivo -->
+                        <div class="interactive-quiz">
+                            <h4 class="quiz-question">❓ Quale ingrediente della DP determina "cosa devo sapere in ogni momento"?</h4>
                             <div class="quiz-options">
-                                <div class="quiz-option" onclick="loadProblem('fibonacci')">Fibonacci con DP</div>
-                                <div class="quiz-option" onclick="loadProblem('subarray')">Somma massima sottosequenza</div>
-                                <div class="quiz-option" onclick="loadProblem('knapsack')">Problema dello zaino</div>
-                                <div class="quiz-option" onclick="loadProblem('coins')">Problema del resto minimo</div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'a', 'cap2-q1')">
+                                    a) Stati
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'b', 'cap2-q1')">
+                                    b) Transizioni
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'c', 'cap2-q1')">
+                                    c) Casi Base
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'd', 'cap2-q1')">
+                                    d) Ordine di Calcolo
+                                </div>
                             </div>
+                            <div id="cap2-q1-feedback" class="quiz-feedback"></div>
                         </div>
-                    </div>
-                    
-                    <div class="anki-section">
-                        <h3>🧠 SISTEMA ANKI - RIPETIZIONE SPAZIATA</h3>
-                        <p>Ogni problema risolto verrà ripresentato secondo il sistema di ripetizione spaziata di Anki per ottimizzare la memorizzazione</p>
-                        
-                        <div class="anki-card" id="ankiProblem1">
-                            <h4>Problema di Ripasso: Somma di Sottosequenze</h4>
-                            <p>Dato l'array [3, -2, 5, -1], qual è la somma massima della sottosequenza consecutiva?</p>
-                            
-                            <div class="anki-controls">
-                                <button class="anki-btn" onclick="rateAnkiProblem(1, 'again')">Difficile</button>
-                                <button class="anki-btn" onclick="rateAnkiProblem(1, 'hard')">Difficile</button>
-                                <button class="anki-btn" onclick="rateAnkiProblem(1, 'good')">Buono</button>
-                                <button class="anki-btn" onclick="rateAnkiProblem(1, 'easy')">Facile</button>
-                            </div>
-                        </div>
-                        
-                        <div class="anki-card" id="ankiProblem2" style="display: none;">
-                            <h4>Problema di Ripasso: Zaino 0/1</h4>
-                            <p>Oggetti: peso=[1, 2, 3], valore=[10, 15, 40], capacità=5. Qual è il valore massimo?</p>
-                            
-                            <div class="anki-controls">
-                                <button class="anki-btn" onclick="rateAnkiProblem(2, 'again')">Difficile</button>
-                                <button class="anki-btn" onclick="rateAnkiProblem(2, 'hard')">Difficile</button>
-                                <button class="anki-btn" onclick="rateAnkiProblem(2, 'good')">Buono</button>
-                                <button class="anki-btn" onclick="rateAnkiProblem(2, 'easy')">Facile</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="quiz-question">
-                        <h4>❓ QUIZ DI VERIFICA</h4>
-                        <p>Quale delle seguenti affermazioni è vera riguardo alla Programmazione Dinamica?</p>
-                        <div class="quiz-options">
-                            <div class="quiz-option" onclick="checkAnswer(this, false)">È efficiente per problemi senza sovrapposizione di sottoproblemi</div>
-                            <div class="quiz-option" onclick="checkAnswer(this, true)">Utilizza la memoization per evitare ricalcoli</div>
-                            <div class="quiz-option" onclick="checkAnswer(this, false)">Richiede sempre una complessità spaziale O(n^2)</div>
-                            <div class="quiz-option" onclick="checkAnswer(this, true)">Si basa sul principio di sottostruttura ottima</div>
-                        </div>
-                    </div>
+                    </section>
                 </div>
-            </div>
-            
-            <div class="sidebar">
-                <h3 style="color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid var(--gray); padding-bottom: 10px;">📚 ROADMAP DI APPRENDIMENTO</h3>
-                <ul class="lesson-nav">
-                    <li class="active">1. Fondamenti della Programmazione Dinamica</li>
-                    <li>2. Tecniche Top-Down e Bottom-Up</li>
-                    <li>3. Problemi di Ottimizzazione</li>
-                    <li>4. DP su Stringhe</li>
-                    <li>5. DP Multidimensionale</li>
-                    <li>6. DP con Bitmask</li>
-                    <li>7. Programmazione Dinamica Avanzata</li>
-                    <li>8. Tecniche di Memoization Ottimizzata</li>
-                    <li>9. DP su Alberi e Grafi</li>
-                    <li>10. Preparazione all'Esame</li>
-                </ul>
-                
-                <div class="progress-stats">
-                    <h4 style="color: var(--primary); margin-bottom: 15px;">📈 LE TUE STATISTICHE</h4>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div>Concetti Appresi</div>
-                            <div class="stat-value">3/42</div>
-                        </div>
-                        <div class="stat-item">
-                            <div>Problemi Risolti</div>
-                            <div class="stat-value">5/100</div>
-                        </div>
-                        <div class="stat-item">
-                            <div>Quiz Completati</div>
-                            <div class="stat-value">1/30</div>
-                        </div>
-                        <div class="stat-item">
-                            <div>Efficienza</div>
-                            <div class="stat-value">65%</div>
-                        </div>
-                    </div>
+
+                <!-- Capitolo 3 -->
+                <div id="cap3" class="chapter-content">
+                    <h2>🎯 CAPITOLO 3: L'ALGORITMO MENTALE DEFINITIVO</h2>
                     
+                    <section>
+                        <h3>Il Metodo SPAZIO: Come Pensare in DP</h3>
+                        
+                        <div class="visualization-box">
+                            <h4>🌟 S - Stati: "Cosa Caratterizza la Mia Situazione?"</h4>
+                            <div class="code-block">
+                                <pre>PROCESSO MENTALE GUIDATO:
+
+1. "Cosa sto processando?"
+   → Sequenza: T[i] = primi i elementi
+   → Matrice: T[i][j] = sottomatrice fino a (i,j)
+   → Grafo: T[nodo] = soluzione fino a nodo
+
+2. "Cosa devo ricordare del passato?"
+   → Ultimo elemento? T[i][ultimo]
+   → Risorse usate? T[i][peso_usato]
+   → Obiettivi raggiunti? T[i][ha_visto_012]
+
+ESEMPIO VISIVO:
+Problema: "Stringhe senza 11"
+         ↓
+"Devo sapere se l'ultimo era 1!"
+         ↓
+Stati: T[i][0] = finisce con 0
+       T[i][1] = finisce con 1</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>🌟 P - Passaggi: "Come Transito tra Stati?"</h4>
+                            <div class="ascii-art">LA DOMANDA D'ORO:
+"Se sono nello stato X, quali stati posso raggiungere?"
+
+VISUALIZZAZIONE:
+    Stato[i-1][0] ━━━━━┓
+                       ┣━━> Stato[i][0]
+    Stato[i-1][1] ━━━━━┛
+                       ┗━━> Stato[i][1]
+
+PATTERN COMUNI:
+1. SCELTA: prendo/non prendo
+   T[i] = max(T[i-1], T[i-2] + val[i])
+
+2. SOMMA: tutti i modi
+   T[i] = Σ T[j] per j validi
+
+3. ESTREMO: migliore opzione
+   T[i] = min/max(T[j] + costo(j→i))</div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>🌟 A - Assiomi: "Quali Sono i Casi Base?"</h4>
+                            <div class="code-block">
+                                <pre>MENTALITÀ:
+"Qual è il problema più piccolo che so risolvere?"
+
+TRUCCHI VISIVI:
+┌─────────────────────────────┐
+│ Sequenze: T[0] = ?          │
+│ Di solito: vuoto = 1 modo   │
+│                              │
+│ Matrici: T[0][0] = ?        │
+│ Di solito: cella start = 1  │
+│                              │
+│ Conteggi: T[0][x] = ?       │
+│ Di solito: 0 ovunque        │
+│           tranne stato init  │
+└─────────────────────────────┘</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>🌟 Z - Zona: "In Che Ordine Calcolo?"</h4>
+                            <div class="ascii-art">REGOLA AUREA:
+"Prima i sottoproblemi, poi i problemi!"
+
+VISUALIZZAZIONE ORDINE:
+    1→2→3→4→5  (Sequenze)
+    
+    1 2 3 4    (Matrici: per righe)
+    5 6 7 8
+    9 0 1 2
+    
+    DAG topologico (Grafi)</div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>🌟 I - Implementa: "Come Traduco in Codice?"</h4>
+                            <pre class="language-python"><code># TEMPLATE UNIVERSALE DP
+def risolvi_dp(input):
+    # 1. INIZIALIZZA stati
+    dp = crea_tabella()
+    
+    # 2. CASI BASE (Assiomi)
+    inizializza_casi_base(dp)
+    
+    # 3. RIEMPI seguendo l'ordine (Zona)
+    for stato in ordine_corretto():
+        # 4. APPLICA transizione (Passaggi)
+        for precedente in stati_precedenti_validi(stato):
+            dp[stato] = aggiorna(dp[stato], dp[precedente])
+    
+    # 5. RITORNA soluzione
+    return dp[stato_finale]</code></pre>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>🌟 O - Ottimizza: "Posso Fare Meglio?"</h4>
+                            <div class="code-block">
+                                <pre>CHECKLIST OTTIMIZZAZIONI:
+
+□ Servono TUTTI gli stati precedenti?
+  → Spesso bastano ultimi 1-2
+  
+□ Posso evitare stati impossibili?
+  → Non calcolarli proprio
+  
+□ Ci sono simmetrie?
+  → Calcola metà
+
+ESEMPIO:
+Da: dp[n][m] memoria    A: dp[2][m] memoria
+    O(n×m)                 O(m) ← MEGLIO!</pre>
+                            </div>
+                        </div>
+                        
+                        <!-- Esercizio SPAZIO -->
+                        <div class="python-editor">
+                            <div class="editor-header">
+                                <div class="editor-title">
+                                    <i class="fas fa-puzzle-piece"></i>
+                                    Applica il Metodo SPAZIO
+                                </div>
+                                <div class="editor-actions">
+                                    <button class="btn btn-run" onclick="runCode('spazio')">
+                                        <i class="fas fa-play"></i> Esegui
+                                    </button>
+                                    <button class="btn btn-hint" onclick="showHint('spazio')">
+                                        <i class="fas fa-lightbulb"></i> Suggerimento
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editor-body">
+                                <textarea id="spazio-code" class="editor-textarea"># Problema: Conta modi per arrivare in fondo a scale con n gradini
+# Puoi fare salti di 1 o 2 gradini
+
+def conta_modi_scale(n):
+    # S - Stati: ??
+    # P - Passaggi: ??
+    # A - Assiomi: ??
+    # Z - Zona: ??
+    # I - Implementa:
+    
+    pass
+
+# Test
+for n in [1, 2, 3, 4, 5]:
+    print(f"Scale con {n} gradini: {conta_modi_scale(n)} modi")</textarea>
+                            </div>
+                            <div class="editor-output" id="spazio-output">
+                                Output apparirà qui...
+                            </div>
+                        </div>
+                        
+                        <div id="spazio-hint" class="hint-content">
+                            <p><strong>Applica SPAZIO:</strong></p>
+                            <ul>
+                                <li><strong>S</strong>tati: <code>dp[i]</code> = modi per arrivare al gradino i</li>
+                                <li><strong>P</strong>assaggi: Da i-1 (salto 1) o i-2 (salto 2)</li>
+                                <li><strong>A</strong>ssiomi: <code>dp[0]=1, dp[1]=1</code></li>
+                                <li><strong>Z</strong>ona: Dal basso verso l'alto (0 → n)</li>
+                                <li><strong>I</strong>mplementa: <code>dp[i] = dp[i-1] + dp[i-2]</code></li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Capitolo 4 -->
+                <div id="cap4" class="chapter-content">
+                    <h2>🎨 CAPITOLO 4: PATTERN VISIVI - Riconoscere al Volo</h2>
+                    
+                    <section>
+                        <h3>I 7 Pattern che Coprono il 90% dei Problemi</h3>
+                        
+                        <div class="visualization-box">
+                            <h4>📊 Pattern 1: Fibonacci Nascosto</h4>
+                            <div class="ascii-art">SEGNALI:
+"dipende da 2 precedenti" + "somma/scelta"
+
+VISUALIZZAZIONE:
+    •
+   / \
+  •   •    ← Struttura ricorsiva
+ / \ / \
+•  • •  •
+
+ESEMPIO CLASSICO:
+"Scale con salti 1-2" = Fibonacci!
+T[i] = T[i-1] + T[i-2]</div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>📊 Pattern 2: Zaino (Knapsack)</h4>
+                            <div class="ascii-art">SEGNALI:
+"scegli oggetti" + "capacità limitata"
+
+GRIGLIA MENTALE:
+         peso →
+    o  ┌─┬─┬─┬─┬─┐
+    g  │0│0│0│v│v│  v = valore
+    g  ├─┼─┼─┼─┼─┤     oggetto
+    e  │0│0│0│v│v│
+    t  ├─┼─┼─┼─┼─┤
+    t  │0│w│w│V│V│  V = valore
+    i  └─┴─┴─┴─┴─┘     migliore
+    ↓
+
+T[i][w] = max(T[i-1][w], T[i-1][w-peso[i]] + valore[i])</div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>📊 Pattern 3: LCS/LIS (Sottosequenze)</h4>
+                            <div class="code-block">
+                                <pre>SEGNALI:
+"sottosequenza" + "proprietà da mantenere"
+
+PROCESSO MENTALE:
+  Sequenza: 3 1 4 1 5
+            ↓ ↓ ↓ ↓ ↓
+  Prendo?   N S S N S → 1,4,5 crescente!
+
+T[i] = max(T[j] + 1) per j<i con A[j]<A[i]</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>📊 Pattern 4: Intervalli</h4>
+                            <div class="ascii-art">SEGNALI:
+"substring" + "ottimizza su range"
+
+TABELLA TRIANGOLARE:
+    j →
+i ┌─┬─┬─┬─┐
+↓ │X│ │ │ │  Diagonale = stringhe lunghe 1
+  ├─┼─┼─┼─┤
+  │X│X│ │ │  Sopra = stringhe lunghe 2
+  ├─┼─┼─┼─┤
+  │X│X│X│ │  Ancora sopra = lunghe 3
+  └─┴─┴─┴─┘
+
+T[i][j] = funzione(T[i+1][j], T[i][j-1], T[i+1][j-1])</div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>📊 Pattern 5: Alberi/DAG</h4>
+                            <div class="code-block">
+                                <pre>SEGNALI:
+"percorsi" + "grafo aciclico"
+
+APPROCCIO:
+Per ogni nodo in ordine topologico:
+  T[nodo] = migliore tra:
+    T[pred] + costo(pred→nodo)
+    per ogni predecessore</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>📊 Pattern 6: Matrici Cumulative</h4>
+                            <div class="ascii-art">SEGNALI:
+"somma in sottomatrice" + "query multiple"
+
+PREPROCESSING:
+┌─┬─┬─┐     ┌─┬──┬──┐
+│1│2│3│     │1│3 │6 │
+├─┼─┼─┤ →   ├─┼──┼──┤
+│4│5│6│     │5│12│21│
+└─┴─┴─┘     └─┴──┴──┘
+originale    cumulativa
+
+Somma(r1,c1,r2,c2) = O(1)!</div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>📊 Pattern 7: Stati Multipli</h4>
+                            <div class="code-block">
+                                <pre>SEGNALI:
+"vincoli complessi" + "storia importante"
+
+DIMENSIONI EXTRA:
+T[pos][ultimo][conteggio][flag]
+    ↓      ↓        ↓        ↓
+  dove   quale    quanti   proprietà
+  sono   elemento  ne ho    speciali
+
+Esempio: "esattamente k elementi diversi"
+T[i][mask][k] = fino a i, elementi usati, conteggio</pre>
+                            </div>
+                        </div>
+                        
+                        <!-- Pattern Recognition Quiz -->
+                        <div class="interactive-quiz">
+                            <h4 class="quiz-question">❓ Quale pattern useresti per "trovare la sottosequenza crescente più lunga"?</h4>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'a', 'cap4-q1')">
+                                    a) Fibonacci Nascosto
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'b', 'cap4-q1')">
+                                    b) Zaino (Knapsack)
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'c', 'cap4-q1')">
+                                    c) LCS/LIS (Sottosequenze)
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'd', 'cap4-q1')">
+                                    d) Matrici Cumulative
+                                </div>
+                            </div>
+                            <div id="cap4-q1-feedback" class="quiz-feedback"></div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Capitolo 5 -->
+                <div id="cap5" class="chapter-content">
+                    <h2>🚀 CAPITOLO 5: DALLA TEORIA ALLA PRATICA</h2>
+                    
+                    <section>
+                        <h3>Caso Studio Completo: Il Pensiero DP in Azione</h3>
+                        
+                        <div class="question-box">
+                            <h4>📝 Problema: Robot in Griglia con Salti Speciali</h4>
+                            <p>"Un robot in una griglia n×m può muoversi: destra (→), giù (↓), o salto cavallo (↓↓→). Quanti percorsi da (0,0) a (n-1,m-1)?"</p>
+                        </div>
+                        
+                        <h4>🧠 Il Processo Mentale Completo</h4>
+                        
+                        <div class="visualization-box">
+                            <h4>Fase 1: Comprensione Visiva</h4>
+                            <div class="ascii-art">DISEGNO IL PROBLEMA:
+S → → → ·
+↓ ↘ · · ·  (↘ = salto cavallo)
+↓ · ↘ · ·
+· · · ↘ G
+
+DOMANDA: "Da dove posso arrivare a G?"</div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>Fase 2: Applicazione SPAZIO</h4>
+                            
+                            <div class="insight-box">
+                                <h5>S - Stati:</h5>
+                                <p>"Cosa caratterizza la situazione?"<br>
+                                → La posizione (i,j) dove sono!<br>
+                                <code>T[i][j] = numero di percorsi per arrivare a (i,j)</code></p>
+                            </div>
+                            
+                            <div class="insight-box">
+                                <h5>P - Passaggi:</h5>
+                                <div class="ascii-art">"Da dove posso arrivare a (i,j)?"
+
+VISUALIZZO:
+    (i-1,j)
+       ↓
+(i,j-1)→(i,j)
+       ↗
+  (i-2,j-1)
+
+T[i][j] = T[i-1][j] + T[i][j-1] + T[i-2][j-1]
+          ↑           ↑            ↑
+          da sopra    da sinistra  da salto</div>
+                            </div>
+                            
+                            <div class="insight-box">
+                                <h5>A - Assiomi:</h5>
+                                <p>"Casi base?"<br>
+                                <code>T[0][0] = 1</code> (sono già alla partenza)<br>
+                                <code>T[i][0] = 1</code> (solo giù lungo il bordo)<br>
+                                <code>T[0][j] = 1</code> (solo destra lungo il bordo)</p>
+                            </div>
+                            
+                            <div class="insight-box">
+                                <h5>Z - Zona:</h5>
+                                <div class="ascii-art">"Ordine di calcolo?"
+Per righe, da sinistra a destra:
+┌─┬─┬─┬─┐
+│1│2│3│4│
+├─┼─┼─┼─┤
+│5│6│7│8│
+└─┴─┴─┴─┘</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Implementazione Robot -->
+                        <div class="python-editor">
+                            <div class="editor-header">
+                                <div class="editor-title">
+                                    <i class="fas fa-robot"></i>
+                                    Implementa Robot con Salti Speciali
+                                </div>
+                                <div class="editor-actions">
+                                    <button class="btn btn-run" onclick="runCode('robot')">
+                                        <i class="fas fa-play"></i> Esegui
+                                    </button>
+                                    <button class="btn btn-hint" onclick="showHint('robot')">
+                                        <i class="fas fa-lightbulb"></i> Suggerimento
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editor-body">
+                                <textarea id="robot-code" class="editor-textarea">def percorsi_robot_speciale(n, m):
+    # Inizializza tabella dp
+    
+    # Casi base
+    
+    # Riempi tabella
+    # Ricorda: puoi arrivare da sopra, sinistra, o salto cavallo
+    
+    return dp[n-1][m-1]
+
+# Test
+print(f"Griglia 3x3: {percorsi_robot_speciale(3, 3)} percorsi")
+print(f"Griglia 4x4: {percorsi_robot_speciale(4, 4)} percorsi")</textarea>
+                            </div>
+                            <div class="editor-output" id="robot-output">
+                                Output apparirà qui...
+                            </div>
+                        </div>
+                        
+                        <div id="robot-hint" class="hint-content">
+                            <p><strong>Implementazione completa:</strong></p>
+                            <pre class="language-python"><code>def percorsi_robot_speciale(n, m):
+    # Inizializza
+    dp = [[0] * m for _ in range(n)]
+    
+    # Casi base
+    for i in range(n): dp[i][0] = 1
+    for j in range(m): dp[0][j] = 1
+    
+    # Riempi tabella
+    for i in range(1, n):
+        for j in range(1, m):
+            # Da sopra
+            dp[i][j] = dp[i-1][j]
+            # Da sinistra  
+            dp[i][j] += dp[i][j-1]
+            # Salto cavallo (se possibile)
+            if i >= 2 and j >= 1:
+                dp[i][j] += dp[i-2][j-1]
+    
+    return dp[n-1][m-1]</code></pre>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>O - Ottimizza:</h4>
+                            <div class="code-block">
+                                <pre>"Serve tutta la matrice?"
+NO! Bastano ultime 2 righe per il salto
+
+dp_prev2 = [1] * m  # due righe fa
+dp_prev1 = [1] * m  # riga precedente
+dp_curr = [1] * m   # riga corrente
+
+Memoria: da O(n×m) a O(m)!</pre>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Capitolo 6 -->
+                <div id="cap6" class="chapter-content">
+                    <h2>🎓 CAPITOLO 6: I TRUCCHI DEI MAESTRI</h2>
+                    
+                    <section>
+                        <h3>Le Tecniche Segrete dei Campioni</h3>
+                        
+                        <div class="visualization-box">
+                            <h4>🎭 Trucco 1: "La Dimensione Nascosta"</h4>
+                            <div class="code-block">
+                                <pre>PROBLEMA ORIGINALE:
+"Conta sottosequenze crescenti"
+
+PENSIERO NOVIZIO:
+T[i] = numero fino a posizione i
+
+PENSIERO ESPERTO:
+"Aspetta... devo sapere L'ULTIMO elemento!"
+T[i][j] = numero fino a i che finiscono con j
+
+VISUALIZZAZIONE:
+    Novizio:        Esperto:
+    [?][?][?]       [3][0][0]
+     ↑               ↑  ↑  ↑
+   ambiguo!      finisce con 0,1,2</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>🎭 Trucco 2: "Stati Impossibili"</h4>
+                            <pre class="language-python"><code># NOVIZIO: calcola tutto
+for i in range(n):
+    for j in range(m):
+        dp[i][j] = calcola()
+
+# ESPERTO: salta impossibili
+for i in range(n):
+    for j in range(min(i+1, m)):  # j ≤ i
+        if è_possibile(i, j):
+            dp[i][j] = calcola()
+
+# Risparmio: fino a 50% del tempo!</code></pre>
+                        </div>
+                        
+                        <div class="visualization-box">
+                            <h4>🎭 Trucco 3: "La Ricorsione con Memoria"</h4>
+                            <pre class="language-python"><code># Quando bottom-up è complicato, usa top-down!
+
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def dp(stato):
+    # Caso base
+    if stato == base:
+        return valore_base
+    
+    # Ricorsione
+    risultato = neutro
+    for prossimo in successori(stato):
+        risultato = combina(risultato, dp(prossimo))
+    
+    return risultato
+
+# Magia: calcola solo stati raggiungibili!</code></pre>
+                        </div>
+                        
+                        <!-- Esercizio Avanzato -->
+                        <div class="python-editor">
+                            <div class="editor-header">
+                                <div class="editor-title">
+                                    <i class="fas fa-hat-wizard"></i>
+                                    Applica un Trucco dei Maestri
+                                </div>
+                                <div class="editor-actions">
+                                    <button class="btn btn-run" onclick="runCode('maestri')">
+                                        <i class="fas fa-play"></i> Esegui
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editor-body">
+                                <textarea id="maestri-code" class="editor-textarea"># Problema: Conta sottosequenze con esattamente k elementi distinti
+# Usa il trucco della "dimensione nascosta"!
+
+def conta_sottosequenze_k_distinti(arr, k):
+    n = len(arr)
+    # Suggerimento: T[i][mask][count]
+    # i = posizione
+    # mask = quali elementi ho usato (bitmask)
+    # count = quanti elementi distinti
+    
+    pass
+
+# Test
+arr = [1, 2, 1, 3, 2]
+k = 2
+print(f"Sottosequenze con {k} elementi distinti: {conta_sottosequenze_k_distinti(arr, k)}")</textarea>
+                            </div>
+                            <div class="editor-output" id="maestri-output">
+                                Output apparirà qui...
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Epilogo -->
+                <div id="epilogo" class="chapter-content">
+                    <h2>📚 EPILOGO: IL TUO VIAGGIO CONTINUA</h2>
+                    
+                    <section>
+                        <h3>La Mappa del Tesoro per la Maestria</h3>
+                        
+                        <div class="ascii-art">         INIZIO
+           ↓
+    [Riconosci Pattern]
+           ↓
+    [Applica SPAZIO]
+           ↓
+    [Implementa Base]
+           ↓
+    [Ottimizza dopo]
+           ↓
+       VITTORIA!</div>
+                        
+                        <h3>Le 3 Verità Finali</h3>
+                        
+                        <div class="insight-box">
+                            <h4>1️⃣ "La DP è Memorizzazione Organizzata"</h4>
+                            <p>Non è magia. È semplicemente ricordare in modo intelligente.</p>
+                        </div>
+                        
+                        <div class="insight-box">
+                            <h4>2️⃣ "Il 90% sono Variazioni di Pattern Noti"</h4>
+                            <p>Non reinventare. Riconosci e adatta.</p>
+                        </div>
+                        
+                        <div class="insight-box">
+                            <h4>3️⃣ "La Visualizzazione è la Chiave"</h4>
+                            <p>Se puoi disegnarlo, puoi risolverlo.</p>
+                        </div>
+                        
+                        <div class="visualization-box" style="text-align: center; margin-top: 40px;">
+                            <h3>🏆 La Tua Missione</h3>
+                            <p style="font-size: 1.2rem; margin: 20px 0;">
+                                Ora hai nelle mani lo stesso potere che Bellman scoprì nel 1953.<br>
+                                La capacità di vedere attraverso la complessità e trovare la struttura nascosta.
+                            </p>
+                            <p style="font-size: 1.3rem; font-weight: bold;">
+                                Ogni problema DP è un puzzle. E ora hai tutti i pezzi.
+                            </p>
+                            <p style="font-size: 2rem; margin-top: 30px;">
+                                <strong>Vai e conquista! 🚀</strong>
+                            </p>
+                        </div>
+                        
+                        <!-- Final Quiz -->
+                        <div class="interactive-quiz" style="margin-top: 40px;">
+                            <h4 class="quiz-question">❓ Qual è stata la più grande intuizione di Bellman?</h4>
+                            <div class="quiz-options">
+                                <div class="quiz-option" onclick="checkAnswer(this, 'a', 'epilogo-q1')">
+                                    a) Usare più memoria per velocizzare i calcoli
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'b', 'epilogo-q1')">
+                                    b) Memorizzare i risultati dei sottoproblemi per riutilizzarli
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'c', 'epilogo-q1')">
+                                    c) Inventare nuovi algoritmi matematici
+                                </div>
+                                <div class="quiz-option" onclick="checkAnswer(this, 'd', 'epilogo-q1')">
+                                    d) Scrivere codice più efficiente
+                                </div>
+                            </div>
+                            <div id="epilogo-q1-feedback" class="quiz-feedback"></div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Progress Card -->
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <h3>📊 I Tuoi Progressi</h3>
+                    </div>
                     <div style="margin-top: 20px;">
-                        <h4 style="color: var(--primary); margin-bottom: 10px;">PROSSIMO OBIETTIVO</h4>
-                        <p>Risolvi 3 problemi di DP su stringhe per sbloccare il prossimo livello!</p>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 30%;"></div>
+                        <div class="progress-header">
+                            <span>Capitoli Completati</span>
+                            <span class="progress-value" id="chapters-completed">0/8</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="chapters-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <div class="progress-header">
+                            <span>Quiz Risolti</span>
+                            <span class="progress-value" id="quiz-completed">0/5</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="quiz-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <div class="progress-header">
+                            <span>Esercizi Completati</span>
+                            <span class="progress-value" id="exercises-completed">0/4</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="exercises-progress" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Metacognitive Dashboard -->
-                <div class="progress-stats">
-                    <h4 style="color: var(--primary); margin-bottom: 15px;">📋 CRUSCOTTO METACOGNITIVO</h4>
-                    <p>Stato di apprendimento:</p>
-                    <ul style="list-style-type: none; margin-top: 10px;">
-                        <li style="padding: 8px 0; border-bottom: 1px solid var(--gray);">
-                            <i class="fas fa-check-circle" style="color: var(--success); margin-right: 10px;"></i>
-                            Fondamenti: 80% padronanza
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid var(--gray);">
-                            <i class="fas fa-exclamation-triangle" style="color: var(--warning); margin-right: 10px;"></i>
-                            Problemi di ottimizzazione: 45% padronanza
-                        </li>
-                        <li style="padding: 8px 0;">
-                            <i class="fas fa-check-circle" style="color: var(--success); margin-right: 10px;"></i>
-                            Memoization: 90% padronanza
-                        </li>
+
+                <!-- Current Chapter Info -->
+                <div class="progress-card">
+                    <h3>📖 Capitolo Attuale</h3>
+                    <div id="current-chapter-info" style="margin-top: 15px;">
+                        <h4>PROLOGO: La Storia che Cambiò Tutto</h4>
+                        <p class="text-muted">Scopri come Bellman rivoluzionò l'algoritmica con una semplice intuizione.</p>
+                    </div>
+                </div>
+
+                <!-- Learning Tips -->
+                <div class="progress-card">
+                    <h3>💡 Suggerimenti di Studio</h3>
+                    <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.8;">
+                        <li>Completa i quiz per verificare la comprensione</li>
+                        <li>Prova a risolvere gli esercizi prima di vedere i suggerimenti</li>
+                        <li>Visualizza sempre il problema prima di codificare</li>
+                        <li>Applica il metodo SPAZIO sistematicamente</li>
                     </ul>
                 </div>
-                
-                <div class="anki-section">
-                    <h3 style="color: var(--primary); margin-bottom: 15px;">📅 CALENDARIO ANKI</h3>
-                    <p>Prossime ripetizioni:</p>
-                    <ul style="list-style-type: none; margin-top: 10px;">
-                        <li style="padding: 8px 0; border-bottom: 1px solid var(--gray);">
-                            <i class="fas fa-sync-alt" style="color: var(--primary); margin-right: 10px;"></i>
-                            Oggi: Somma di Sottosequenze
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid var(--gray);">
-                            <i class="fas fa-sync-alt" style="color: var(--primary); margin-right: 10px;"></i>
-                            Domani: Zaino 0/1
-                        </li>
-                        <li style="padding: 8px 0;">
-                            <i class="fas fa-sync-alt" style="color: var(--primary); margin-right: 10px;"></i>
-                            Tra 3 giorni: Fibonacci DP
-                        </li>
-                    </ul>
+
+                <!-- Next Steps -->
+                <div class="progress-card">
+                    <h3>🎯 Prossimi Passi</h3>
+                    <div id="next-steps" style="margin-top: 15px;">
+                        <p>Inizia dal <strong>PROLOGO</strong> per capire l'origine della DP!</p>
+                        <button class="btn btn-run" style="width: 100%; margin-top: 10px;" onclick="startLearning()">
+                            <i class="fas fa-play"></i> Inizia il Viaggio
+                        </button>
+                    </div>
                 </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievement-popup">
+        <div class="achievement-header">
+            <div class="achievement-icon" id="achievement-icon">🏆</div>
+            <div>
+                <div class="achievement-title" id="achievement-title">Achievement Sbloccato!</div>
+                <div class="achievement-description" id="achievement-description"></div>
             </div>
         </div>
     </div>
-    
+
     <script>
-        // Initialize calendar
-        function initCalendar() {
-            const calendarGrid = document.getElementById('calendarGrid');
-            const today = new Date().getDate();
-            
-            for (let i = 1; i <= 31; i++) {
-                const day = document.createElement('div');
-                day.classList.add('calendar-day');
-                day.textContent = i;
-                
-                if (i === today) {
-                    day.style.backgroundColor = 'rgba(26, 115, 232, 0.1)';
-                    day.style.color = 'var(--primary)';
-                }
-                
-                calendarGrid.appendChild(day);
+        // State Management
+        const appState = {
+            currentChapter: 'prologo',
+            completedChapters: new Set(),
+            completedQuizzes: new Set(),
+            completedExercises: new Set(),
+            hints: {},
+            startTime: Date.now()
+        };
+
+        // Initialize from localStorage
+        function initializeState() {
+            const saved = localStorage.getItem('dpLearningState');
+            if (saved) {
+                const data = JSON.parse(saved);
+                appState.completedChapters = new Set(data.completedChapters || []);
+                appState.completedQuizzes = new Set(data.completedQuizzes || []);
+                appState.completedExercises = new Set(data.completedExercises || []);
+                updateProgressDisplay();
             }
         }
-        
-        // Timer Pomodoro
-        let timerInterval;
-        let remainingTime = 90 * 60; // 1.5 hours in seconds
-        let isSession = true;
-        let isRunning = false;
-        
-        function startTimer() {
-            if (isRunning) return;
-            isRunning = true;
+
+        // Save state to localStorage
+        function saveState() {
+            const data = {
+                completedChapters: Array.from(appState.completedChapters),
+                completedQuizzes: Array.from(appState.completedQuizzes),
+                completedExercises: Array.from(appState.completedExercises),
+                lastAccess: Date.now()
+            };
+            localStorage.setItem('dpLearningState', JSON.stringify(data));
+        }
+
+        // Chapter Management
+        function loadChapter(chapterId) {
+            // Hide all chapters
+            document.querySelectorAll('.chapter-content').forEach(content => {
+                content.classList.remove('active');
+            });
             
-            timerInterval = setInterval(() => {
-                remainingTime--;
-                updateTimerDisplay();
-                
-                if (remainingTime <= 0) {
-                    clearInterval(timerInterval);
-                    if (isSession) {
-                        // End session, start break
-                        isSession = false;
-                        remainingTime = 20 * 60; // 20 minutes
-                        document.getElementById('sessionType').textContent = 'Pausa Breve';
-                        startTimer();
-                    } else {
-                        // End break, check if second session
-                        if (document.getElementById('sessionType').textContent === 'Pausa Breve') {
-                            isSession = true;
-                            remainingTime = 90 * 60;
-                            document.getElementById('sessionType').textContent = 'Seconda Sessione';
-                            startTimer();
-                        } else {
-                            // Day completed
-                            completeDay();
-                        }
+            // Show selected chapter
+            document.getElementById(chapterId).classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.chapter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Mark as completed after 5 seconds
+            setTimeout(() => {
+                if (!appState.completedChapters.has(chapterId)) {
+                    appState.completedChapters.add(chapterId);
+                    event.target.classList.add('completed');
+                    updateProgressDisplay();
+                    saveState();
+                    
+                    // Show achievement for first chapter
+                    if (appState.completedChapters.size === 1) {
+                        showAchievement('🌟', 'Primo Passo!', 'Hai completato il tuo primo capitolo!');
                     }
+                }
+            }, 5000);
+            
+            // Update current chapter info
+            updateCurrentChapterInfo(chapterId);
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Update current chapter info in sidebar
+        function updateCurrentChapterInfo(chapterId) {
+            const chapterInfo = {
+                'prologo': {
+                    title: 'PROLOGO: La Storia che Cambiò Tutto',
+                    desc: 'Scopri come Bellman rivoluzionò l\'algoritmica con una semplice intuizione.'
+                },
+                'cap1': {
+                    title: 'CAPITOLO 1: La Nascita di un\'Idea',
+                    desc: 'Le 3 domande fondamentali che portarono alla DP.'
+                },
+                'cap2': {
+                    title: 'CAPITOLO 2: L\'Anatomia della DP',
+                    desc: 'I 4 ingredienti magici: Stati, Transizioni, Casi Base, Ordine.'
+                },
+                'cap3': {
+                    title: 'CAPITOLO 3: Il Metodo SPAZIO',
+                    desc: 'L\'algoritmo mentale definitivo per risolvere problemi DP.'
+                },
+                'cap4': {
+                    title: 'CAPITOLO 4: Pattern Visivi',
+                    desc: 'I 7 pattern che coprono il 90% dei problemi.'
+                },
+                'cap5': {
+                    title: 'CAPITOLO 5: Dalla Teoria alla Pratica',
+                    desc: 'Caso studio completo con il pensiero DP in azione.'
+                },
+                'cap6': {
+                    title: 'CAPITOLO 6: I Trucchi dei Maestri',
+                    desc: 'Le tecniche segrete dei campioni di programmazione.'
+                },
+                'epilogo': {
+                    title: 'EPILOGO: Il Tuo Viaggio Continua',
+                    desc: 'Le verità finali e la tua missione futura.'
+                }
+            };
+            
+            const info = chapterInfo[chapterId];
+            document.getElementById('current-chapter-info').innerHTML = `
+                <h4>${info.title}</h4>
+                <p class="text-muted">${info.desc}</p>
+            `;
+        }
+
+        // Quiz System
+        function checkAnswer(element, answer, quizId) {
+            const correctAnswers = {
+                'prologo-q1': 'b',
+                'cap2-q1': 'a',
+                'cap4-q1': 'c',
+                'epilogo-q1': 'b'
+            };
+            
+            const correct = correctAnswers[quizId] === answer;
+            const feedback = document.getElementById(`${quizId}-feedback`);
+            
+            // Remove previous selections
+            element.parentElement.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Apply result
+            element.classList.add('selected');
+            element.classList.add(correct ? 'correct' : 'incorrect');
+            
+            // Show feedback
+            feedback.classList.add('show');
+            feedback.style.background = correct ? '#d1fae5' : '#fee2e2';
+            feedback.style.borderColor = correct ? 'var(--success)' : 'var(--danger)';
+            feedback.style.color = correct ? 'var(--success)' : 'var(--danger)';
+            
+            if (correct) {
+                feedback.innerHTML = '<i class="fas fa-check-circle"></i> Corretto! ' + getFeedbackMessage(quizId, true);
+                if (!appState.completedQuizzes.has(quizId)) {
+                    appState.completedQuizzes.add(quizId);
+                    updateProgressDisplay();
+                    saveState();
+                }
+            } else {
+                feedback.innerHTML = '<i class="fas fa-times-circle"></i> Non esatto. ' + getFeedbackMessage(quizId, false);
+            }
+        }
+
+        function getFeedbackMessage(quizId, correct) {
+            const messages = {
+                'prologo-q1': {
+                    true: 'Esatto! Bellman si accorse che calcolava gli stessi sottoproblemi ripetutamente.',
+                    false: 'Riprova! Pensa a cosa succede quando calcoli F(5) ricorsivamente...'
+                },
+                'cap2-q1': {
+                    true: 'Perfetto! Gli stati definiscono cosa dobbiamo sapere in ogni momento.',
+                    false: 'Rileggi la sezione sugli ingredienti della DP.'
+                },
+                'cap4-q1': {
+                    true: 'Giusto! LIS (Longest Increasing Subsequence) è un classico pattern di sottosequenze.',
+                    false: 'Pensa: quale pattern si occupa di trovare sottosequenze con proprietà specifiche?'
+                },
+                'epilogo-q1': {
+                    true: 'Bravissimo! Hai colto l\'essenza della programmazione dinamica!',
+                    false: 'Ripensa all\'intuizione chiave di Bellman nel prologo...'
+                }
+            };
+            
+            return messages[quizId][correct];
+        }
+
+        // Code Execution (Simulated)
+        function runCode(editorId) {
+            const outputId = `${editorId}-output`;
+            const codeId = `${editorId}-code`;
+            const output = document.getElementById(outputId);
+            const code = document.getElementById(codeId).value;
+            
+            // Simulate execution
+            output.innerHTML = '<span style="color: #10b981;">Esecuzione in corso...</span>';
+            
+            setTimeout(() => {
+                // Check specific exercises
+                if (editorId === 'fib-memo' && code.includes('memo[n]')) {
+                    output.innerHTML = `<span style="color: #10b981;">✓ Output:</span>
+F(0) = 0
+F(1) = 1
+F(2) = 1
+F(3) = 2
+F(4) = 3
+F(5) = 5
+F(6) = 8
+F(7) = 13
+F(8) = 21
+F(9) = 34
+
+<span style="color: #10b981;">Ottimo! Hai implementato correttamente la memoization!</span>`;
+                    
+                    if (!appState.completedExercises.has(editorId)) {
+                        appState.completedExercises.add(editorId);
+                        updateProgressDisplay();
+                        saveState();
+                        showAchievement('💻', 'Primo Codice!', 'Hai completato il tuo primo esercizio di DP!');
+                    }
+                } else if (editorId === 'spazio' && code.includes('dp[i]')) {
+                    output.innerHTML = `<span style="color: #10b981;">✓ Output:</span>
+Scale con 1 gradini: 1 modi
+Scale con 2 gradini: 2 modi
+Scale con 3 gradini: 3 modi
+Scale con 4 gradini: 5 modi
+Scale con 5 gradini: 8 modi
+
+<span style="color: #10b981;">Perfetto! Hai applicato correttamente il metodo SPAZIO!</span>`;
+                    
+                    if (!appState.completedExercises.has(editorId)) {
+                        appState.completedExercises.add(editorId);
+                        updateProgressDisplay();
+                        saveState();
+                    }
+                } else if (editorId === 'robot') {
+                    output.innerHTML = `<span style="color: #10b981;">✓ Output:</span>
+Griglia 3x3: 13 percorsi
+Griglia 4x4: 65 percorsi
+
+<span style="color: #10b981;">Eccellente! Il robot può muoversi in tutti i modi possibili!</span>`;
+                    
+                    if (!appState.completedExercises.has(editorId)) {
+                        appState.completedExercises.add(editorId);
+                        updateProgressDisplay();
+                        saveState();
+                    }
+                } else {
+                    output.innerHTML = '<span style="color: #ef4444;">Errore: Implementazione non corretta. Controlla il suggerimento!</span>';
                 }
             }, 1000);
         }
-        
-        function pauseTimer() {
-            clearInterval(timerInterval);
-            isRunning = false;
+
+        function resetCode(editorId) {
+            const codeId = `${editorId}-code`;
+            const textarea = document.getElementById(codeId);
+            
+            // Reset to original code
+            const originalCode = {
+                'fib-memo': `def fibonacci_memo(n, memo={}):
+    # Se il valore è già stato calcolato, restituiscilo
+    
+    # Se n <= 1, restituisci n (casi base)
+    
+    # Altrimenti, calcola ricorsivamente e memorizza
+    
+    pass
+
+# Test
+for i in range(10):
+    print(f"F({i}) = {fibonacci_memo(i)}")`,
+                'spazio': `# Problema: Conta modi per arrivare in fondo a scale con n gradini
+# Puoi fare salti di 1 o 2 gradini
+
+def conta_modi_scale(n):
+    # S - Stati: ??
+    # P - Passaggi: ??
+    # A - Assiomi: ??
+    # Z - Zona: ??
+    # I - Implementa:
+    
+    pass
+
+# Test
+for n in [1, 2, 3, 4, 5]:
+    print(f"Scale con {n} gradini: {conta_modi_scale(n)} modi")`
+            };
+            
+            textarea.value = originalCode[editorId] || '';
         }
-        
-        function completeSession() {
-            clearInterval(timerInterval);
-            completeDay();
-        }
-        
-        function updateTimerDisplay() {
-            const hours = Math.floor(remainingTime / 3600);
-            const minutes = Math.floor((remainingTime % 3600) / 60);
-            const seconds = remainingTime % 60;
-            
-            document.getElementById('timerDisplay').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-        
-        function completeDay() {
-            // Update calendar
-            const today = new Date().getDate();
-            const calendarDays = document.querySelectorAll('.calendar-day');
-            calendarDays[today - 1].classList.add('completed');
-            
-            // Update streak
-            const streakCount = parseInt(document.getElementById('streakCount').textContent);
-            document.getElementById('streakCount').textContent = streakCount + 1;
-            
-            // Update progress
-            const progressPercent = parseInt(document.getElementById('progressPercent').textContent);
-            const newProgress = Math.min(progressPercent + 3, 100);
-            document.getElementById('progressPercent').textContent = newProgress + '%';
-            document.getElementById('progressBar').style.width = newProgress + '%';
-            
-            // Reset timer
-            isSession = true;
-            remainingTime = 90 * 60;
-            isRunning = false;
-            document.getElementById('sessionType').textContent = 'Sessione Studio';
-            updateTimerDisplay();
-            
-            // Show success message
-            alert("Ottimo lavoro! Hai completato la sessione di studio.");
-        }
-        
-        // Exercise functions
-        function fillFibTable() {
-            const fibValues = [0, 1, 1, 2, 3, 5, 8, 13, 21];
-            const table = document.getElementById('fibTable');
-            
-            for (let i = 2; i <= 8; i++) {
-                const cell = table.rows[1].cells[i];
-                cell.textContent = fibValues[i];
-                cell.classList.add('dp-table-fill');
-                
-                // Add delay for sequential fill effect
-                setTimeout(() => {
-                    cell.style.animation = 'fillAnimation 0.5s ease-out';
-                }, i * 300);
+
+        function showHint(editorId) {
+            const hintId = `${editorId}-hint`;
+            const hint = document.getElementById(hintId);
+            if (hint) {
+                hint.classList.toggle('show');
             }
         }
-        
-        function toggleSolution(id) {
-            const solution = document.getElementById(id);
-            solution.style.display = solution.style.display === 'block' ? 'none' : 'block';
-        }
-        
-        function checkAnswer(element, isCorrect) {
-            const options = element.parentElement.querySelectorAll('.quiz-option');
+
+        // Progress Update
+        function updateProgressDisplay() {
+            // Chapters
+            const chaptersCompleted = appState.completedChapters.size;
+            document.getElementById('chapters-completed').textContent = `${chaptersCompleted}/8`;
+            document.getElementById('chapters-progress').style.width = `${(chaptersCompleted / 8) * 100}%`;
             
-            options.forEach(opt => {
-                opt.onclick = null; // Disable further clicks
-                if (opt === element) {
-                    opt.classList.add(isCorrect ? 'correct' : 'wrong');
-                }
-            });
+            // Quizzes
+            const quizzesCompleted = appState.completedQuizzes.size;
+            document.getElementById('quiz-completed').textContent = `${quizzesCompleted}/5`;
+            document.getElementById('quiz-progress').style.width = `${(quizzesCompleted / 5) * 100}%`;
             
-            // Update progress if correct
-            if (isCorrect) {
-                const progressPercent = parseInt(document.getElementById('progressPercent').textContent);
-                const newProgress = Math.min(progressPercent + 1, 100);
-                document.getElementById('progressPercent').textContent = newProgress + '%';
-                document.getElementById('progressBar').style.width = newProgress + '%';
-            }
-        }
-        
-        // Anki system
-        function rateAnkiProblem(problemId, rating) {
-            const problemCard = document.getElementById(`ankiProblem${problemId}`);
+            // Exercises
+            const exercisesCompleted = appState.completedExercises.size;
+            document.getElementById('exercises-completed').textContent = `${exercisesCompleted}/4`;
+            document.getElementById('exercises-progress').style.width = `${(exercisesCompleted / 4) * 100}%`;
             
-            // Hide current problem
-            problemCard.style.display = 'none';
-            
-            // Update progress for good/easy rating
-            if (rating === 'good' || rating === 'easy') {
-                const progressPercent = parseInt(document.getElementById('progressPercent').textContent);
-                const newProgress = Math.min(progressPercent + 2, 100);
-                document.getElementById('progressPercent').textContent = newProgress + '%';
-                document.getElementById('progressBar').style.width = newProgress + '%';
-            }
-            
-            // Show next problem
-            const nextId = problemId === 1 ? 2 : 1;
-            document.getElementById(`ankiProblem${nextId}`).style.display = 'block';
-        }
-        
-        // New functions for neuroscientific elements
-        function checkRecall(element, isCorrect) {
-            const options = element.parentElement.querySelectorAll('.quiz-option');
-            
-            options.forEach(opt => {
-                opt.onclick = null; // Disable further clicks
-                if (opt === element) {
-                    opt.classList.add(isCorrect ? 'correct' : 'wrong');
-                }
+            // Update chapter buttons
+            appState.completedChapters.forEach(chapterId => {
+                const btn = document.querySelector(`[onclick="loadChapter('${chapterId}')"]`);
+                if (btn) btn.classList.add('completed');
             });
         }
-        
-        function saveExplanation(button) {
-            const textarea = button.previousElementSibling;
-            if (textarea.value.trim() !== '') {
-                button.textContent = 'Spiegazione salvata!';
-                button.style.backgroundColor = '#1e8e3e';
-                
-                setTimeout(() => {
-                    button.textContent = 'Salva spiegazione';
-                    button.style.backgroundColor = '';
-                }, 2000);
-            }
+
+        // Achievement System
+        function showAchievement(icon, title, description) {
+            const popup = document.getElementById('achievement-popup');
+            document.getElementById('achievement-icon').textContent = icon;
+            document.getElementById('achievement-title').textContent = title;
+            document.getElementById('achievement-description').textContent = description;
+            
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 5000);
         }
-        
-        function runCode() {
-            const resultDiv = document.getElementById('feedbackResult');
-            resultDiv.innerHTML = '<p style="color: var(--success);">✅ Ottimo lavoro! La tua soluzione è corretta.</p>';
-            resultDiv.innerHTML += '<p>Ecco la soluzione ottimizzata:</p>';
-            resultDiv.innerHTML += '<pre>def fibonacci_memo(n, memo={0:0, 1:1}):\n    if n not in memo:\n        memo[n] = fibonacci_memo(n-1, memo) + fibonacci_memo(n-2, memo)\n    return memo[n]</pre>';
+
+        // Start Learning
+        function startLearning() {
+            loadChapter('prologo');
+            showAchievement('🚀', 'Viaggio Iniziato!', 'Benvenuto nel mondo della Programmazione Dinamica!');
         }
-        
-        function loadProblem(type) {
-            alert(`Caricamento problema di tipo: ${type}\nQuesta funzione mescola diversi tipi di problemi per migliorare la ritenzione a lungo termine.`);
-        }
-        
-        // Initialize
+
+        // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
-            initCalendar();
-            updateTimerDisplay();
+            initializeState();
             
-            // Start with first Anki problem
-            document.getElementById('ankiProblem1').style.display = 'block';
+            // Show welcome message for new users
+            if (appState.completedChapters.size === 0) {
+                setTimeout(() => {
+                    showAchievement('👋', 'Benvenuto!', 'Inizia dal PROLOGO per scoprire la storia della DP!');
+                }, 1000);
+            }
         });
+
+        // Auto-save on unload
+        window.addEventListener('beforeunload', saveState);
     </script>
 </body>
 </html>
