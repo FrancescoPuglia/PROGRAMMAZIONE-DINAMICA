@@ -350,6 +350,12 @@ function setMode(mode, clickedElement = null) {
         // Nascondi modalità speciali
         hideSpecialModes();
         
+        // Mostra esplicitamente learnMode
+        const learnMode = document.getElementById('learnMode');
+        if (learnMode) {
+            learnMode.style.display = 'block';
+        }
+        
         // Ripristina capitolo salvato o mostra prologo
         const savedChapter = localStorage.getItem('currentChapter') || 'prologo';
         loadChapter(savedChapter);
@@ -358,18 +364,27 @@ function setMode(mode, clickedElement = null) {
         // Modalità Pratica
         if (heroHeader) heroHeader.style.display = 'none';
         hideSpecialModes();
+        // Nascondi learnMode in modalità practice
+        const learnMode = document.getElementById('learnMode');
+        if (learnMode) learnMode.style.display = 'none';
         showPracticeMode();
         
     } else if (mode === 'review') {
         // Modalità Ripasso
         if (heroHeader) heroHeader.style.display = 'none';
         hideSpecialModes();
+        // Nascondi learnMode in modalità review
+        const learnMode = document.getElementById('learnMode');
+        if (learnMode) learnMode.style.display = 'none';
         showReviewMode();
         
     } else if (mode === 'professional') {
         // Modalità Professionale
         if (heroHeader) heroHeader.style.display = 'none';
         hideSpecialModes();
+        // Nascondi learnMode in modalità professional
+        const learnMode = document.getElementById('learnMode');
+        if (learnMode) learnMode.style.display = 'none';
         showProfessionalMode();
     }
     
@@ -377,13 +392,8 @@ function setMode(mode, clickedElement = null) {
 }
 
 function hideSpecialModes() {
-    // Nascondi tutti i contenuti capitoli
-    document.querySelectorAll('.chapter-content').forEach(content => {
-        content.style.display = 'none';
-    });
-    
-    // Nascondi tutte le modalità
-    document.querySelectorAll('.mode-content').forEach(mode => {
+    // Nascondi solo le modalità speciali, NON learnMode che contiene i capitoli teorici
+    document.querySelectorAll('.mode-content:not(#learnMode)').forEach(mode => {
         mode.style.display = 'none';
     });
     
