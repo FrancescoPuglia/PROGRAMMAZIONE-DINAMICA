@@ -22,1051 +22,8 @@
     <!-- D3.js per visualizzazioni interattive -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #4f46e5;
-            --primary-light: #818cf8;
-            --primary-dark: #3730a3;
-            --secondary: #ec4899;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --info: #3b82f6;
-            --dark: #1f2937;
-            --light: #f9fafb;
-            --gray: #6b7280;
-            --border-radius: 12px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Dark Mode Variables */
-        [data-theme="dark"] {
-            --dark: #f9fafb;
-            --light: #1f2937;
-            --gray: #9ca3af;
-            background: #0f172a;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #fdf6ff 0%, #f0f9ff 100%);
-            min-height: 100vh;
-            color: var(--dark);
-            line-height: 1.8;
-        }
-
-        [data-theme="dark"] body {
-            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Top Navigation Bar */
-        .top-nav {
-            background: white;
-            padding: 15px 30px;
-            border-radius: var(--border-radius);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-        }
-
-        [data-theme="dark"] .top-nav {
-            background: #1e293b;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        /* Mode Buttons */
-        .mode-selector {
-            display: flex;
-            gap: 10px;
-            background: #f3f4f6;
-            padding: 5px;
-            border-radius: 8px;
-        }
-
-        [data-theme="dark"] .mode-selector {
-            background: #0f172a;
-        }
-
-        .mode-btn {
-            padding: 8px 16px;
-            border: none;
-            background: transparent;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .mode-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover {
-            transform: rotate(180deg);
-        }
-
-        /* Hero Header */
-        .hero-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 60px 40px;
-            border-radius: var(--border-radius);
-            margin-bottom: 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(30px, -30px) rotate(120deg); }
-            66% { transform: translate(-30px, 30px) rotate(240deg); }
-        }
-
-        .hero-header h1 {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 1;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        /* Main Layout */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 250px 1fr 350px;
-            gap: 30px;
-            align-items: start;
-        }
-
-        /* Left Sidebar - Chapter Navigation */
-        .chapter-sidebar {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            position: sticky;
-            top: 20px;
-        }
-
-        [data-theme="dark"] .chapter-sidebar {
-            background: #1e293b;
-        }
-
-        .chapter-list {
-            list-style: none;
-        }
-
-        .chapter-item {
-            margin-bottom: 10px;
-        }
-
-        .chapter-link {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            color: var(--dark);
-            position: relative;
-        }
-
-        .chapter-link:hover {
-            background: #f3f4f6;
-            transform: translateX(5px);
-        }
-
-        [data-theme="dark"] .chapter-link:hover {
-            background: #334155;
-        }
-
-        .chapter-link.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .chapter-link.completed::after {
-            content: '✓';
-            position: absolute;
-            right: 15px;
-            background: var(--success);
-            color: white;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-
-        /* Content Area */
-        .content-area {
-            background: white;
-            padding: 40px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            min-height: 600px;
-        }
-
-        [data-theme="dark"] .content-area {
-            background: #1e293b;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        /* Right Sidebar */
-        .right-sidebar {
-            position: sticky;
-            top: 20px;
-        }
-
-        /* Spaced Repetition Dashboard */
-        .spaced-repetition-card {
-            background: white;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-        }
-
-        [data-theme="dark"] .spaced-repetition-card {
-            background: #1e293b;
-        }
-
-        .review-queue {
-            margin-top: 15px;
-        }
-
-        .review-item {
-            padding: 10px;
-            background: #f3f4f6;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        [data-theme="dark"] .review-item {
-            background: #334155;
-        }
-
-        .review-item:hover {
-            background: #e5e7eb;
-            transform: translateX(5px);
-        }
-
-        .review-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .stat-box {
-            text-align: center;
-            padding: 10px;
-            background: #f3f4f6;
-            border-radius: 8px;
-        }
-
-        [data-theme="dark"] .stat-box {
-            background: #0f172a;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-
-        /* Interactive Python Editor with Real Execution */
-        .python-editor-advanced {
-            background: #1e293b;
-            border-radius: 12px;
-            overflow: hidden;
-            margin: 30px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .editor-header {
-            background: #0f172a;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #334155;
-        }
-
-        .editor-title {
-            color: white;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .editor-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-        }
-
-        .btn-run {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-run:hover {
-            background: #059669;
-            transform: translateY(-1px);
-        }
-
-        .btn-test {
-            background: var(--info);
-            color: white;
-        }
-
-        .btn-solution {
-            background: var(--warning);
-            color: white;
-        }
-
-        .editor-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            height: 400px;
-        }
-
-        .editor-pane {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .editor-textarea {
-            width: 100%;
-            height: 100%;
-            padding: 20px;
-            background: #1e293b;
-            color: #e2e8f0;
-            border: none;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            resize: none;
-        }
-
-        .test-results {
-            background: #0f172a;
-            color: #e2e8f0;
-            padding: 20px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 14px;
-            overflow-y: auto;
-            border-left: 1px solid #334155;
-        }
-
-        .test-case {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .test-case.passed {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 3px solid var(--success);
-        }
-
-        .test-case.failed {
-            background: rgba(239, 68, 68, 0.1);
-            border-left: 3px solid var(--danger);
-        }
-
-        /* Interactive Visualizations */
-        .dp-visualizer {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 25px;
-            margin: 30px 0;
-            position: relative;
-        }
-
-        [data-theme="dark"] .dp-visualizer {
-            background: #0f172a;
-            border-color: #334155;
-        }
-
-        .vis-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .vis-canvas {
-            min-height: 300px;
-            position: relative;
-        }
-
-        /* Auto-explanation Fields */
-        .explanation-box {
-            background: #f3f4f6;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        [data-theme="dark"] .explanation-box {
-            background: #0f172a;
-        }
-
-        .explanation-prompt {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-
-        .explanation-field {
-            width: 100%;
-            min-height: 100px;
-            padding: 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 16px;
-            resize: vertical;
-        }
-
-        [data-theme="dark"] .explanation-field {
-            background: #1e293b;
-            border-color: #334155;
-            color: white;
-        }
-
-        /* Worked Examples */
-        .worked-example {
-            background: #f8fafc;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 25px;
-            margin: 30px 0;
-        }
-
-        [data-theme="dark"] .worked-example {
-            background: #0f172a;
-            border-color: #334155;
-        }
-
-        .example-steps {
-            margin-top: 20px;
-        }
-
-        .example-step {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        [data-theme="dark"] .example-step {
-            background: #1e293b;
-            border-color: #334155;
-        }
-
-        .step-hidden {
-            filter: blur(5px);
-            user-select: none;
-            cursor: pointer;
-        }
-
-        .step-reveal {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* Metacognitive Dashboard */
-        .metacognitive-dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .meta-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        }
-
-        [data-theme="dark"] .meta-card {
-            background: #1e293b;
-        }
-
-        .heatmap {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
-            margin-top: 15px;
-        }
-
-        .heatmap-cell {
-            aspect-ratio: 1;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .heatmap-cell:hover {
-            transform: scale(1.2);
-        }
-
-        /* Difficulty Adaptive System */
-        .difficulty-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .difficulty-bar {
-            flex: 1;
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .difficulty-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--success), var(--warning), var(--danger));
-            transition: width 0.5s ease;
-        }
-
-        /* Focus Mode */
-        .focus-mode-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(79, 70, 229, 0.3);
-            transition: var(--transition);
-            z-index: 1000;
-        }
-
-        .focus-mode-toggle:hover {
-            transform: scale(1.1);
-        }
-
-        body.focus-mode .chapter-sidebar,
-        body.focus-mode .right-sidebar,
-        body.focus-mode .top-nav {
-            display: none;
-        }
-
-        body.focus-mode .main-layout {
-            grid-template-columns: 1fr;
-        }
-
-        body.focus-mode .content-area {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        /* Keyboard Shortcuts Modal */
-        .shortcuts-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            z-index: 2000;
-            display: none;
-            max-width: 500px;
-            width: 90%;
-        }
-
-        [data-theme="dark"] .shortcuts-modal {
-            background: #1e293b;
-        }
-
-        .shortcuts-modal.show {
-            display: block;
-        }
-
-        .shortcut-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .shortcut-key {
-            background: #f3f4f6;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-weight: 600;
-        }
-
-        [data-theme="dark"] .shortcut-key {
-            background: #0f172a;
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-        }
-
-        .loading-content {
-            text-align: center;
-            color: white;
-        }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1400px) {
-            .main-layout {
-                grid-template-columns: 250px 1fr;
-            }
-            
-            .right-sidebar {
-                display: none;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-            
-            .chapter-sidebar {
-                position: static;
-                margin-bottom: 20px;
-            }
-            
-            .editor-container {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-            
-            .test-results {
-                border-left: none;
-                border-top: 1px solid #334155;
-                height: 200px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero-header h1 {
-                font-size: 2rem;
-            }
-            
-            .top-nav {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .metacognitive-dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            .content-area {
-                padding: 20px;
-            }
-        }
-
-        /* Chapter Content Base Styles */
-        .chapter-content {
-            display: none;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .chapter-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .chapter-content h2 {
-            color: var(--primary);
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            border-bottom: 3px solid var(--primary-light);
-            padding-bottom: 15px;
-        }
-
-        .chapter-content h3 {
-            color: var(--primary-dark);
-            font-size: 1.8rem;
-            margin: 30px 0 20px;
-        }
-
-        /* Special Content Boxes */
-        .insight-box {
-            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-            border-left: 4px solid var(--primary);
-            padding: 20px 25px;
-            margin: 25px 0;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        [data-theme="dark"] .insight-box {
-            background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
-        }
-
-        .question-box {
-            background: #fef3c7;
-            border-left: 4px solid var(--warning);
-            padding: 20px 25px;
-            margin: 25px 0;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        [data-theme="dark"] .question-box {
-            background: #78350f;
-        }
-
-        /* Active Recall Components */
-        .recall-exercise {
-            background: #f0f9ff;
-            border: 2px solid #0891b2;
-            border-radius: 12px;
-            padding: 25px;
-            margin: 30px 0;
-        }
-
-        [data-theme="dark"] .recall-exercise {
-            background: #0c4a6e;
-            border-color: #0891b2;
-        }
-
-        .recall-prompt {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
-
-        .recall-input {
-            width: 100%;
-            min-height: 120px;
-            padding: 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        [data-theme="dark"] .recall-input {
-            background: #1e293b;
-            border-color: #334155;
-            color: white;
-        }
-
-        /* Code Diff Viewer */
-        .diff-viewer {
-            background: #1e293b;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 14px;
-            overflow-x: auto;
-        }
-
-        .diff-line {
-            padding: 2px 10px;
-            margin: 2px 0;
-            border-radius: 3px;
-        }
-
-        .diff-added {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .diff-removed {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-
-        .diff-unchanged {
-            color: #94a3b8;
-        }
-
-        /* Interleaving Practice Mode */
-        .practice-mode-selector {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        }
-
-        [data-theme="dark"] .practice-mode-selector {
-            background: #1e293b;
-        }
-
-        .practice-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .practice-option {
-            padding: 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-        }
-
-        [data-theme="dark"] .practice-option {
-            border-color: #334155;
-        }
-
-        .practice-option:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .practice-option.selected {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        /* Achievement System Enhanced */
-        .achievement-popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 20px 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            transform: translateX(400px);
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 1000;
-            max-width: 350px;
-        }
-
-        [data-theme="dark"] .achievement-popup {
-            background: #1e293b;
-        }
-
-        .achievement-popup.show {
-            transform: translateX(0);
-        }
-
-        /* ASCII Art Styling */
-        .ascii-art {
-            background: #2d3748;
-            color: #48bb78;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.3;
-            margin: 20px 0;
-            overflow-x: auto;
-            white-space: pre;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        [data-theme="dark"] .ascii-art {
-            background: #0f172a;
-        }
-
-        /* Interactive Quiz Enhanced */
-        .quiz-container {
-            background: #f8fafc;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 25px;
-            margin: 30px 0;
-        }
-
-        [data-theme="dark"] .quiz-container {
-            background: #0f172a;
-            border-color: #334155;
-        }
-
-        .quiz-question {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
-
-        .quiz-timer {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--warning);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        /* Notification System */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
-            z-index: 1500;
-        }
-
-        [data-theme="dark"] .notification {
-            background: #1e293b;
-        }
-
-        .notification.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .notification.success {
-            border-left: 4px solid var(--success);
-        }
-
-        .notification.error {
-            border-left: 4px solid var(--danger);
-        }
-
-        .notification.info {
-            border-left: 4px solid var(--info);
-        }
-    </style>
+    <!-- CSS Personalizzato -->
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     <!-- Loading Overlay -->
@@ -1189,11 +146,45 @@
                         <section>
                             <h3>1943 - Il Problema che Ossessionava Richard Bellman</h3>
                             
-                            <p>Immagina di essere un giovane matematico durante la Seconda Guerra Mondiale. Il tuo compito? Ottimizzare le traiettorie dei missili. Ogni calcolo richiede ore. E poi ti accorci di una cosa assurda...</p>
+                            <p>Immagina di essere un giovane matematico durante la Seconda Guerra Mondiale. Il tuo compito? Ottimizzare le traiettorie dei missili. Ogni calcolo richiede ore. E poi ti accorgi di una cosa assurda...</p>
                             
                             <div class="insight-box">
                                 <p><strong>"Sto calcolando la stessa maledetta cosa 100 volte!"</strong></p>
                                 <p style="text-align: right;">- Richard Bellman (probabilmente)</p>
+                            </div>
+
+                            <h3>🎨 La Rivelazione Visiva</h3>
+                            <p>Quello che vedeva Bellman quando calcolava F(5):</p>
+                            
+                            <div class="ascii-art">
+Per calcolare F(5):
+                    F(5)
+                   /    \
+                F(4)     F(3)
+               /    \    /   \
+            F(3)    F(2) F(2) F(1)
+            /  \
+         F(2)  F(1)
+
+CONTA I NODI: F(3) calcolato 2 volte!
+              F(2) calcolato 3 volte!
+
+💡 L'ILLUMINAZIONE: "E se... ricordassi?"
+                            </div>
+                            
+                            <div class="question-box">
+                                <h4>📊 Il Disastro Esponenziale</h4>
+                                <p>Visualizzazione delle chiamate per F(6):</p>
+                                <div style="font-family: monospace; margin: 15px 0;">
+                                    F(1): ████████ (8 volte)<br>
+                                    F(2): █████████████ (13 volte)<br> 
+                                    F(3): ████████ (8 volte)<br>
+                                    F(4): █████ (5 volte)<br>
+                                    F(5): ███ (3 volte)<br>
+                                    F(6): █ (1 volta)<br>
+                                    <br>
+                                    <strong>Totale: 38 chiamate per 6 valori!</strong>
+                                </div>
                             </div>
                             
                             <!-- Interactive Visualization -->
@@ -1500,6 +491,126 @@ test_memoria()</textarea>
                         <section>
                             <h3>I 4 Ingredienti Magici (Scoperti nel Tempo)</h3>
                             
+                            <div class="insight-box">
+                                <h4>🧪 Ingrediente 1: Stati (1950s)</h4>
+                                <p><em>"Cosa devo sapere per prendere una decisione?"</em></p>
+                                
+                                <div class="ascii-art">
+EVOLUZIONE DEL CONCETTO:
+
+1950: "Stato = situazione attuale"
+      Esempio: "Sono alla posizione i"
+
+1955: "Stato = situazione + storia rilevante"  
+      Esempio: "Sono a i, vengo da j"
+
+1960: "Stato = minima info per decidere il futuro"
+      Esempio: "Sono a i, ultimo elemento era pari"
+
+VISUALIZZAZIONE:
+     Stato Semplice          Stato Complesso
+          [i]                [i, ultimo, conteggio]
+           ↓                         ↓
+    "Dove sono?"         "Dove sono e cosa ho fatto?"
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🧪 Ingrediente 2: Transizioni (1952)</h4>
+                                <p><em>"Come passo da uno stato all'altro?"</em></p>
+                                
+                                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>LA DOMANDA CHIAVE DI BELLMAN:</strong><br>
+                                    "Se so la soluzione per stati più piccoli, come costruisco quella per stati più grandi?"</p>
+                                    
+                                    <div style="border: 2px solid #4f46e5; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                                        <strong>PATTERN UNIVERSALE SCOPERTO:</strong><br>
+                                        Stato[i] = FUNZIONE(<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;Stato[j] per tutti j &lt; i<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;che rispettano i vincoli<br>
+                                        )
+                                    </div>
+                                    
+                                    <p><strong>ESEMPI DI FUNZIONI:</strong></p>
+                                    <ul>
+                                        <li><strong>MAX:</strong> voglio il meglio</li>
+                                        <li><strong>MIN:</strong> voglio il minimo</li>
+                                        <li><strong>SUM:</strong> voglio contare tutti</li>
+                                        <li><strong>OR:</strong> basta uno valido</li>
+                                        <li><strong>AND:</strong> devono valere tutti</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🧪 Ingrediente 3: Casi Base (1948)</h4>
+                                <p><em>"Dove comincio?"</em></p>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 15px 0;">
+                                    <div style="text-align: center;">
+                                        <strong>Ricorsione Infinita</strong><br>
+                                        <div class="ascii-art" style="font-size: 12px; margin: 10px 0;">
+F(n)
+ ↓
+F(n-1)
+ ↓
+F(n-2)
+ ↓
+...
+ ↓
+???
+[CRASH!]
+                                        </div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <strong>Ricorsione con Base</strong><br>
+                                        <div class="ascii-art" style="font-size: 12px; margin: 10px 0;">
+F(n)
+ ↓
+F(n-1)
+ ↓
+F(n-2)
+ ↓
+...
+ ↓
+F(0)=0 ✓
+[SUCCESSO!]
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🧪 Ingrediente 4: Ordine di Calcolo (1953)</h4>
+                                <p><em>"In che sequenza risolvo?"</em></p>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 15px 0;">
+                                    <div>
+                                        <strong>1. BOTTOM-UP (Dal basso)</strong>
+                                        <pre style="background: #f0f9ff; padding: 10px; border-radius: 6px; font-size: 12px;">
+F[0] = 0
+F[1] = 1
+for i in 2..n:
+  F[i] = F[i-1] + F[i-2]
+                                        </pre>
+                                        <p style="font-size: 14px;"><strong>PRO:</strong> Semplice, no stack<br>
+                                        <strong>CON:</strong> Calcola tutto</p>
+                                    </div>
+                                    <div>
+                                        <strong>2. TOP-DOWN (Dall'alto)</strong>
+                                        <pre style="background: #f0f9ff; padding: 10px; border-radius: 6px; font-size: 12px;">
+def F(n):
+  if n in memo:
+    return memo[n]
+  memo[n] = calcola...
+  return memo[n]
+                                        </pre>
+                                        <p style="font-size: 14px;"><strong>PRO:</strong> Calcola solo necessari<br>
+                                        <strong>CON:</strong> Rischio overflow stack</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <!-- Interactive DP Anatomy -->
                             <div class="dp-visualizer">
                                 <h4>🧬 Anatomia Interattiva della DP</h4>
@@ -1658,27 +769,1123 @@ print("Edit distance ('kitten', 'sitting'): ", edit_distance('kitten', 'sitting'
 
                     <div id="cap3" class="chapter-content">
                         <h2>🎯 CAPITOLO 3: L'ALGORITMO MENTALE DEFINITIVO</h2>
-                        <!-- Contenuto del capitolo 3 con tutti i componenti interattivi -->
+                        
+                        <section>
+                            <h3>Il Metodo SPAZIO: Come Pensare in DP</h3>
+                            
+                            <div class="insight-box">
+                                <p>🧠 <strong>SPAZIO</strong> è l'acronimo che ti guiderà nella risoluzione di qualsiasi problema DP:</p>
+                                <ul style="margin-top: 15px;">
+                                    <li><strong>S</strong> - Stati: "Cosa Caratterizza la Mia Situazione?"</li>
+                                    <li><strong>P</strong> - Passaggi: "Come Transito tra Stati?"</li>
+                                    <li><strong>A</strong> - Assiomi: "Quali Sono i Casi Base?"</li>
+                                    <li><strong>Z</strong> - Zona: "In Che Ordine Calcolo?"</li>
+                                    <li><strong>I</strong> - Implementa: "Come Traduco in Codice?"</li>
+                                    <li><strong>O</strong> - Ottimizza: "Posso Fare Meglio?"</li>
+                                </ul>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🌟 S - Stati: "Cosa Caratterizza la Mia Situazione?"</h4>
+                                
+                                <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>PROCESSO MENTALE GUIDATO:</strong></p>
+                                    
+                                    <div style="margin: 15px 0;">
+                                        <p><strong>1. "Cosa sto processando?"</strong></p>
+                                        <ul>
+                                            <li>→ Sequenza: T[i] = primi i elementi</li>
+                                            <li>→ Matrice: T[i][j] = sottomatrice fino a (i,j)</li>
+                                            <li>→ Grafo: T[nodo] = soluzione fino a nodo</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div style="margin: 15px 0;">
+                                        <p><strong>2. "Cosa devo ricordare del passato?"</strong></p>
+                                        <ul>
+                                            <li>→ Ultimo elemento? T[i][ultimo]</li>
+                                            <li>→ Risorse usate? T[i][peso_usato]</li>
+                                            <li>→ Obiettivi raggiunti? T[i][ha_visto_012]</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="ascii-art">
+ESEMPIO VISIVO:
+Problema: "Stringhe senza 11"
+         ↓
+"Devo sapere se l'ultimo era 1!"
+         ↓
+Stati: T[i][0] = finisce con 0
+       T[i][1] = finisce con 1
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🌟 P - Passaggi: "Come Transito tra Stati?"</h4>
+                                
+                                <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>LA DOMANDA D'ORO:</strong><br>
+                                    "Se sono nello stato X, quali stati posso raggiungere?"</p>
+                                </div>
+                                
+                                <div class="ascii-art">
+VISUALIZZAZIONE:
+    Stato[i-1][0] ━━━━━┓
+                       ┣━━> Stato[i][0]
+    Stato[i-1][1] ━━━━━┛
+                       ┗━━> Stato[i][1]
+
+PATTERN COMUNI:
+1. SCELTA: prendo/non prendo
+   T[i] = max(T[i-1], T[i-2] + val[i])
+
+2. SOMMA: tutti i modi
+   T[i] = Σ T[j] per j validi
+
+3. ESTREMO: migliore opzione
+   T[i] = min/max(T[j] + costo(j→i))
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🌟 A - Assiomi: "Quali Sono i Casi Base?"</h4>
+                                
+                                <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>MENTALITÀ:</strong><br>
+                                    "Qual è il problema più piccolo che so risolvere?"</p>
+                                </div>
+                                
+                                <div style="border: 2px solid #4f46e5; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>TRUCCHI VISIVI:</strong></p>
+                                    <ul>
+                                        <li><strong>Sequenze:</strong> T[0] = ? Di solito: vuoto = 1 modo</li>
+                                        <li><strong>Matrici:</strong> T[0][0] = ? Di solito: cella start = 1</li>
+                                        <li><strong>Conteggi:</strong> T[0][x] = ? Di solito: 0 ovunque tranne stato init</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🌟 Z - Zona: "In Che Ordine Calcolo?"</h4>
+                                
+                                <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>REGOLA AUREA:</strong><br>
+                                    "Prima i sottoproblemi, poi i problemi!"</p>
+                                </div>
+                                
+                                <div class="ascii-art">
+VISUALIZZAZIONE ORDINE:
+    1→2→3→4→5  (Sequenze)
+    
+    1 2 3 4    (Matrici: per righe)
+    5 6 7 8
+    9 0 1 2
+    
+    DAG topologico (Grafi)
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🌟 I - Implementa: "Come Traduco in Codice?"</h4>
+                                
+                                <div class="python-editor-advanced">
+                                    <div class="editor-header">
+                                        <div class="editor-title">
+                                            <i class="fas fa-code"></i>
+                                            Template Universale DP
+                                        </div>
+                                    </div>
+                                    <div class="editor-container">
+                                        <pre style="background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto;">
+# TEMPLATE UNIVERSALE DP
+def risolvi_dp(input):
+    # 1. INIZIALIZZA stati
+    dp = crea_tabella()
+    
+    # 2. CASI BASE (Assiomi)
+    inizializza_casi_base(dp)
+    
+    # 3. RIEMPI seguendo l'ordine (Zona)
+    for stato in ordine_corretto():
+        # 4. APPLICA transizione (Passaggi)
+        for precedente in stati_precedenti_validi(stato):
+            dp[stato] = aggiorna(dp[stato], dp[precedente])
+    
+    # 5. RITORNA soluzione
+    return dp[stato_finale]
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🌟 O - Ottimizza: "Posso Fare Meglio?"</h4>
+                                
+                                <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>CHECKLIST OTTIMIZZAZIONI:</strong></p>
+                                    <ul>
+                                        <li>☐ Servono TUTTI gli stati precedenti? → Spesso bastano ultimi 1-2</li>
+                                        <li>☐ Posso evitare stati impossibili? → Non calcolarli proprio</li>
+                                        <li>☐ Ci sono simmetrie? → Calcola metà</li>
+                                    </ul>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 15px 0;">
+                                    <div style="text-align: center;">
+                                        <strong>PRIMA</strong><br>
+                                        <div class="ascii-art" style="font-size: 12px;">
+dp[n][m] memoria
+O(n×m)
+                                        </div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <strong>DOPO</strong><br>
+                                        <div class="ascii-art" style="font-size: 12px;">
+dp[2][m] memoria
+O(m) ← MEGLIO!
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interactive SPAZIO Exercise -->
+                            <div class="recall-exercise">
+                                <h4 class="recall-prompt">🎯 Pratica SPAZIO: Robot in Griglia</h4>
+                                <p><strong>Problema:</strong> Robot può muoversi destra, giù, o salto cavallo (↓↓→). Quanti percorsi da (0,0) a (n-1,m-1)?</p>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 20px 0;">
+                                    <div>
+                                        <p><strong>S - Stati:</strong></p>
+                                        <textarea class="recall-input" style="min-height: 80px;" id="spazio-s" placeholder="T[i][j] = ..."></textarea>
+                                    </div>
+                                    <div>
+                                        <p><strong>P - Passaggi:</strong></p>
+                                        <textarea class="recall-input" style="min-height: 80px;" id="spazio-p" placeholder="T[i][j] = ..."></textarea>
+                                    </div>
+                                    <div>
+                                        <p><strong>A - Assiomi:</strong></p>
+                                        <textarea class="recall-input" style="min-height: 80px;" id="spazio-a" placeholder="T[0][0] = ..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-info" onclick="checkSPAZIO()">
+                                    <i class="fas fa-check"></i> Verifica SPAZIO
+                                </button>
+                                <div id="spazio-feedback" style="margin-top: 15px; display: none;"></div>
+                            </div>
+                        </section>
                     </div>
 
                     <div id="cap4" class="chapter-content">
                         <h2>🎨 CAPITOLO 4: PATTERN VISIVI - Riconoscere al Volo</h2>
-                        <!-- Contenuto del capitolo 4 con pattern recognition interattivo -->
+                        
+                        <section>
+                            <h3>I 7 Pattern che Coprono il 90% dei Problemi</h3>
+                            
+                            <div class="insight-box">
+                                <h4>📊 Pattern 1: Fibonacci Nascosto</h4>
+                                <p><strong>SEGNALI:</strong> "dipende da 2 precedenti" + "somma/scelta"</p>
+                                
+                                <div class="ascii-art">
+VISUALIZZAZIONE:
+    •
+   / \
+  •   •    ← Struttura ricorsiva
+ / \ / \
+•  • •  •
+
+ESEMPIO CLASSICO:
+"Scale con salti 1-2" = Fibonacci!
+T[i] = T[i-1] + T[i-2]
+                                </div>
+                                
+                                <div class="recall-exercise">
+                                    <p><strong>🔍 Riconosci il Pattern:</strong> Quale di questi è Fibonacci nascosto?</p>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                                        <div class="practice-option" onclick="checkFibPattern(this, true)">
+                                            <strong>Tile 2×n</strong><br>
+                                            <small>Modi di riempire rettangolo con tiles 2×1</small>
+                                        </div>
+                                        <div class="practice-option" onclick="checkFibPattern(this, false)">
+                                            <strong>Ordinamento</strong><br>
+                                            <small>Ordinare array in ordine crescente</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>📊 Pattern 2: Zaino (Knapsack)</h4>
+                                <p><strong>SEGNALI:</strong> "scegli oggetti" + "capacità limitata"</p>
+                                
+                                <div class="ascii-art">
+GRIGLIA MENTALE:
+         peso →
+    o  ┌─┬─┬─┬─┬─┐
+    g  │0│0│0│v│v│  v = valore
+    g  ├─┼─┼─┼─┼─┤     oggetto
+    e  │0│0│0│v│v│
+    t  ├─┼─┼─┼─┼─┤
+    t  │0│w│w│V│V│  V = valore
+    i  └─┴─┴─┴─┴─┘     migliore
+    ↓
+
+T[i][w] = max(T[i-1][w], T[i-1][w-peso[i]] + valore[i])
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>📊 Pattern 3: LCS/LIS (Sottosequenze)</h4>
+                                <p><strong>SEGNALI:</strong> "sottosequenza" + "proprietà da mantenere"</p>
+                                
+                                <div class="ascii-art">
+PROCESSO MENTALE:
+  Sequenza: 3 1 4 1 5
+            ↓ ↓ ↓ ↓ ↓
+  Prendo?   N S S N S → 1,4,5 crescente!
+
+T[i] = max(T[j] + 1) per j<i con A[j]<A[i]
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>📊 Pattern 4: Intervalli</h4>
+                                <p><strong>SEGNALI:</strong> "substring" + "ottimizza su range"</p>
+                                
+                                <div class="ascii-art">
+TABELLA TRIANGOLARE:
+    j →
+i ┌─┬─┬─┬─┐
+↓ │X│ │ │ │  Diagonale = stringhe lunghe 1
+  ├─┼─┼─┼─┤
+  │X│X│ │ │  Sopra = stringhe lunghe 2
+  ├─┼─┼─┼─┤
+  │X│X│X│ │  Ancora sopra = lunghe 3
+  └─┴─┴─┴─┘
+
+T[i][j] = funzione(T[i+1][j], T[i][j-1], T[i+1][j-1])
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>📊 Pattern 5: Alberi/DAG</h4>
+                                <p><strong>SEGNALI:</strong> "percorsi" + "grafo aciclico"</p>
+                                
+                                <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>APPROCCIO:</strong><br>
+                                    Per ogni nodo in ordine topologico:<br>
+                                    &nbsp;&nbsp;T[nodo] = migliore tra:<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;T[pred] + costo(pred→nodo)<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;per ogni predecessore</p>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>📊 Pattern 6: Matrici Cumulative</h4>
+                                <p><strong>SEGNALI:</strong> "somma in sottomatrice" + "query multiple"</p>
+                                
+                                <div class="ascii-art">
+PREPROCESSING:
+┌─┬─┬─┐     ┌─┬──┬──┐
+│1│2│3│     │1│3 │6 │
+├─┼─┼─┤ →   ├─┼──┼──┤
+│4│5│6│     │5│12│21│
+└─┴─┴─┘     └─┴──┴──┘
+originale    cumulativa
+
+Somma(r1,c1,r2,c2) = O(1)!
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>📊 Pattern 7: Stati Multipli</h4>
+                                <p><strong>SEGNALI:</strong> "vincoli complessi" + "storia importante"</p>
+                                
+                                <div class="ascii-art">
+DIMENSIONI EXTRA:
+T[pos][ultimo][conteggio][flag]
+    ↓      ↓        ↓        ↓
+  dove   quale    quanti   proprietà
+  sono   elemento  ne ho    speciali
+
+Esempio: "esattamente k elementi diversi"
+T[i][mask][k] = fino a i, elementi usati, conteggio
+                                </div>
+                            </div>
+
+                            <!-- Pattern Recognition Game -->
+                            <div class="recall-exercise">
+                                <h4 class="recall-prompt">🎮 Gioco di Riconoscimento Pattern</h4>
+                                <p>Leggi il problema e identifica il pattern corretto:</p>
+                                
+                                <div id="pattern-game" style="margin: 20px 0;">
+                                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                                        <p id="pattern-problem"><strong>Problema:</strong> Trova il numero di modi per salire n gradini, potendo salire 1, 2 o 3 gradini alla volta.</p>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                        <div class="practice-option" onclick="selectPattern(this, 'fibonacci')">
+                                            <strong>Fibonacci</strong><br>
+                                            <small>Dipende da precedenti</small>
+                                        </div>
+                                        <div class="practice-option" onclick="selectPattern(this, 'knapsack')">
+                                            <strong>Zaino</strong><br>
+                                            <small>Scelta con vincoli</small>
+                                        </div>
+                                        <div class="practice-option" onclick="selectPattern(this, 'lis')">
+                                            <strong>Sottosequenza</strong><br>
+                                            <small>Mantieni proprietà</small>
+                                        </div>
+                                        <div class="practice-option" onclick="selectPattern(this, 'interval')">
+                                            <strong>Intervalli</strong><br>
+                                            <small>Range di substring</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-info" onclick="nextPatternProblem()" style="margin-top: 15px;">
+                                        <i class="fas fa-forward"></i> Problema Successivo
+                                    </button>
+                                    <div id="pattern-score" style="margin-top: 10px; font-weight: bold;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Reference Card -->
+                            <div style="background: white; border: 2px solid #4f46e5; border-radius: 12px; padding: 20px; margin: 30px 0;">
+                                <h4>📋 Quick Reference: Pattern Cheat Sheet</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                                    <div>
+                                        <strong>🔍 FIBONACCI:</strong><br>
+                                        "Modi di fare", "Salti", "Combinazioni"
+                                    </div>
+                                    <div>
+                                        <strong>🎒 KNAPSACK:</strong><br>
+                                        "Scegli oggetti", "Peso/capacità", "Massimizza"
+                                    </div>
+                                    <div>
+                                        <strong>📈 LIS/LCS:</strong><br>
+                                        "Sottosequenza", "Crescente/comune", "Lunghezza"
+                                    </div>
+                                    <div>
+                                        <strong>🔄 INTERVALLI:</strong><br>
+                                        "Substring", "Palindromi", "Range DP"
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
                     <div id="cap5" class="chapter-content">
                         <h2>🚀 CAPITOLO 5: DALLA TEORIA ALLA PRATICA</h2>
-                        <!-- Contenuto del capitolo 5 con case study completi -->
+                        
+                        <section>
+                            <h3>Caso Studio Completo: Il Pensiero DP in Azione</h3>
+                            
+                            <div class="question-box">
+                                <h4>💪 Problema: Robot in Griglia con Salti Speciali</h4>
+                                <p><strong>"Un robot in una griglia n×m può muoversi: destra (→), giù (↓), o salto cavallo (↓↓→). Quanti percorsi da (0,0) a (n-1,m-1)?"</strong></p>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🧠 Il Processo Mentale Completo</h4>
+                                
+                                <h5>Fase 1: Comprensione Visiva</h5>
+                                <div class="ascii-art">
+DISEGNO IL PROBLEMA:
+S → → → ·
+↓ ↘ · · ·  (↘ = salto cavallo)
+↓ · ↘ · ·
+· · · ↘ G
+
+DOMANDA: "Da dove posso arrivare a G?"
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>Fase 2: Applicazione SPAZIO</h4>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 20px 0;">
+                                    <div>
+                                        <h5>🌟 S - Stati:</h5>
+                                        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px;">
+                                            <p><strong>"Cosa caratterizza la situazione?"</strong><br>
+                                            → La posizione (i,j) dove sono!</p>
+                                            <p><strong>T[i][j]</strong> = numero di percorsi per arrivare a (i,j)</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5>🌟 P - Passaggi:</h5>
+                                        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px;">
+                                            <p><strong>"Da dove posso arrivare a (i,j)?"</strong></p>
+                                            <div class="ascii-art" style="font-size: 12px;">
+    (i-1,j)
+       ↓
+(i,j-1)→(i,j)
+       ↗
+  (i-2,j-1)
+                                            </div>
+                                            <p><strong>T[i][j] = T[i-1][j] + T[i][j-1] + T[i-2][j-1]</strong></p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5>🌟 A - Assiomi:</h5>
+                                        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px;">
+                                            <p><strong>"Casi base?"</strong></p>
+                                            <ul style="font-size: 14px;">
+                                                <li>T[0][0] = 1 (partenza)</li>
+                                                <li>T[i][0] = 1 (solo giù)</li>
+                                                <li>T[0][j] = 1 (solo destra)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 20px 0;">
+                                    <div>
+                                        <h5>🌟 Z - Zona:</h5>
+                                        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px;">
+                                            <p><strong>"Ordine di calcolo?"</strong><br>
+                                            Per righe, da sinistra a destra:</p>
+                                            <div class="ascii-art" style="font-size: 10px;">
+┌─┬─┬─┬─┐
+│1│2│3│4│
+├─┼─┼─┼─┤
+│5│6│7│8│
+└─┴─┴─┴─┘
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5>🌟 I - Implementa:</h5>
+                                        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px;">
+                                            <p><strong>"Codice Python"</strong></p>
+                                            <button class="btn btn-info" onclick="showRobotImplementation()">
+                                                <i class="fas fa-code"></i> Mostra Codice
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5>🌟 O - Ottimizza:</h5>
+                                        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px;">
+                                            <p><strong>"Serve tutta la matrice?"</strong><br>
+                                            NO! Bastano ultime 2 righe</p>
+                                            <p><strong>Memoria: da O(n×m) a O(m)!</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Implementation -->
+                            <div class="python-editor-advanced">
+                                <div class="editor-header">
+                                    <div class="editor-title">
+                                        <i class="fas fa-robot"></i>
+                                        Implementazione Completa: Robot in Griglia
+                                    </div>
+                                    <div class="editor-actions">
+                                        <button class="btn btn-run" onclick="runPythonCode('robot-grid')">
+                                            <i class="fas fa-play"></i> Esegui
+                                        </button>
+                                        <button class="btn btn-test" onclick="runTests('robot-grid')">
+                                            <i class="fas fa-vial"></i> Test
+                                        </button>
+                                        <button class="btn btn-solution" onclick="showSolution('robot-grid')">
+                                            <i class="fas fa-lightbulb"></i> Soluzione
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="editor-container">
+                                    <div class="editor-pane">
+                                        <textarea id="robot-grid-code" class="editor-textarea">def percorsi_robot_speciale(n, m):
+    """
+    Robot può muoversi:
+    - Destra (→)
+    - Giù (↓) 
+    - Salto cavallo (↓↓→)
+    
+    Quanti percorsi da (0,0) a (n-1,m-1)?
+    """
+    # TODO: Implementa usando SPAZIO
+    
+    # S - Stati: T[i][j] = numero percorsi a (i,j)
+    
+    # P - Passaggi: T[i][j] = T[i-1][j] + T[i][j-1] + T[i-2][j-1]
+    
+    # A - Assiomi: T[0][0] = 1, bordi = 1
+    
+    # Z - Zona: per righe, sinistra→destra
+    
+    # I - Implementa:
+    dp = [[0] * m for _ in range(n)]
+    
+    # Casi base
+    for i in range(n): 
+        dp[i][0] = 1  # Primo colonna
+    for j in range(m): 
+        dp[0][j] = 1  # Prima riga
+    
+    # Riempi tabella
+    for i in range(1, n):
+        for j in range(1, m):
+            # Da sopra
+            dp[i][j] = dp[i-1][j]
+            # Da sinistra  
+            dp[i][j] += dp[i][j-1]
+            # Salto cavallo (se possibile)
+            if i >= 2 and j >= 1:
+                dp[i][j] += dp[i-2][j-1]
+    
+    return dp[n-1][m-1]
+
+# Test della funzione
+def test_robot():
+    print("Robot 3x3:", percorsi_robot_speciale(3, 3))
+    print("Robot 4x4:", percorsi_robot_speciale(4, 4))
+    print("Robot 2x5:", percorsi_robot_speciale(2, 5))
+
+test_robot()
+
+# Versione ottimizzata (O(m) memoria)
+def percorsi_robot_ottimizzato(n, m):
+    """
+    Versione con memoria O(m) invece di O(n*m)
+    """
+    # TODO: Implementa versione ottimizzata
+    # Usa solo 2 righe: precedente e corrente
+    pass</textarea>
+                                    </div>
+                                    <div class="editor-pane">
+                                        <div class="test-results" id="robot-grid-output">
+                                            <div style="color: #94a3b8;">
+                                                <i class="fas fa-terminal"></i> Output apparirà qui...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Visualization of the Process -->
+                            <div class="dp-visualizer">
+                                <h4>🎨 Visualizzazione Step-by-Step</h4>
+                                <div class="vis-controls">
+                                    <button class="btn btn-info" onclick="startRobotVisualization()">
+                                        <i class="fas fa-play"></i> Animazione Riempimento
+                                    </button>
+                                    <button class="btn btn-warning" onclick="resetRobotVisualization()">
+                                        <i class="fas fa-redo"></i> Reset
+                                    </button>
+                                    <label>Dimensioni: 
+                                        <select id="gridSize" onchange="updateGridVisualization()">
+                                            <option value="3,3">3×3</option>
+                                            <option value="4,4">4×4</option>
+                                            <option value="5,3">5×3</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="vis-canvas" id="robotCanvas">
+                                    <!-- Grid visualization will be generated here -->
+                                </div>
+                            </div>
+
+                            <!-- Reflection Exercise -->
+                            <div class="recall-exercise">
+                                <h4 class="recall-prompt">📝 Riflessione Metacognitiva</h4>
+                                <p>Ora che hai visto il processo completo, rifletti:</p>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                                    <div>
+                                        <p><strong>1. Quale è stata la parte più difficile?</strong></p>
+                                        <textarea class="recall-input" style="min-height: 80px;" id="reflection-difficult" 
+                                            placeholder="Es: Identificare tutti i modi di arrivare a una cella..."></textarea>
+                                    </div>
+                                    <div>
+                                        <p><strong>2. Quale insight ti ha aiutato di più?</strong></p>
+                                        <textarea class="recall-input" style="min-height: 80px;" id="reflection-insight" 
+                                            placeholder="Es: Disegnare la griglia mi ha fatto capire..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin: 20px 0;">
+                                    <p><strong>3. Come applicheresti SPAZIO a un problema simile?</strong></p>
+                                    <textarea class="recall-input" style="min-height: 100px;" id="reflection-apply" 
+                                        placeholder="Es: Se il robot potesse anche muoversi in diagonale..."></textarea>
+                                </div>
+                                
+                                <button class="btn btn-info" onclick="saveReflection('robot-case-study')">
+                                    <i class="fas fa-save"></i> Salva Riflessione
+                                </button>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div style="background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); padding: 25px; border-radius: 12px; margin: 30px 0;">
+                                <h4>🚀 Prossimi Passi</h4>
+                                <p>Ora che hai padroneggiato il processo completo:</p>
+                                <ul style="margin: 15px 0;">
+                                    <li>✅ Hai visto come applicare SPAZIO metodicamente</li>
+                                    <li>✅ Hai implementato una soluzione completa</li>
+                                    <li>✅ Hai visto l'ottimizzazione di memoria</li>
+                                    <li>🎯 Pronto per i trucchi avanzati dei maestri!</li>
+                                </ul>
+                                <button class="btn btn-primary" onclick="loadChapter('cap6')">
+                                    <i class="fas fa-hat-wizard"></i> Scopri i Trucchi dei Maestri
+                                </button>
+                            </div>
+                        </section>
                     </div>
 
                     <div id="cap6" class="chapter-content">
                         <h2>🎓 CAPITOLO 6: I TRUCCHI DEI MAESTRI</h2>
-                        <!-- Contenuto del capitolo 6 con tecniche avanzate -->
+                        
+                        <section>
+                            <h3>Le Tecniche Segrete dei Campioni</h3>
+                            
+                            <div class="insight-box">
+                                <h4>🎭 Trucco 1: "La Dimensione Nascosta"</h4>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                                    <div>
+                                        <h5>PENSIERO NOVIZIO:</h5>
+                                        <div style="background: #fef3c7; padding: 15px; border-radius: 8px;">
+                                            <p><strong>Problema:</strong> "Conta sottosequenze crescenti"</p>
+                                            <p><strong>Soluzione:</strong> T[i] = numero fino a posizione i</p>
+                                            <div class="ascii-art" style="font-size: 12px;">
+[?][?][?]
+ ↑
+ambiguo!
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5>PENSIERO ESPERTO:</h5>
+                                        <div style="background: #d1fae5; padding: 15px; border-radius: 8px;">
+                                            <p><strong>Insight:</strong> "Aspetta... devo sapere L'ULTIMO elemento!"</p>
+                                            <p><strong>Soluzione:</strong> T[i][j] = numero fino a i che finiscono con j</p>
+                                            <div class="ascii-art" style="font-size: 12px;">
+[3][0][0]
+ ↑  ↑  ↑
+finisce con 0,1,2
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="recall-exercise">
+                                    <h5>🧠 Pratica Dimensione Nascosta</h5>
+                                    <p><strong>Problema:</strong> "Stringhe binarie di lunghezza n senza '11' consecutivi"</p>
+                                    <p>Quale dimensione aggiuntiva serve?</p>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 15px 0;">
+                                        <div class="practice-option" onclick="checkDimension(this, false)">
+                                            T[i] = stringhe di lunghezza i
+                                        </div>
+                                        <div class="practice-option" onclick="checkDimension(this, true)">
+                                            T[i][last] = stringhe lunghe i che finiscono con 'last'
+                                        </div>
+                                        <div class="practice-option" onclick="checkDimension(this, false)">
+                                            T[i][count] = stringhe con 'count' uni
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🎭 Trucco 2: "Stati Impossibili"</h4>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                                    <div>
+                                        <h5>❌ NOVIZIO: calcola tutto</h5>
+                                        <pre style="background: #fef3c7; padding: 15px; border-radius: 8px; font-size: 12px;">
+for i in range(n):
+    for j in range(m):
+        dp[i][j] = calcola()
+        
+# Calcola n×m stati
+                                        </pre>
+                                    </div>
+                                    <div>
+                                        <h5>✅ ESPERTO: salta impossibili</h5>
+                                        <pre style="background: #d1fae5; padding: 15px; border-radius: 8px; font-size: 12px;">
+for i in range(n):
+    for j in range(min(i+1, m)):  # j ≤ i
+        if è_possibile(i, j):
+            dp[i][j] = calcola()
+            
+# Risparmio: fino a 50% del tempo!
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🎭 Trucco 3: "La Ricorsione con Memoria"</h4>
+                                <p><em>Quando bottom-up è complicato, usa top-down!</em></p>
+                                
+                                <div class="python-editor-advanced">
+                                    <div class="editor-header">
+                                        <div class="editor-title">
+                                            <i class="fas fa-magic"></i>
+                                            Template Top-Down Magico
+                                        </div>
+                                    </div>
+                                    <div class="editor-container">
+                                        <pre style="background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto;">
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def dp(stato):
+    # Caso base
+    if stato == base:
+        return valore_base
+    
+    # Ricorsione
+    risultato = neutro
+    for prossimo in successori(stato):
+        risultato = combina(risultato, dp(prossimo))
+    
+    return risultato
+
+# Magia: calcola solo stati raggiungibili!
+                                        </pre>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>🪄 MAGIA:</strong> Questo pattern funziona quando:</p>
+                                    <ul>
+                                        <li>✅ Non tutti gli stati sono raggiungibili</li>
+                                        <li>✅ L'ordine di calcolo è complicato</li>
+                                        <li>✅ Vuoi scrivere codice più leggibile</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🎭 Trucco 4: "Rolling Array Pattern"</h4>
+                                <p><em>Ottimizzazione di memoria quando serve solo "window" di stati</em></p>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                                    <div>
+                                        <h5>PRIMA: O(n×m) memoria</h5>
+                                        <pre style="background: #fef3c7; padding: 15px; border-radius: 8px; font-size: 12px;">
+dp = [[0]*m for _ in range(n)]
+
+for i in range(n):
+    for j in range(m):
+        dp[i][j] = funzione(
+            dp[i-1][j],
+            dp[i][j-1]
+        )
+                                        </pre>
+                                    </div>
+                                    <div>
+                                        <h5>DOPO: O(m) memoria</h5>
+                                        <pre style="background: #d1fae5; padding: 15px; border-radius: 8px; font-size: 12px;">
+prev = [0] * m
+curr = [0] * m
+
+for i in range(n):
+    for j in range(m):
+        curr[j] = funzione(
+            prev[j],
+            curr[j-1]
+        )
+    prev, curr = curr, prev
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="insight-box">
+                                <h4>🎭 Trucco 5: "Coordinate Compression"</h4>
+                                <p><em>Quando lo spazio è enorme ma i valori sono pochi</em></p>
+                                
+                                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                                    <p><strong>SCENARIO:</strong> "DP su range [1, 10^9] ma solo 1000 valori distinti"</p>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                                        <div>
+                                            <strong>❌ INGENUO:</strong>
+                                            <pre style="background: #fef3c7; padding: 10px; border-radius: 6px; font-size: 11px;">
+dp = [0] * (10**9)  # CRASH!
+                                            </pre>
+                                        </div>
+                                        <div>
+                                            <strong>✅ COMPRESSO:</strong>
+                                            <pre style="background: #d1fae5; padding: 10px; border-radius: 6px; font-size: 11px;">
+valori_unici = sorted(set(input))
+mappa = {v: i for i, v in enumerate(valori_unici)}
+dp = [0] * len(valori_unici)
+                                            </pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Master's Challenge -->
+                            <div class="recall-exercise">
+                                <h4 class="recall-prompt">🏆 La Sfida del Maestro</h4>
+                                <p><strong>Problema Avanzato:</strong> "Contare percorsi in griglia n×m evitando celle [marked], con massimo k salti magici"</p>
+                                
+                                <div style="margin: 20px 0;">
+                                    <p><strong>🧠 Progetta gli stati usando i trucchi dei maestri:</strong></p>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                                        <div>
+                                            <label><strong>1. Dimensioni necessarie:</strong></label>
+                                            <textarea class="recall-input" style="min-height: 80px;" id="master-dimensions" 
+                                                placeholder="T[i][j][...] = ..."></textarea>
+                                        </div>
+                                        <div>
+                                            <label><strong>2. Come eviti stati impossibili:</strong></label>
+                                            <textarea class="recall-input" style="min-height: 80px;" id="master-optimization" 
+                                                placeholder="if condizione_validità:..."></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="margin: 15px 0;">
+                                        <label><strong>3. Ricorsione top-down o bottom-up? Perché?</strong></label>
+                                        <textarea class="recall-input" style="min-height: 80px;" id="master-approach" 
+                                            placeholder="Scelgo... perché..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-info" onclick="checkMasterChallenge()">
+                                    <i class="fas fa-trophy"></i> Sottoponi alla Valutazione del Maestro
+                                </button>
+                                <div id="master-feedback" style="margin-top: 15px; display: none;"></div>
+                            </div>
+
+                            <!-- Quick Tips Card -->
+                            <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 25px; border-radius: 12px; margin: 30px 0;">
+                                <h4>⚡ Quick Tips dal Maestro</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                                    <div>
+                                        <p><strong>🔥 Performance:</strong></p>
+                                        <ul style="font-size: 14px;">
+                                            <li>Profila PRIMA di ottimizzare</li>
+                                            <li>Memoria spesso più importante di tempo</li>
+                                            <li>Cache locality matters</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p><strong>🧠 Debugging:</strong></p>
+                                        <ul style="font-size: 14px;">
+                                            <li>Stampa tabella DP piccola</li>
+                                            <li>Verifica casi base per primi</li>
+                                            <li>Traccia uno stato manualmente</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Patterns -->
+                            <div style="background: white; border: 2px solid #6366f1; border-radius: 12px; padding: 20px; margin: 30px 0;">
+                                <h4>🎨 Pattern Avanzati per i Maestri</h4>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                                    <div>
+                                        <h5>🌊 Monotonic Queue DP</h5>
+                                        <p style="font-size: 14px;">Per ottimizzazioni O(n²) → O(n)</p>
+                                        <code style="background: #f0f9ff; padding: 2px 6px; border-radius: 4px; font-size: 12px;">
+                                            deque per min/max sliding window
+                                        </code>
+                                    </div>
+                                    <div>
+                                        <h5>🌳 Tree DP</h5>
+                                        <p style="font-size: 14px;">Stati per ogni sottoalbero</p>
+                                        <code style="background: #f0f9ff; padding: 2px 6px; border-radius: 4px; font-size: 12px;">
+                                            DFS + memoization su nodi
+                                        </code>
+                                    </div>
+                                    <div>
+                                        <h5>🎯 Digit DP</h5>
+                                        <p style="font-size: 14px;">Contare numeri con proprietà</p>
+                                        <code style="background: #f0f9ff; padding: 2px 6px; border-radius: 4px; font-size: 12px;">
+                                            tight, pos, started flags
+                                        </code>
+                                    </div>
+                                    <div>
+                                        <h5>🎭 Bitmask DP</h5>
+                                        <p style="font-size: 14px;">Subset come stato</p>
+                                        <code style="background: #f0f9ff; padding: 2px 6px; border-radius: 4px; font-size: 12px;">
+                                            T[mask] = dp su subset
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
                     <div id="epilogo" class="chapter-content">
                         <h2>📚 EPILOGO: IL TUO VIAGGIO CONTINUA</h2>
-                        <!-- Contenuto dell'epilogo con roadmap personalizzata -->
+                        
+                        <section>
+                            <div class="insight-box">
+                                <h3>🗺️ La Mappa del Tesoro per la Maestria</h3>
+                                
+                                <div class="ascii-art">
+         INIZIO
+           ↓
+    [Riconosci Pattern]
+           ↓
+    [Applica SPAZIO]
+           ↓
+    [Implementa Base]
+           ↓
+    [Ottimizza dopo]
+           ↓
+       VITTORIA!
+                                </div>
+                            </div>
+
+                            <h3>Le 3 Verità Finali</h3>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0;">
+                                <div class="insight-box">
+                                    <h4>1️⃣ "La DP è Memorizzazione Organizzata"</h4>
+                                    <p>Non è magia. È semplicemente ricordare in modo intelligente.</p>
+                                    <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                        <p><strong>🧠 Ricorda sempre:</strong><br>
+                                        Se hai calcolato qualcosa una volta, non calcolarlo mai più.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="insight-box">
+                                    <h4>2️⃣ "Il 90% sono Variazioni di Pattern Noti"</h4>
+                                    <p>Non reinventare. Riconosci e adatta.</p>
+                                    <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                        <p><strong>🔍 I pattern che hai imparato:</strong><br>
+                                        Fibonacci, Knapsack, LIS/LCS, Intervalli, DAG, Cumulativi, Stati Multipli</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="insight-box">
+                                    <h4>3️⃣ "La Visualizzazione è la Chiave"</h4>
+                                    <p>Se puoi disegnarlo, puoi risolverlo.</p>
+                                    <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                        <p><strong>✏️ Il tuo processo:</strong><br>
+                                        Disegna → SPAZIO → Implementa → Ottimizza</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Personal Progress Review -->
+                            <div class="recall-exercise">
+                                <h4 class="recall-prompt">🎯 La Tua Missione Finale</h4>
+                                <p>Ora hai nelle mani lo stesso potere che Bellman scoprì nel 1953. La capacità di vedere attraverso la complessità e trovare la struttura nascosta.</p>
+                                
+                                <div style="margin: 20px 0;">
+                                    <p><strong>📝 Rifletti sul tuo viaggio:</strong></p>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                                        <div>
+                                            <label><strong>Qual è stato il tuo momento "eureka"?</strong></label>
+                                            <textarea class="recall-input" style="min-height: 100px;" id="eureka-moment" 
+                                                placeholder="Il momento in cui tutto ha fatto click..."></textarea>
+                                        </div>
+                                        <div>
+                                            <label><strong>Quale pattern trovi più affascinante?</strong></label>
+                                            <textarea class="recall-input" style="min-height: 100px;" id="favorite-pattern" 
+                                                placeholder="Fibonacci, Knapsack, LIS..."></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="margin: 20px 0;">
+                                        <label><strong>Quale problema DP vorresti risolvere ora?</strong></label>
+                                        <textarea class="recall-input" style="min-height: 80px;" id="next-challenge" 
+                                            placeholder="Descrivi un problema che vorresti affrontare..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-info" onclick="saveJourneyReflection()">
+                                    <i class="fas fa-heart"></i> Salva la Tua Storia
+                                </button>
+                            </div>
+
+                            <!-- Next Steps Roadmap -->
+                            <div style="background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%); color: white; padding: 30px; border-radius: 12px; margin: 30px 0;">
+                                <h4>🚀 La Tua Roadmap di Apprendimento</h4>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                                    <div>
+                                        <h5>📚 Prossime 2 Settimane</h5>
+                                        <ul style="font-size: 14px;">
+                                            <li>✅ Risolvi 5 problemi Fibonacci</li>
+                                            <li>✅ Padroneggia il pattern Knapsack</li>
+                                            <li>✅ Implementa 3 LIS variations</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h5>🎯 Prossimo Mese</h5>
+                                        <ul style="font-size: 14px;">
+                                            <li>🏋️ Problemi di difficoltà media</li>
+                                            <li>🧠 Spaced repetition quotidiana</li>
+                                            <li>📊 Traccia i tuoi progressi</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h5>🏆 Prossimi 3 Mesi</h5>
+                                        <ul style="font-size: 14px;">
+                                            <li>💪 Contest programming</li>
+                                            <li>🌟 Pattern avanzati</li>
+                                            <li>👨‍🏫 Insegna ad altri!</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bellman's Final Quote -->
+                            <div style="background: #f8fafc; border: 3px solid #4f46e5; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center;">
+                                <p style="font-size: 1.2rem; font-style: italic; margin-bottom: 15px;">
+                                    <strong>"La programmazione dinamica è sia un metodo matematico di ottimizzazione sia un paradigma di programmazione. In entrambi i contesti si riferisce a semplificare un problema complicato scomponendolo in sottoproblemi più semplici."</strong>
+                                </p>
+                                <p style="font-weight: 600; color: #4f46e5;">
+                                    - Richard Bellman, l'uomo che ha iniziato tutto
+                                </p>
+                            </div>
+
+                            <!-- Final Challenge -->
+                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; border-radius: 12px; margin: 30px 0; text-align: center;">
+                                <h4>🏆 Il Tuo Certificato di Maestria</h4>
+                                <p style="margin: 20px 0;">Hai completato il viaggio dalla curiosità alla maestria. Ogni problema DP è ora un puzzle che sai risolvere.</p>
+                                
+                                <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 8px; margin: 20px 0;">
+                                    <p><strong>🎓 Certifico che hai padroneggiato:</strong></p>
+                                    <ul style="text-align: left; max-width: 400px; margin: 15px auto;">
+                                        <li>✅ Il metodo SPAZIO</li>
+                                        <li>✅ I 7 pattern essenziali</li>
+                                        <li>✅ I trucchi dei maestri</li>
+                                        <li>✅ L'implementazione pratica</li>
+                                        <li>✅ L'ottimizzazione avanzata</li>
+                                    </ul>
+                                </div>
+                                
+                                <button class="btn" style="background: white; color: #10b981; font-weight: bold; padding: 15px 30px;" onclick="generateCertificate()">
+                                    <i class="fas fa-download"></i> Genera il Tuo Certificato
+                                </button>
+                            </div>
+
+                            <!-- Final Call to Action -->
+                            <div style="text-align: center; margin: 40px 0;">
+                                <h3 style="color: #4f46e5; margin-bottom: 20px;">**Vai e conquista! 🚀**</h3>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 30px 0;">
+                                    <button class="btn btn-primary" onclick="startPracticeSession()">
+                                        <i class="fas fa-dumbbell"></i> Inizia Pratica
+                                    </button>
+                                    <button class="btn btn-info" onclick="exploreAdvancedTopics()">
+                                        <i class="fas fa-rocket"></i> Argomenti Avanzati
+                                    </button>
+                                    <button class="btn btn-success" onclick="joinCommunity()">
+                                        <i class="fas fa-users"></i> Unisciti alla Community
+                                    </button>
+                                    <button class="btn btn-warning" onclick="becomeTeacher()">
+                                        <i class="fas fa-chalkboard-teacher"></i> Diventa Insegnante
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                     </div>
                 </div>
 
@@ -1863,852 +2070,7 @@ print("Edit distance ('kitten', 'sitting'): ", edit_distance('kitten', 'sitting'
     <div id="notificationContainer"></div>
 
     <!-- Scripts -->
-    <script>
-        // Global State Management
-        const appState = {
-            currentChapter: 'prologo',
-            currentMode: 'learn',
-            completedChapters: new Set(),
-            completedExercises: new Set(),
-            spacedRepetitionData: {},
-            annotations: {},
-            mistakes: [],
-            userLevel: 1,
-            pythonReady: false,
-            pyodide: null,
-            theme: localStorage.getItem('theme') || 'light',
-            focusMode: false,
-            adaptiveDifficulty: 1,
-            sessionStartTime: Date.now(),
-            exerciseStats: {
-                attempted: 0,
-                solved: 0,
-                totalTime: 0
-            }
-        };
-
-        // Initialize Pyodide
-        async function initializePython() {
-            try {
-                appState.pyodide = await loadPyodide();
-                await appState.pyodide.loadPackage(['numpy', 'matplotlib']);
-                appState.pythonReady = true;
-                hideLoading();
-                showNotification('Python environment ready!', 'success');
-            } catch (error) {
-                console.error('Failed to load Pyodide:', error);
-                hideLoading();
-                showNotification('Python initialization failed. Some features may not work.', 'error');
-            }
-        }
-
-        // Initialize Application
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Load saved state
-            loadState();
-            
-            // Apply theme
-            document.documentElement.setAttribute('data-theme', appState.theme);
-            updateThemeIcon();
-            
-            // Initialize Python
-            await initializePython();
-            
-            // Initialize visualizations
-            initializeVisualizations();
-            
-            // Setup keyboard shortcuts
-            setupKeyboardShortcuts();
-            
-            // Initialize spaced repetition
-            initializeSpacedRepetition();
-            
-            // Update UI
-            updateProgressDisplay();
-            
-            // Show welcome message for new users
-            if (appState.completedChapters.size === 0) {
-                setTimeout(() => {
-                    showNotification('👋 Benvenuto! Inizia dal PROLOGO per scoprire la magia della DP!', 'info');
-                }, 1000);
-            }
-        });
-
-        // Chapter Management
-        function loadChapter(chapterId) {
-            // Update state
-            appState.currentChapter = chapterId;
-            
-            // Update UI
-            document.querySelectorAll('.chapter-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(chapterId).classList.add('active');
-            
-            // Update navigation
-            document.querySelectorAll('.chapter-link').forEach(link => {
-                link.classList.remove('active');
-                if (link.dataset.chapter === chapterId) {
-                    link.classList.add('active');
-                }
-            });
-            
-            // Mark as completed after reading time
-            setTimeout(() => {
-                if (!appState.completedChapters.has(chapterId)) {
-                    appState.completedChapters.add(chapterId);
-                    document.querySelector(`[data-chapter="${chapterId}"]`).classList.add('completed');
-                    updateProgressDisplay();
-                    saveState();
-                    
-                    // Add to spaced repetition
-                    addToSpacedRepetition(chapterId, 'chapter');
-                    
-                    // Achievement check
-                    checkAchievements();
-                }
-            }, 30000); // 30 seconds reading time
-            
-            // Save state
-            saveState();
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Mode Management
-        function setMode(mode) {
-            appState.currentMode = mode;
-            
-            // Update UI
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Show/hide content
-            document.querySelectorAll('.mode-content').forEach(content => {
-                content.style.display = 'none';
-            });
-            document.getElementById(`${mode}Mode`).style.display = 'block';
-            
-            // Mode-specific initialization
-            if (mode === 'practice') {
-                initializePracticeMode();
-            } else if (mode === 'review') {
-                initializeReviewMode();
-            }
-            
-            // Update hero visibility
-            document.getElementById('heroHeader').style.display = mode === 'learn' ? 'block' : 'none';
-        }
-
-        // Python Code Execution
-        async function runPythonCode(editorId) {
-            if (!appState.pythonReady) {
-                showNotification('Python environment not ready yet', 'error');
-                return;
-            }
-            
-            const code = document.getElementById(`${editorId}-code`).value;
-            const outputElement = document.getElementById(`${editorId}-output`);
-            
-            outputElement.innerHTML = '<div style="color: #10b981;">Running...</div>';
-            
-            try {
-                // Redirect stdout
-                await appState.pyodide.runPython(`
-                    import sys
-                    from io import StringIO
-                    sys.stdout = StringIO()
-                `);
-                
-                // Run user code
-                await appState.pyodide.runPython(code);
-                
-                // Get output
-                const output = await appState.pyodide.runPython(`sys.stdout.getvalue()`);
-                
-                outputElement.innerHTML = `<div style="color: #10b981;">✓ Output:</div><pre>${output}</pre>`;
-                
-                // Track exercise completion
-                if (!appState.completedExercises.has(editorId)) {
-                    appState.completedExercises.add(editorId);
-                    updateProgressDisplay();
-                    saveState();
-                    addToSpacedRepetition(editorId, 'exercise');
-                }
-                
-                // Update stats
-                appState.exerciseStats.attempted++;
-                appState.exerciseStats.solved++;
-                updateStats();
-                
-            } catch (error) {
-                outputElement.innerHTML = `<div style="color: #ef4444;">✗ Error:</div><pre style="color: #ef4444;">${error}</pre>`;
-                
-                // Track mistake
-                trackMistake(editorId, code, error.toString());
-            }
-        }
-
-        // Test Runner
-        async function runTests(editorId) {
-            const code = document.getElementById(`${editorId}-code`).value;
-            const outputElement = document.getElementById(`${editorId}-output`);
-            
-            // Define tests based on exercise
-            const tests = getTestsForExercise(editorId);
-            
-            outputElement.innerHTML = '<div style="color: #3b82f6;">Running tests...</div>';
-            
-            let results = [];
-            
-            for (let test of tests) {
-                try {
-                    // Run test
-                    const result = await runSingleTest(code, test);
-                    results.push(result);
-                } catch (error) {
-                    results.push({
-                        name: test.name,
-                        passed: false,
-                        error: error.toString()
-                    });
-                }
-            }
-            
-            // Display results
-            displayTestResults(outputElement, results);
-            
-            // Check if all passed
-            const allPassed = results.every(r => r.passed);
-            if (allPassed) {
-                showNotification('🎉 Tutti i test sono passati!', 'success');
-                appState.exerciseStats.solved++;
-                
-                // Adaptive difficulty
-                adjustDifficulty(true);
-            } else {
-                adjustDifficulty(false);
-            }
-        }
-
-        // Solution Viewer with Diff
-        function showSolution(editorId) {
-            const userCode = document.getElementById(`${editorId}-code`).value;
-            const solution = getSolutionForExercise(editorId);
-            
-            // Create diff view
-            const diffHtml = createCodeDiff(userCode, solution);
-            
-            // Show in modal or inline
-            const outputElement = document.getElementById(`${editorId}-output`);
-            outputElement.innerHTML = `
-                <div style="margin-bottom: 15px;">
-                    <strong style="color: #f59e0b;">📝 Confronto con la Soluzione:</strong>
-                </div>
-                <div class="diff-viewer">${diffHtml}</div>
-                <div style="margin-top: 15px;">
-                    <button class="btn btn-info" onclick="copySolution('${editorId}')">
-                        <i class="fas fa-copy"></i> Copia Soluzione
-                    </button>
-                </div>
-            `;
-        }
-
-        // Visualization Functions
-        function startFibVisualization() {
-            const canvas = document.getElementById('fibCanvas');
-            canvas.innerHTML = ''; // Clear previous
-            
-            // Create D3 visualization
-            const width = 600;
-            const height = 400;
-            
-            const svg = d3.select('#fibCanvas')
-                .append('svg')
-                .attr('width', width)
-                .attr('height', height);
-            
-            // Animate fibonacci tree
-            animateFibonacciTree(svg, 5);
-        }
-
-        function animateFibonacciTree(svg, n) {
-            // Tree data structure
-            const treeData = buildFibTree(n);
-            
-            // Create tree layout
-            const treeLayout = d3.tree()
-                .size([580, 360]);
-            
-            const root = d3.hierarchy(treeData);
-            treeLayout(root);
-            
-            // Draw links
-            svg.selectAll('.link')
-                .data(root.links())
-                .enter()
-                .append('line')
-                .attr('class', 'link')
-                .attr('x1', d => d.source.x + 10)
-                .attr('y1', d => d.source.y + 20)
-                .attr('x2', d => d.target.x + 10)
-                .attr('y2', d => d.target.y + 20)
-                .attr('stroke', '#94a3b8')
-                .attr('stroke-width', 2)
-                .style('opacity', 0)
-                .transition()
-                .duration(1000)
-                .style('opacity', 1);
-            
-            // Draw nodes
-            const nodes = svg.selectAll('.node')
-                .data(root.descendants())
-                .enter()
-                .append('g')
-                .attr('class', 'node')
-                .attr('transform', d => `translate(${d.x + 10}, ${d.y + 20})`);
-            
-            nodes.append('circle')
-                .attr('r', 25)
-                .attr('fill', d => d.data.duplicate ? '#ef4444' : '#4f46e5')
-                .style('opacity', 0)
-                .transition()
-                .duration(1000)
-                .delay((d, i) => i * 100)
-                .style('opacity', 1);
-            
-            nodes.append('text')
-                .attr('text-anchor', 'middle')
-                .attr('dy', '0.3em')
-                .attr('fill', 'white')
-                .style('font-weight', 'bold')
-                .text(d => `F(${d.data.n})`)
-                .style('opacity', 0)
-                .transition()
-                .duration(1000)
-                .delay((d, i) => i * 100)
-                .style('opacity', 1);
-            
-            // Highlight duplicates
-            setTimeout(() => {
-                nodes.filter(d => d.data.duplicate)
-                    .select('circle')
-                    .transition()
-                    .duration(500)
-                    .attr('r', 30)
-                    .transition()
-                    .duration(500)
-                    .attr('r', 25);
-            }, 2000);
-        }
-
-        function buildFibTree(n, seen = new Set()) {
-            const key = `F(${n})`;
-            const duplicate = seen.has(key);
-            seen.add(key);
-            
-            if (n <= 1) {
-                return { n, duplicate, children: [] };
-            }
-            
-            return {
-                n,
-                duplicate,
-                children: [
-                    buildFibTree(n - 1, seen),
-                    buildFibTree(n - 2, seen)
-                ]
-            };
-        }
-
-        // Active Recall Verification
-        function checkRecall(topic) {
-            const input = document.getElementById(`recall-${topic}`).value;
-            const feedback = document.getElementById(`recall-${topic}-feedback`);
-            
-            if (input.trim().length < 50) {
-                feedback.innerHTML = '<div style="color: #f59e0b;">📝 Prova a scrivere una spiegazione più dettagliata (almeno 50 caratteri)</div>';
-                feedback.style.display = 'block';
-                return;
-            }
-            
-            // Simple keyword analysis
-            const keywords = getKeywordsForTopic(topic);
-            const matchedKeywords = keywords.filter(kw => 
-                input.toLowerCase().includes(kw.toLowerCase())
-            );
-            
-            const score = matchedKeywords.length / keywords.length;
-            
-            if (score >= 0.7) {
-                feedback.innerHTML = `
-                    <div style="color: #10b981;">
-                        ✅ Ottima spiegazione! Hai menzionato concetti chiave come: 
-                        ${matchedKeywords.join(', ')}
-                    </div>
-                `;
-            } else if (score >= 0.4) {
-                feedback.innerHTML = `
-                    <div style="color: #f59e0b;">
-                        📝 Buon inizio! Considera anche di menzionare: 
-                        ${keywords.filter(kw => !matchedKeywords.includes(kw)).slice(0, 2).join(', ')}
-                    </div>
-                `;
-            } else {
-                feedback.innerHTML = `
-                    <div style="color: #ef4444;">
-                        ❌ Riprova includendo concetti come: 
-                        ${keywords.slice(0, 3).join(', ')}
-                    </div>
-                `;
-            }
-            
-            feedback.style.display = 'block';
-            
-            // Save explanation
-            saveExplanation(topic, input);
-        }
-
-        function getKeywordsForTopic(topic) {
-            const keywords = {
-                'fib': ['ripetizione', 'sottoproblemi', 'calcolo', 'inefficiente', 'ridondante'],
-                'memo': ['cache', 'memorizzare', 'riutilizzare', 'veloce', 'ottimizzazione']
-            };
-            return keywords[topic] || [];
-        }
-
-        // Spaced Repetition System
-        function initializeSpacedRepetition() {
-            // Load saved data
-            const saved = localStorage.getItem('spacedRepetitionData');
-            if (saved) {
-                appState.spacedRepetitionData = JSON.parse(saved);
-            }
-            
-            // Update UI
-            updateSpacedRepetitionDisplay();
-        }
-
-        function addToSpacedRepetition(itemId, type) {
-            const now = Date.now();
-            const item = {
-                id: itemId,
-                type: type,
-                lastReview: now,
-                nextReview: now + 24 * 60 * 60 * 1000, // 1 day
-                interval: 1,
-                easeFactor: 2.5,
-                repetitions: 0
-            };
-            
-            appState.spacedRepetitionData[itemId] = item;
-            saveSpacedRepetitionData();
-            updateSpacedRepetitionDisplay();
-        }
-
-        function updateSpacedRepetitionDisplay() {
-            const now = Date.now();
-            const due = Object.values(appState.spacedRepetitionData)
-                .filter(item => item.nextReview <= now).length;
-            
-            document.getElementById('dueToday').textContent = due;
-            
-            // Update upcoming reviews
-            const upcoming = Object.values(appState.spacedRepetitionData)
-                .filter(item => item.nextReview > now)
-                .sort((a, b) => a.nextReview - b.nextReview)
-                .slice(0, 3);
-            
-            const upcomingHtml = upcoming.map(item => `
-                <div class="review-item">
-                    <i class="fas fa-clock"></i>
-                    ${item.id} - ${formatTimeUntil(item.nextReview)}
-                </div>
-            `).join('');
-            
-            document.getElementById('upcomingReviews').innerHTML = upcomingHtml || 
-                '<p style="color: #94a3b8;">Nessun ripasso programmato</p>';
-        }
-
-        function formatTimeUntil(timestamp) {
-            const diff = timestamp - Date.now();
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const days = Math.floor(hours / 24);
-            
-            if (days > 0) return `tra ${days} giorni`;
-            if (hours > 0) return `tra ${hours} ore`;
-            return 'presto';
-        }
-
-        // Practice Mode
-        function startPractice(type) {
-            const content = document.getElementById('practiceContent');
-            content.style.display = 'block';
-            
-            if (type === 'mixed') {
-                loadMixedPractice();
-            } else if (type === 'focused') {
-                loadFocusedPractice();
-            } else if (type === 'adaptive') {
-                loadAdaptivePractice();
-            }
-        }
-
-        function loadMixedPractice() {
-            // Get problems from all chapters
-            const problems = getAllProblems();
-            const shuffled = shuffleArray(problems);
-            
-            displayPracticeProblems(shuffled.slice(0, 5));
-        }
-
-        function loadAdaptivePractice() {
-            // Get problems based on user level
-            const problems = getProblemsForLevel(appState.adaptiveDifficulty);
-            displayPracticeProblems(problems);
-        }
-
-        // Metacognitive Dashboard
-        function initializeReviewMode() {
-            // Generate heatmap
-            generateProgressHeatmap();
-            
-            // Generate strength chart
-            generateStrengthChart();
-            
-            // Generate learning trend
-            generateLearningTrend();
-            
-            // Identify weaknesses
-            identifyWeaknesses();
-        }
-
-        function generateProgressHeatmap() {
-            const heatmap = document.getElementById('progressHeatmap');
-            const data = generateHeatmapData();
-            
-            heatmap.innerHTML = data.map((value, index) => {
-                const intensity = value / 10;
-                const color = `rgba(79, 70, 229, ${intensity})`;
-                const date = new Date();
-                date.setDate(date.getDate() - (29 - index));
-                
-                return `<div class="heatmap-cell" 
-                    style="background: ${color}" 
-                    title="${date.toLocaleDateString()}: ${value} attività"
-                    onclick="showDayDetails('${date.toISOString()}')"></div>`;
-            }).join('');
-        }
-
-        function generateHeatmapData() {
-            // Simulate activity data
-            return Array.from({ length: 30 }, () => Math.floor(Math.random() * 10));
-        }
-
-        // Utility Functions
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type} show`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 
-                    type === 'error' ? 'times-circle' : 'info-circle'}"></i>
-                ${message}
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        function toggleTheme() {
-            appState.theme = appState.theme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', appState.theme);
-            updateThemeIcon();
-            localStorage.setItem('theme', appState.theme);
-        }
-
-        function updateThemeIcon() {
-            const icon = document.getElementById('themeIcon');
-            icon.className = appState.theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-        }
-
-        function toggleFocusMode() {
-            appState.focusMode = !appState.focusMode;
-            document.body.classList.toggle('focus-mode');
-            
-            const icon = document.getElementById('focusIcon');
-            icon.className = appState.focusMode ? 'fas fa-expand' : 'fas fa-compress';
-        }
-
-        function showShortcuts() {
-            document.getElementById('shortcutsModal').classList.add('show');
-        }
-
-        function closeShortcuts() {
-            document.getElementById('shortcutsModal').classList.remove('show');
-        }
-
-        function setupKeyboardShortcuts() {
-            document.addEventListener('keydown', (e) => {
-                // Navigation
-                if (e.key === 'ArrowLeft') {
-                    navigateChapter(-1);
-                } else if (e.key === 'ArrowRight') {
-                    navigateChapter(1);
-                }
-                
-                // Run code
-                else if (e.ctrlKey && e.key === 'Enter') {
-                    const activeEditor = document.querySelector('.editor-textarea:focus');
-                    if (activeEditor) {
-                        const editorId = activeEditor.id.replace('-code', '');
-                        runPythonCode(editorId);
-                    }
-                }
-                
-                // Focus mode
-                else if (e.key === 'f' && !e.ctrlKey && !e.target.matches('input, textarea')) {
-                    toggleFocusMode();
-                }
-                
-                // Theme
-                else if (e.key === 't' && !e.ctrlKey && !e.target.matches('input, textarea')) {
-                    toggleTheme();
-                }
-                
-                // Help
-                else if (e.key === '?' && !e.target.matches('input, textarea')) {
-                    showShortcuts();
-                }
-            });
-        }
-
-        function navigateChapter(direction) {
-            const chapters = ['prologo', 'cap1', 'cap2', 'cap3', 'cap4', 'cap5', 'cap6', 'epilogo'];
-            const currentIndex = chapters.indexOf(appState.currentChapter);
-            const newIndex = Math.max(0, Math.min(chapters.length - 1, currentIndex + direction));
-            
-            if (newIndex !== currentIndex) {
-                loadChapter(chapters[newIndex]);
-            }
-        }
-
-        // State Management
-        function saveState() {
-            const state = {
-                completedChapters: Array.from(appState.completedChapters),
-                completedExercises: Array.from(appState.completedExercises),
-                annotations: appState.annotations,
-                mistakes: appState.mistakes,
-                userLevel: appState.userLevel,
-                exerciseStats: appState.exerciseStats,
-                lastAccess: Date.now()
-            };
-            
-            localStorage.setItem('dpLearningState', JSON.stringify(state));
-        }
-
-        function loadState() {
-            const saved = localStorage.getItem('dpLearningState');
-            if (saved) {
-                const state = JSON.parse(saved);
-                appState.completedChapters = new Set(state.completedChapters || []);
-                appState.completedExercises = new Set(state.completedExercises || []);
-                appState.annotations = state.annotations || {};
-                appState.mistakes = state.mistakes || [];
-                appState.userLevel = state.userLevel || 1;
-                appState.exerciseStats = state.exerciseStats || appState.exerciseStats;
-            }
-        }
-
-        function saveSpacedRepetitionData() {
-            localStorage.setItem('spacedRepetitionData', 
-                JSON.stringify(appState.spacedRepetitionData));
-        }
-
-        function updateProgressDisplay() {
-            const chapters = 8;
-            const exercises = 20; // Total exercises
-            
-            const chaptersCompleted = appState.completedChapters.size;
-            const exercisesCompleted = appState.completedExercises.size;
-            
-            // Update stats
-            document.getElementById('problemsSolved').textContent = exercisesCompleted;
-            document.getElementById('successRate').textContent = 
-                appState.exerciseStats.attempted > 0 
-                    ? Math.round((appState.exerciseStats.solved / appState.exerciseStats.attempted) * 100) + '%'
-                    : '0%';
-            
-            // Update level
-            const level = Math.floor((chaptersCompleted + exercisesCompleted) / 5) + 1;
-            appState.userLevel = level;
-            updateLevelDisplay();
-        }
-
-        function updateLevelDisplay() {
-            const levels = ['Principiante', 'Intermedio', 'Avanzato', 'Esperto', 'Master'];
-            const levelIndex = Math.min(appState.userLevel - 1, levels.length - 1);
-            
-            document.getElementById('currentLevel').style.width = `${(levelIndex + 1) * 20}%`;
-            document.getElementById('levelLabel').textContent = levels[levelIndex];
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-
-        // Helper functions for exercises and solutions
-        function getTestsForExercise(exerciseId) {
-            const tests = {
-                'fib-comparison': [
-                    { name: 'Test base F(0)', input: 0, expected: 0 },
-                    { name: 'Test base F(1)', input: 1, expected: 1 },
-                    { name: 'Test F(10)', input: 10, expected: 55 },
-                    { name: 'Test F(20)', input: 20, expected: 6765 }
-                ],
-                'memory-strategies': [
-                    { name: 'Test efficienza memoria', type: 'memory' },
-                    { name: 'Test correttezza risultati', type: 'correctness' }
-                ]
-            };
-            
-            return tests[exerciseId] || [];
-        }
-
-        function getSolutionForExercise(exerciseId) {
-            const solutions = {
-                'fib-comparison': `def fibonacci_ricorsivo(n):
-    if n <= 1:
-        return n
-    return fibonacci_ricorsivo(n-1) + fibonacci_ricorsivo(n-2)
-
-def fibonacci_memo(n, memo=None):
-    if memo is None:
-        memo = {}
-    
-    if n in memo:
-        return memo[n]
-    
-    if n <= 1:
-        result = n
-    else:
-        result = fibonacci_memo(n-1, memo) + fibonacci_memo(n-2, memo)
-    
-    memo[n] = result
-    return result`,
-                
-                'memory-strategies': `def fib_con_lista(n):
-    if n <= 1:
-        return n
-    
-    dp = [0] * (n + 1)
-    dp[0] = 0
-    dp[1] = 1
-    
-    for i in range(2, n + 1):
-        dp[i] = dp[i-1] + dp[i-2]
-    
-    return dp[n]
-
-def fib_con_dizionario(n, memo={}):
-    if n in memo:
-        return memo[n]
-    if n <= 1:
-        return n
-    memo[n] = fib_con_dizionario(n-1, memo) + fib_con_dizionario(n-2, memo)
-    return memo[n]
-
-def fib_ottimizzata(n):
-    if n <= 1:
-        return n
-    
-    prev2, prev1 = 0, 1
-    for i in range(2, n + 1):
-        current = prev1 + prev2
-        prev2, prev1 = prev1, current
-    
-    return prev1`
-            };
-            
-            return solutions[exerciseId] || '';
-        }
-
-        function createCodeDiff(userCode, solution) {
-            const userLines = userCode.split('\n');
-            const solutionLines = solution.split('\n');
-            
-            // Simple diff visualization
-            let diffHtml = '';
-            const maxLines = Math.max(userLines.length, solutionLines.length);
-            
-            for (let i = 0; i < maxLines; i++) {
-                const userLine = userLines[i] || '';
-                const solutionLine = solutionLines[i] || '';
-                
-                if (userLine === solutionLine) {
-                    diffHtml += `<div class="diff-line diff-unchanged">${escapeHtml(userLine)}</div>`;
-                } else {
-                    if (userLine) {
-                        diffHtml += `<div class="diff-line diff-removed">- ${escapeHtml(userLine)}</div>`;
-                    }
-                    if (solutionLine) {
-                        diffHtml += `<div class="diff-line diff-added">+ ${escapeHtml(solutionLine)}</div>`;
-                    }
-                }
-            }
-            
-            return diffHtml;
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
-        }
-
-        // Problem and difficulty management
-        function adjustDifficulty(success) {
-            if (success) {
-                appState.adaptiveDifficulty = Math.min(5, appState.adaptiveDifficulty + 0.2);
-            } else {
-                appState.adaptiveDifficulty = Math.max(1, appState.adaptiveDifficulty - 0.1);
-            }
-        }
-
-        function getAllProblems() {
-            // Return array of all problems from all chapters
-            return [
-                { id: 'fib', chapter: 'prologo', difficulty: 1, title: 'Fibonacci Base' },
-                { id: 'stairs', chapter: 'cap1', difficulty: 2, title: 'Climbing Stairs' },
-                { id: 'coins', chapter: 'cap2', difficulty: 3, title: 'Coin Change' },
-                // ... more problems
-            ];
-        }
-
-        function getProblemsForLevel(level) {
-            const allProblems = getAllProblems();
-            return allProblems.filter(p => 
-                p.difficulty >= level - 0.5 && p.difficulty <= level + 0.5
-            );
-        }
-
-        // Add more implementation functions as needed...
-    </script>
+    <!-- JavaScript Personalizzato -->
+    <script type="module" src="assets/js/app.js"></script>
 </body>
 </html>
