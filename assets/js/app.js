@@ -46,34 +46,30 @@ const appState = {
     }
 };
 
-// Initialize Pyodide with comprehensive package setup
+// Initialize Pyodide with optimized lightweight setup
 async function initializePython() {
     try {
         console.log('🐍 Inizializzazione ambiente Python...');
         
-        // Load Pyodide core
-        appState.pyodide = await loadPyodide({
-            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/"
+        // Load Pyodide core with timeout and optimized settings
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout during Pyodide loading')), 15000);
         });
         
-        console.log('📦 Caricamento pacchetti Python...');
+        appState.pyodide = await Promise.race([
+            loadPyodide({
+                // Use default CDN for better reliability
+                indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/"
+            }),
+            timeoutPromise
+        ]);
         
-        // Load essential packages for DP exercises
-        const packages = [
-            'numpy',           // Numerical computations
-            'matplotlib',      // Plotting and visualization
-            'networkx',        // Graph algorithms
-            'scipy'            // Scientific computing
-        ];
+        console.log('✅ Pyodide core caricato');
         
-        await appState.pyodide.loadPackage(packages);
-        
-        // Set up Python environment with DP utilities
+        // Set up Python environment with basic utilities (no heavy packages)
         await appState.pyodide.runPython(`
             import sys
             import time
-            import numpy as np
-            import matplotlib.pyplot as plt
             from io import StringIO
             import functools
             
@@ -112,16 +108,8 @@ async function initializePython() {
                 """Reset Python environment for clean execution"""
                 sys.stdout = StringIO()
                 sys.stderr = StringIO()
-                # Clear any user-defined variables except built-ins
-                for name in list(globals().keys()):
-                    if not name.startswith('_') and name not in ['sys', 'time', 'np', 'plt', 'StringIO', 'functools', 'time_function', 'count_calls', 'visualize_call_tree', 'reset_environment']:
-                        try:
-                            del globals()[name]
-                        except:
-                            pass
             
             print("🚀 Ambiente Python per Programmazione Dinamica pronto!")
-            print("📚 Pacchetti disponibili: numpy, matplotlib, networkx, scipy")
             print("🛠️ Utility: @time_function, @count_calls, visualize_call_tree()")
         `);
         
@@ -145,6 +133,11 @@ async function initializePython() {
         
         console.log('🧪 Test Python:', testResult);
         
+        // Optional: Load packages in background (non-blocking)
+        setTimeout(() => {
+            loadOptionalPackages();
+        }, 2000);
+        
     } catch (error) {
         console.error('❌ Failed to load Pyodide:', error);
         hideLoading();
@@ -154,6 +147,8 @@ async function initializePython() {
             errorMsg += 'Problema di connessione - verifica la connessione internet.';
         } else if (error.message.includes('package')) {
             errorMsg += 'Errore nel caricamento dei pacchetti.';
+        } else if (error.message.includes('Timeout')) {
+            errorMsg += 'Timeout nel caricamento - riprova più tardi.';
         } else {
             errorMsg += 'Errore sconosciuto.';
         }
@@ -164,17 +159,65 @@ async function initializePython() {
         try {
             console.log('🔄 Tentativo fallback senza pacchetti...');
             appState.pyodide = await loadPyodide();
+            
+            // Minimal setup
+            await appState.pyodide.runPython(`
+                import sys
+                import time
+                from io import StringIO
+                print("⚠️ Python base caricato (senza pacchetti avanzati)")
+            `);
+            
             appState.pythonReady = true;
-            showNotification('⚠️ Python caricato in modalità base (senza pacchetti extra)', 'warning');
+            showNotification('⚠️ Python caricato in modalità base (funzionalità limitate)', 'warning');
         } catch (fallbackError) {
             console.error('❌ Fallback failed:', fallbackError);
-            showNotification('❌ Impossibile caricare Python. Controlla la connessione.', 'error');
+            hideLoading(); // CRITICAL: Ensure loading is hidden even if fallback fails
+            showNotification('❌ Python non disponibile. La piattaforma funziona comunque!', 'error');
+            
+            // Mark as "ready" but with limited functionality
+            appState.pythonReady = false;
         }
     }
 }
 
+// Load optional packages in background (non-blocking)
+async function loadOptionalPackages() {
+    if (!appState.pythonReady || !appState.pyodide) return;
+    
+    try {
+        console.log('📦 Caricamento pacchetti opzionali in background...');
+        
+        // Load only lightweight, essential packages
+        const lightPackages = ['micropip'];
+        await appState.pyodide.loadPackage(lightPackages);
+        
+        showNotification('📦 Pacchetti aggiuntivi caricati!', 'info');
+        
+    } catch (error) {
+        console.log('📦 Pacchetti opzionali non disponibili:', error);
+        // Non-critical, continue without packages
+    }
+}
+
+// IMMEDIATE TEST: Force hide loading after 3 seconds as safety
+setTimeout(() => {
+    console.log('🔧 Safety timeout: Force hiding loading overlay');
+    forceHideLoading();
+}, 3000);
+
 // Initialize Application
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 DOM Content Loaded - Starting initialization');
+    
+    // Immediate safety check
+    setTimeout(() => {
+        if (document.getElementById('loadingOverlay')?.style.display !== 'none') {
+            console.warn('⚠️ Loading still visible after 5 seconds, force hiding');
+            forceHideLoading();
+        }
+    }, 5000);
+    
     // Load saved state
     loadState();
     
@@ -182,29 +225,56 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.documentElement.setAttribute('data-theme', appState.theme);
     updateThemeIcon();
     
-    // Initialize Python
-    await initializePython();
+    // Emergency timeout to hide loading if everything fails
+    const emergencyTimeout = setTimeout(() => {
+        console.warn('⚠️ Emergency timeout: Forcing loading hide');
+        forceHideLoading();
+        showNotification('⚠️ Caricamento completato con funzionalità limitate', 'warning');
+    }, 15000); // 15 seconds max (reduced from 20)
     
-    // Initialize visualizations
-    initializeVisualizations();
+    try {
+        // Initialize Python (non-blocking for rest of app)
+        await initializePython();
+        
+        // Clear emergency timeout if Python loads successfully
+        clearTimeout(emergencyTimeout);
+        
+    } catch (error) {
+        console.error('Python initialization failed:', error);
+        hideLoading();
+        clearTimeout(emergencyTimeout);
+    }
     
-    // Setup keyboard shortcuts
-    setupKeyboardShortcuts();
-    
-    // Initialize spaced repetition
-    initializeSpacedRepetition();
-    
-    // Initialize Pomodoro timer
-    initializePomodoroTimer();
-    
-    // Update UI
-    updateProgressDisplay();
-    
-    // Show welcome message for new users
-    if (appState.completedChapters.size === 0) {
-        setTimeout(() => {
-            showNotification('👋 Benvenuto! Inizia dal PROLOGO per scoprire la magia della DP!', 'info');
-        }, 1000);
+    // Initialize other components (these should work without Python)
+    try {
+        // Initialize visualizations
+        initializeVisualizations();
+        
+        // Setup keyboard shortcuts
+        setupKeyboardShortcuts();
+        
+        // Initialize spaced repetition
+        initializeSpacedRepetition();
+        
+        // Initialize Pomodoro timer
+        initializePomodoroTimer();
+        
+        // Update UI
+        updateProgressDisplay();
+        
+        // Show welcome message for new users
+        if (appState.completedChapters.size === 0) {
+            setTimeout(() => {
+                showNotification('👋 Benvenuto! Inizia dal PROLOGO per scoprire la magia della DP!', 'info');
+            }, 1000);
+        }
+        
+        console.log('✅ Piattaforma inizializzata con successo');
+        
+    } catch (error) {
+        console.error('Application initialization error:', error);
+        hideLoading(); // Ensure loading is hidden
+        showNotification('⚠️ Alcune funzionalità potrebbero essere limitate', 'warning');
     }
 });
 
@@ -1392,7 +1462,42 @@ function updateLevelDisplay() {
 }
 
 function hideLoading() {
-    document.getElementById('loadingOverlay').style.display = 'none';
+    try {
+        const loadingElement = document.getElementById('loadingOverlay');
+        if (loadingElement) {
+            loadingElement.style.display = 'none';
+            console.log('✅ Loading overlay nascosto');
+        } else {
+            console.warn('⚠️ Loading overlay non trovato');
+        }
+    } catch (error) {
+        console.error('❌ Errore nell\'nascondere loading:', error);
+        // Force hide any loading elements as fallback
+        const allLoading = document.querySelectorAll('.loading-overlay, [id*="loading"], [class*="loading"]');
+        allLoading.forEach(el => {
+            el.style.display = 'none';
+        });
+    }
+}
+
+// Emergency function to force hide loading immediately
+function forceHideLoading() {
+    console.log('🚨 Force hiding all loading elements');
+    
+    // Hide by ID
+    const loadingById = document.getElementById('loadingOverlay');
+    if (loadingById) loadingById.style.display = 'none';
+    
+    // Hide by class
+    const loadingElements = document.querySelectorAll('.loading-overlay, .loading, [class*="loading"]');
+    loadingElements.forEach(el => {
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+        el.style.opacity = '0';
+    });
+    
+    // Remove loading class from body if present
+    document.body.classList.remove('loading');
 }
 
 // Helper functions for exercises and solutions
@@ -2309,6 +2414,18 @@ async function runPythonCodeEnhanced(editorId, timeout = 30000) {
     }
 }
 
+// Debug and emergency functions
+window.forceHideLoading = forceHideLoading;
+window.hideLoading = hideLoading;
+window.debugPlatform = function() {
+    console.log('🔍 Platform Debug Info:');
+    console.log('- Python Ready:', appState.pythonReady);
+    console.log('- Pyodide Object:', !!appState.pyodide);
+    console.log('- Loading Overlay:', document.getElementById('loadingOverlay')?.style.display);
+    console.log('- App State:', appState);
+    forceHideLoading();
+};
+
 // Make functions globally available for HTML onclick handlers
 window.loadChapter = loadChapter;
 window.setMode = setMode;
@@ -2345,3 +2462,8 @@ window.reviewItem = reviewItem;
 window.showItemDetails = showItemDetails;
 window.getSpacedRepetitionStats = getSpacedRepetitionStats;
 window.getItemsDueForReview = getItemsDueForReview;
+
+// Debug message for immediate verification
+console.log('✅ JavaScript loaded successfully!');
+console.log('🔧 Emergency function available: window.forceHideLoading()');
+console.log('🔍 Debug function available: window.debugPlatform()');

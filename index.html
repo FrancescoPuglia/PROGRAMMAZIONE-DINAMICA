@@ -2072,5 +2072,44 @@ dp = [0] * len(valori_unici)
     <!-- Scripts -->
     <!-- JavaScript Personalizzato -->
     <script type="module" src="assets/js/app.js"></script>
+    
+    <!-- Emergency loading fix script -->
+    <script>
+        console.log('🚨 Emergency script loaded');
+        
+        // Force hide loading after 2 seconds regardless of anything else
+        setTimeout(function() {
+            console.log('🔧 Emergency timeout: hiding loading overlay');
+            var loading = document.getElementById('loadingOverlay');
+            if (loading) {
+                loading.style.display = 'none';
+                console.log('✅ Loading overlay hidden by emergency script');
+            }
+        }, 2000);
+        
+        // Additional safety check
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var loading = document.getElementById('loadingOverlay');
+                if (loading && loading.style.display !== 'none') {
+                    loading.style.display = 'none';
+                    console.log('✅ Loading overlay hidden by window.load event');
+                }
+            }, 1000);
+        });
+        
+        // Make emergency function globally available immediately
+        window.emergencyHideLoading = function() {
+            var loading = document.getElementById('loadingOverlay');
+            if (loading) {
+                loading.style.display = 'none';
+                loading.style.visibility = 'hidden';
+                loading.style.opacity = '0';
+                console.log('🚨 Emergency hide loading executed');
+            }
+        };
+        
+        console.log('🔧 Emergency function available: window.emergencyHideLoading()');
+    </script>
 </body>
 </html>
