@@ -16,14 +16,18 @@
     <!-- Chart.js per visualizzazioni -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Pyodide per esecuzione Python nel browser (lite build) -->
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/lite/pyodide.js"></script>
+    <!-- Skulpt per esecuzione Python nel browser (più leggero) -->
+    <script src="https://unpkg.com/skulpt@1.2.0/dist/skulpt.min.js"></script>
+    <script src="https://unpkg.com/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
     
     <!-- D3.js per visualizzazioni interattive -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     
     <!-- CSS Personalizzato -->
     <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Main JS con tutte le funzionalità essenziali -->
+    <script defer src="assets/js/main.js"></script>
 </head>
 <body>
     <!-- Loading Overlay -->
@@ -52,6 +56,15 @@
                     </button>
                 </div>
             </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container" style="flex: 1; margin: 0 20px;">
+                <div style="background: #e5e7eb; border-radius: 10px; height: 8px; position: relative;">
+                    <div class="progress-bar" style="width: 0%; background: #10b981; height: 100%; border-radius: 10px; transition: width 0.3s ease;"></div>
+                </div>
+                <span class="progress-label" style="font-size: 12px; color: #6b7280; margin-left: 5px;">0%</span>
+            </div>
+            
             <div class="nav-right">
                 <button class="btn btn-info" onclick="showShortcuts()">
                     <i class="fas fa-keyboard"></i> Shortcuts
@@ -222,7 +235,7 @@ CONTA I NODI: F(3) calcolato 2 volte!
                                         Esercizio: Fibonacci Ricorsivo vs Memorizzato
                                     </div>
                                     <div class="editor-actions">
-                                        <button class="btn btn-run" onclick="runPythonCode('fib-comparison')">
+                                        <button class="btn btn-run run-btn" data-code="fib-comparison-code" data-out="fib-comparison-output">
                                             <i class="fas fa-play"></i> Esegui
                                         </button>
                                         <button class="btn btn-test" onclick="runTests('fib-comparison')">
@@ -239,20 +252,27 @@ CONTA I NODI: F(3) calcolato 2 volte!
 
 def fibonacci_ricorsivo(n):
     """Implementa Fibonacci in modo ricorsivo (inefficiente)"""
-    # TODO: Implementa la versione ricorsiva
-    pass
+    if n <= 1:
+        return n
+    return fibonacci_ricorsivo(n-1) + fibonacci_ricorsivo(n-2)
 
 def fibonacci_memo(n, memo=None):
     """Implementa Fibonacci con memoization"""
     if memo is None:
         memo = {}
     
-    # TODO: Implementa la versione con memoization
-    pass
+    if n in memo:
+        return memo[n]
+    
+    if n <= 1:
+        return n
+    
+    memo[n] = fibonacci_memo(n-1, memo) + fibonacci_memo(n-2, memo)
+    return memo[n]
 
 # Test di performance
 def test_performance():
-    n = 35
+    n = 25  # Valore ridotto per Skulpt
     
     # Test ricorsivo
     start = time.time()
@@ -267,9 +287,9 @@ def test_performance():
     print(f"Fibonacci({n}):")
     print(f"  Ricorsivo: {result1} in {time1:.4f} secondi")
     print(f"  Memoization: {result2} in {time2:.4f} secondi")
-    print(f"  Speedup: {time1/time2:.0f}x più veloce!")
+    print(f"  Speedup: {time1/time2:.1f}x più veloce!")
 
-# Esegui test
+# Esegui il test
 test_performance()</textarea>
                                     </div>
                                     <div class="editor-pane">
@@ -344,6 +364,24 @@ def fib_memo(n):
                             
                             <div class="question-box">
                                 <h4>🤔 Domanda 1: "Perché Ricalcolo?"</h4>
+                                
+                                <!-- Quiz Interattivo -->
+                                <div class="quiz" data-question="q1" data-correct="B" style="margin-top: 15px;">
+                                    <p><strong>Qual è il problema principale della ricorsione naive per Fibonacci?</strong></p>
+                                    <label style="display: block; margin: 5px 0;">
+                                        <input type="radio" name="q1" value="A"> A) Usa troppa memoria RAM
+                                    </label>
+                                    <label style="display: block; margin: 5px 0;">
+                                        <input type="radio" name="q1" value="B"> B) Ricalcola gli stessi sottoproblemi più volte
+                                    </label>
+                                    <label style="display: block; margin: 5px 0;">
+                                        <input type="radio" name="q1" value="C"> C) È difficile da implementare
+                                    </label>
+                                    <button class="btn btn-info check-btn" style="margin-top: 10px;">
+                                        <i class="fas fa-check"></i> Verifica
+                                    </button>
+                                    <span class="result" style="margin-left: 15px; font-weight: bold;"></span>
+                                </div>
                             </div>
                             
                             <!-- Interactive Calculation Tracker -->
@@ -362,6 +400,24 @@ def fib_memo(n):
 
                             <div class="question-box">
                                 <h4>🤔 Domanda 2: "Cosa Hanno in Comune i Sottoproblemi?"</h4>
+                                
+                                <!-- Quiz Interattivo -->
+                                <div class="quiz" data-question="q2" data-correct="C" style="margin-top: 15px;">
+                                    <p><strong>Nella sequenza di Fibonacci, quale caratteristica hanno i sottoproblemi?</strong></p>
+                                    <label style="display: block; margin: 5px 0;">
+                                        <input type="radio" name="q2" value="A"> A) Sono sempre diversi
+                                    </label>
+                                    <label style="display: block; margin: 5px 0;">
+                                        <input type="radio" name="q2" value="B"> B) Crescono esponenzialmente
+                                    </label>
+                                    <label style="display: block; margin: 5px 0;">
+                                        <input type="radio" name="q2" value="C"> C) Si ripetono frequentemente
+                                    </label>
+                                    <button class="btn btn-info check-btn" style="margin-top: 10px;">
+                                        <i class="fas fa-check"></i> Verifica
+                                    </button>
+                                    <span class="result" style="margin-left: 15px; font-weight: bold;"></span>
+                                </div>
                             </div>
                             
                             <div class="insight-box">
@@ -2070,46 +2126,9 @@ dp = [0] * len(valori_unici)
     <div id="notificationContainer"></div>
 
     <!-- Scripts -->
-    <!-- JavaScript Personalizzato -->
-    <script type="module" src="assets/js/app.js"></script>
+    <!-- app.js temporaneamente disabilitato per test con main.js -->
+    <!-- <script type="module" src="assets/js/app.js"></script> -->
     
-    <!-- Emergency loading fix script -->
-    <script>
-        console.log('🚨 Emergency script loaded');
-        
-        // Force hide loading after 2 seconds regardless of anything else
-        setTimeout(function() {
-            console.log('🔧 Emergency timeout: hiding loading overlay');
-            var loading = document.getElementById('loadingOverlay');
-            if (loading) {
-                loading.style.display = 'none';
-                console.log('✅ Loading overlay hidden by emergency script');
-            }
-        }, 2000);
-        
-        // Additional safety check
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                var loading = document.getElementById('loadingOverlay');
-                if (loading && loading.style.display !== 'none') {
-                    loading.style.display = 'none';
-                    console.log('✅ Loading overlay hidden by window.load event');
-                }
-            }, 1000);
-        });
-        
-        // Make emergency function globally available immediately
-        window.emergencyHideLoading = function() {
-            var loading = document.getElementById('loadingOverlay');
-            if (loading) {
-                loading.style.display = 'none';
-                loading.style.visibility = 'hidden';
-                loading.style.opacity = '0';
-                console.log('🚨 Emergency hide loading executed');
-            }
-        };
-        
-        console.log('🔧 Emergency function available: window.emergencyHideLoading()');
-    </script>
+    <!-- Il loading è ora gestito da main.js con Skulpt -->
 </body>
 </html>

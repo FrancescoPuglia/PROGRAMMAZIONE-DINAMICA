@@ -2008,3 +2008,19 @@ body.focus-mode .content-area {
         padding: 20px;
     }
 }
+
+/* ===== FIX SCROLL CON HEADER STICKY ===== */
+html { 
+    scroll-behavior: smooth; 
+}
+
+section[id], 
+.chapter-content[id] { 
+    scroll-margin-top: 90px; 
+}
+
+/* ===== LAZY LOADING PLACEHOLDER ===== */
+img[loading="lazy"] {
+    background: #f3f4f6;
+    min-height: 100px;
+}
