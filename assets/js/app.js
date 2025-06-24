@@ -58,8 +58,8 @@ async function initializePython() {
         
         appState.pyodide = await Promise.race([
             loadPyodide({
-                // Use default CDN for better reliability
-                indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/"
+                // Use lite build for faster loading and better compatibility
+                indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/lite/"
             }),
             timeoutPromise
         ]);
@@ -694,6 +694,14 @@ function startFibVisualization() {
     
     // Animate fibonacci tree
     animateFibonacciTree(svg, 5);
+}
+
+function resetFibVisualization() {
+    const canvas = document.getElementById('fibCanvas');
+    if (canvas) {
+        canvas.innerHTML = '';
+        console.log('🔄 Fibonacci visualization reset');
+    }
 }
 
 function animateFibonacciTree(svg, n) {
@@ -2657,6 +2665,7 @@ window.runEducationalDemo = runEducationalDemo;
 window.runTests = runTests;
 window.showSolution = showSolution;
 window.startFibVisualization = startFibVisualization;
+window.resetFibVisualization = resetFibVisualization;
 window.updateFibVisualization = updateFibVisualization;
 window.revealStep = revealStep;
 window.trackFibonacciCalls = trackFibonacciCalls;
