@@ -683,7 +683,7 @@ body.focus-mode .content-area {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
-    display: flex;
+    display: none; /* NASCOSTO DI DEFAULT - FIX CRITICO */
     align-items: center;
     justify-content: center;
     z-index: 3000;

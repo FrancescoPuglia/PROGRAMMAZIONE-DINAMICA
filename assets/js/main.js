@@ -1,6 +1,39 @@
 // 🚀 Main.js - Funzionalità essenziali per la piattaforma DP
 // Sostituisce Pyodide con Skulpt (più leggero) e implementa tutte le interazioni mancanti
 
+// EMERGENCY FIX: Nascondi loading overlay ASAP
+(function() {
+    const hideLoadingImmediately = () => {
+        const loader = document.getElementById("loadingOverlay");
+        if (loader) {
+            loader.style.display = "none !important";
+            loader.style.visibility = "hidden !important";
+            loader.style.opacity = "0 !important";
+            loader.style.zIndex = "-9999 !important";
+            console.log("⚡ EMERGENCY FIX: Loading nascosto immediatamente");
+        }
+    };
+    
+    // Esegui appena il DOM è disponibile
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", hideLoadingImmediately);
+    } else {
+        hideLoadingImmediately();
+    }
+    
+    // Anche come fallback ogni 100ms fino a che non funziona
+    const interval = setInterval(() => {
+        hideLoadingImmediately();
+        const loader = document.getElementById("loadingOverlay");
+        if (!loader || loader.style.display === "none") {
+            clearInterval(interval);
+        }
+    }, 100);
+    
+    // Stop interval dopo 10 secondi max
+    setTimeout(() => clearInterval(interval), 10000);
+})();
+
 // ===== 1. RUNNER PYTHON CON SKULPT =====
 document.addEventListener("click", async (e) => {
     if (!e.target.matches(".run-btn")) return;
@@ -2463,6 +2496,16 @@ window.revealStep = revealStep;
 // ===== INIZIALIZZAZIONE AL CARICAMENTO =====
 window.addEventListener("DOMContentLoaded", () => {
     console.log("🚀 Inizializzazione piattaforma DP...");
+    
+    // SUPER FIX: Forza nascondimento immediato
+    const loader = document.getElementById("loadingOverlay");
+    if (loader) {
+        loader.style.display = "none";
+        loader.style.visibility = "hidden";
+        loader.style.opacity = "0";
+        loader.style.zIndex = "-1";
+        console.log("🚨 SUPER FIX: Loading overlay forzatamente nascosto");
+    }
     
     // Gestisci loading screen immediatamente
     handleLoadingScreen();
