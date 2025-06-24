@@ -264,6 +264,188 @@ function showNotification(message, type = "info") {
     }, 3000);
 }
 
+// ===== 9. NAVIGAZIONE CAPITOLI E MODALITÀ =====
+// Gestione completa navigazione capitoli
+function loadChapter(chapterId) {
+    console.log(`🔄 Caricamento capitolo: ${chapterId}`);
+    
+    // Nascondi tutti i capitoli
+    document.querySelectorAll('.chapter-content').forEach(content => {
+        content.style.display = 'none';
+        content.classList.remove('active');
+    });
+    
+    // Mostra il capitolo selezionato
+    const targetChapter = document.getElementById(chapterId);
+    if (targetChapter) {
+        targetChapter.style.display = 'block';
+        targetChapter.classList.add('active');
+        console.log(`✅ Capitolo ${chapterId} visualizzato`);
+    } else {
+        console.error(`❌ Capitolo non trovato: ${chapterId}`);
+    }
+    
+    // Aggiorna navigazione sidebar
+    document.querySelectorAll('.chapter-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.chapter === chapterId) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Scroll in alto
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Gestione modalità Apprendi/Pratica/Ripasso
+function setMode(mode, clickedElement = null) {
+    console.log(`🔄 Cambio modalità: ${mode}`);
+    
+    // Aggiorna pulsanti modalità
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    if (clickedElement) {
+        clickedElement.classList.add('active');
+    } else {
+        const targetBtn = document.querySelector(`[onclick*="${mode}"]`);
+        if (targetBtn) targetBtn.classList.add('active');
+    }
+    
+    const contentArea = document.querySelector('.content-area');
+    const heroHeader = document.getElementById('heroHeader');
+    
+    if (mode === 'learn') {
+        // Modalità Apprendi - mostra contenuti normali
+        if (heroHeader) heroHeader.style.display = 'block';
+        
+        // Nascondi modalità speciali
+        hideSpecialModes();
+        
+        // Mostra capitolo corrente
+        const activeChapter = document.querySelector('.chapter-content.active') || document.getElementById('prologo');
+        if (activeChapter) {
+            activeChapter.style.display = 'block';
+        }
+        
+    } else if (mode === 'practice') {
+        // Modalità Pratica
+        if (heroHeader) heroHeader.style.display = 'none';
+        hideSpecialModes();
+        showPracticeMode();
+        
+    } else if (mode === 'review') {
+        // Modalità Ripasso
+        if (heroHeader) heroHeader.style.display = 'none';
+        hideSpecialModes();
+        showReviewMode();
+    }
+    
+    console.log(`✅ Modalità ${mode} attivata`);
+}
+
+function hideSpecialModes() {
+    // Nascondi tutti i contenuti capitoli
+    document.querySelectorAll('.chapter-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    // Rimuovi modalità practice/review se esistenti
+    const practiceMode = document.getElementById('practiceMode');
+    const reviewMode = document.getElementById('reviewMode');
+    if (practiceMode) practiceMode.remove();
+    if (reviewMode) reviewMode.remove();
+}
+
+function showPracticeMode() {
+    const contentArea = document.querySelector('.content-area');
+    if (!contentArea) return;
+    
+    const practiceHTML = `
+        <div id="practiceMode" class="mode-content">
+            <div style="padding: 40px; text-align: center;">
+                <h2>🏋️ Modalità Pratica</h2>
+                <p>Esercizi interattivi di Programmazione Dinamica</p>
+                
+                <div class="practice-mode-selector" style="margin-top: 30px;">
+                    <h3>Scegli il tipo di pratica:</h3>
+                    <div class="practice-options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                        
+                        <div class="practice-option" style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s ease;" onclick="startPractice('mixed')">
+                            <h4>🔀 Pratica Mista</h4>
+                            <p>Problemi di diversi capitoli mescolati</p>
+                        </div>
+                        
+                        <div class="practice-option" style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s ease;" onclick="startPractice('focused')">
+                            <h4>🎯 Pratica Focalizzata</h4>
+                            <p>Concentrati su un argomento specifico</p>
+                        </div>
+                        
+                        <div class="practice-option" style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s ease;" onclick="startPractice('adaptive')">
+                            <h4>🧠 Pratica Adattiva</h4>
+                            <p>Difficoltà basata sulle tue performance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    contentArea.innerHTML = practiceHTML;
+}
+
+function showReviewMode() {
+    const contentArea = document.querySelector('.content-area');
+    if (!contentArea) return;
+    
+    const reviewHTML = `
+        <div id="reviewMode" class="mode-content">
+            <div style="padding: 40px;">
+                <h2>📊 Modalità Ripasso</h2>
+                <p>Dashboard metacognitivo e spaced repetition</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px;">
+                    
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h3>📈 Progresso Generale</h3>
+                        <div style="background: #f3f4f6; border-radius: 8px; height: 20px; margin: 10px 0;">
+                            <div class="progress-bar" style="height: 100%; border-radius: 8px; background: #10b981;"></div>
+                        </div>
+                        <p>Quiz completati: <span class="progress-label">0%</span></p>
+                    </div>
+                    
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h3>🎯 Aree di Miglioramento</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin: 10px 0;">• Fibonacci avanzato</li>
+                            <li style="margin: 10px 0;">• Ottimizzazione spazio</li>
+                            <li style="margin: 10px 0;">• Pattern recognition</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h3>⏰ Tempo di Studio</h3>
+                        <p style="font-size: 24px; font-weight: bold; color: #3b82f6;">25 min</p>
+                        <p>Sessione corrente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    contentArea.innerHTML = reviewHTML;
+}
+
+function startPractice(type) {
+    showNotification(`🎯 Avvio pratica ${type}...`, 'info');
+    // Qui andrebbe implementata la logica specifica per ogni tipo
+}
+
+// Esponi funzioni globalmente
+window.loadChapter = loadChapter;
+window.setMode = setMode;
+
 // ===== INIZIALIZZAZIONE AL CARICAMENTO =====
 window.addEventListener("DOMContentLoaded", () => {
     console.log("🚀 Inizializzazione piattaforma DP...");
@@ -282,6 +464,9 @@ window.addEventListener("DOMContentLoaded", () => {
     
     // Aggiorna progresso iniziale
     updateProgress();
+    
+    // Inizializza modalità learn di default
+    setMode('learn');
     
     // Aggiungi CSS per scroll margin
     if (!document.getElementById("scroll-fix-style")) {
