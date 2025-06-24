@@ -218,29 +218,51 @@ function handleLoadingScreen() {
     const loader = document.getElementById("loadingOverlay");
     if (!loader) return;
     
-    // Nascondi dopo 3 secondi se Skulpt è caricato
+    console.log("🔄 Inizializzazione loading screen...");
+    
+    // Timer 1: Controlla Skulpt dopo 2 secondi
     setTimeout(() => {
         if (window.Sk) {
-            loader.style.display = "none";
             console.log("✅ Skulpt caricato con successo");
-        } else {
-            // Mostra messaggio di errore
-            const loadingContent = loader.querySelector(".loading-content");
-            if (loadingContent) {
-                loadingContent.innerHTML = `
-                    <div style="text-align: center; padding: 20px;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f59e0b;"></i>
-                        <h3>⚠️ Impossibile inizializzare l'ambiente Python</h3>
-                        <p>Ricarica la pagina o controlla la connessione</p>
-                        <button onclick="location.reload()" class="btn btn-warning">
-                            <i class="fas fa-redo"></i> Ricarica
-                        </button>
-                    </div>
-                `;
-            }
+            loader.style.display = "none";
+            return;
         }
-    }, 3000);
+        console.log("⚠️ Skulpt non ancora caricato, continuo...");
+    }, 2000);
+    
+    // Timer 2: Nascondi il loading dopo 4 secondi comunque
+    setTimeout(() => {
+        if (window.Sk) {
+            console.log("✅ Skulpt caricato con successo (ritardato)");
+        } else {
+            console.log("⚠️ Skulpt non caricato - continuo senza Python runner");
+            showNotification("⚠️ Ambiente Python non disponibile - alcune funzionalità saranno limitate", "warning");
+        }
+        loader.style.display = "none";
+        console.log("✅ Loading screen rimosso");
+    }, 4000);
+    
+    // Timer 3: Fallback assoluto dopo 6 secondi
+    setTimeout(() => {
+        if (loader.style.display !== "none") {
+            console.log("🚨 Fallback: forzo rimozione loading screen");
+            loader.style.display = "none";
+        }
+    }, 6000);
 }
+
+// Funzione per saltare forzatamente il loading
+function forceSkipLoading() {
+    console.log("🚀 Utente ha forzato il skip del loading");
+    const loader = document.getElementById("loadingOverlay");
+    if (loader) {
+        loader.style.display = "none";
+        showNotification("✅ Piattaforma caricata manualmente", "success");
+    }
+}
+
+// Esponi la funzione globalmente
+window.forceSkipLoading = forceSkipLoading;
 
 // ===== UTILITY: NOTIFICHE =====
 function showNotification(message, type = "info") {
@@ -2457,6 +2479,16 @@ window.revealStep = revealStep;
 // ===== INIZIALIZZAZIONE AL CARICAMENTO =====
 window.addEventListener("DOMContentLoaded", () => {
     console.log("🚀 Inizializzazione piattaforma DP...");
+    
+    // FALLBACK IMMEDIATO: Nascondi loading dopo 8 secondi assolutamente
+    setTimeout(() => {
+        const loader = document.getElementById("loadingOverlay");
+        if (loader && loader.style.display !== "none") {
+            console.log("🚨 FALLBACK CRITICO: Rimuovo loading screen dopo 8 secondi");
+            loader.style.display = "none";
+            showNotification("✅ Piattaforma caricata - alcune funzionalità potrebbero essere limitate", "info");
+        }
+    }, 8000);
     
     // Applica tema salvato
     applyStoredTheme();
