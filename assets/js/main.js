@@ -1,37 +1,22 @@
 // 🚀 Main.js - Funzionalità essenziali per la piattaforma DP
 // Sostituisce Pyodide con Skulpt (più leggero) e implementa tutte le interazioni mancanti
 
-// EMERGENCY FIX: Nascondi loading overlay ASAP
+// SIMPLE FIX: Nascondi loading overlay una volta sola
 (function() {
-    const hideLoadingImmediately = () => {
+    const hideLoadingOnce = () => {
         const loader = document.getElementById("loadingOverlay");
         if (loader) {
-            loader.style.display = "none !important";
-            loader.style.visibility = "hidden !important";
-            loader.style.opacity = "0 !important";
-            loader.style.zIndex = "-9999 !important";
-            console.log("⚡ EMERGENCY FIX: Loading nascosto immediatamente");
+            loader.style.display = "none";
+            console.log("⚡ Loading overlay nascosto");
         }
     };
     
-    // Esegui appena il DOM è disponibile
+    // Esegui quando il DOM è pronto
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", hideLoadingImmediately);
+        document.addEventListener("DOMContentLoaded", hideLoadingOnce);
     } else {
-        hideLoadingImmediately();
+        hideLoadingOnce();
     }
-    
-    // Anche come fallback ogni 100ms fino a che non funziona
-    const interval = setInterval(() => {
-        hideLoadingImmediately();
-        const loader = document.getElementById("loadingOverlay");
-        if (!loader || loader.style.display === "none") {
-            clearInterval(interval);
-        }
-    }, 100);
-    
-    // Stop interval dopo 10 secondi max
-    setTimeout(() => clearInterval(interval), 10000);
 })();
 
 // ===== 1. RUNNER PYTHON CON SKULPT =====
@@ -1792,7 +1777,6 @@ function updateLCSVisualization() {
             ${path.reverse().map(p => `<span class="match-highlight">${p.char} (${p.i+1},${p.j+1})</span>`).join(' → ')}
         </div>
     `;
-    }
 }
 
 // Visualizzazione Fibonacci interattiva
@@ -2497,14 +2481,11 @@ window.revealStep = revealStep;
 window.addEventListener("DOMContentLoaded", () => {
     console.log("🚀 Inizializzazione piattaforma DP...");
     
-    // SUPER FIX: Forza nascondimento immediato
+    // Verifica che il loading sia nascosto
     const loader = document.getElementById("loadingOverlay");
     if (loader) {
         loader.style.display = "none";
-        loader.style.visibility = "hidden";
-        loader.style.opacity = "0";
-        loader.style.zIndex = "-1";
-        console.log("🚨 SUPER FIX: Loading overlay forzatamente nascosto");
+        console.log("✅ Loading overlay verificato come nascosto");
     }
     
     // Gestisci loading screen immediatamente
