@@ -54,6 +54,9 @@
                     <button class="mode-btn" onclick="setMode('review', this)">
                         <i class="fas fa-history"></i> Ripasso
                     </button>
+                    <button class="mode-btn professional-mode" onclick="setMode('professional', this)">
+                        <i class="fas fa-trophy"></i> Professionali
+                    </button>
                 </div>
             </div>
             
@@ -150,6 +153,24 @@
 
             <!-- Content Area -->
             <main class="content-area">
+                <!-- Professional Mode Content -->
+                <div id="professionalMode" class="mode-content" style="display: none;">
+                    <div class="professional-header">
+                        <h2>🏆 Pattern Professionali di Programmazione Dinamica</h2>
+                        <p class="professional-subtitle">
+                            Dominare i 20 pattern fondamentali con visualizzazioni interattive, 
+                            spiegazioni approfondite ed esercizi reali da colloqui tecnici.
+                        </p>
+                    </div>
+                    
+                    <div id="professional-pattern-menu">
+                        <!-- Pattern professionali verranno caricati qui dinamicamente -->
+                        <div class="loading-professional">
+                            <i class="fas fa-spinner fa-spin"></i> Caricamento pattern professionali...
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Learn Mode Content -->
                 <div id="learnMode" class="mode-content">
                     <!-- Prologo -->
@@ -2158,6 +2179,20 @@ dp = [0] * len(valori_unici)
         <button class="btn btn-info" style="margin-top: 20px; width: 100%;" onclick="closeShortcuts()">
             Chiudi
         </button>
+    </div>
+
+    <!-- Professional Exercises Modals -->
+    <div id="professional-exercise-modal" class="modal" style="display: none;">
+        <!-- Pattern exercises list modal content will be dynamically generated -->
+    </div>
+
+    <div id="professional-code-modal" class="modal" style="display: none;">
+        <!-- Individual exercise code modal content will be dynamically generated -->
+    </div>
+
+    <!-- Professional Pattern Menu Section -->
+    <div id="professional-pattern-menu" style="display: none;">
+        <!-- Professional patterns will be loaded here by JavaScript -->
     </div>
 
     <!-- Notification Container -->

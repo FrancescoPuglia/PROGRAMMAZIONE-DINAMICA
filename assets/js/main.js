@@ -341,6 +341,12 @@ function setMode(mode, clickedElement = null) {
         if (heroHeader) heroHeader.style.display = 'none';
         hideSpecialModes();
         showReviewMode();
+        
+    } else if (mode === 'professional') {
+        // Modalità Professionale
+        if (heroHeader) heroHeader.style.display = 'none';
+        hideSpecialModes();
+        showProfessionalMode();
     }
     
     console.log(`✅ Modalità ${mode} attivata`);
@@ -352,7 +358,12 @@ function hideSpecialModes() {
         content.style.display = 'none';
     });
     
-    // Rimuovi modalità practice/review se esistenti
+    // Nascondi tutte le modalità
+    document.querySelectorAll('.mode-content').forEach(mode => {
+        mode.style.display = 'none';
+    });
+    
+    // Rimuovi modalità dinamiche se esistenti
     const practiceMode = document.getElementById('practiceMode');
     const reviewMode = document.getElementById('reviewMode');
     if (practiceMode) practiceMode.remove();
@@ -394,6 +405,24 @@ function showPracticeMode() {
     `;
     
     contentArea.innerHTML = practiceHTML;
+}
+
+function showProfessionalMode() {
+    console.log('🏆 Attivando modalità professionale...');
+    
+    // Mostra la modalità professionale
+    const professionalMode = document.getElementById('professionalMode');
+    if (professionalMode) {
+        professionalMode.style.display = 'block';
+        
+        // Mostra il menu dei pattern se è stato nascosto
+        const patternMenu = document.getElementById('professional-pattern-menu');
+        if (patternMenu) {
+            patternMenu.style.display = 'block';
+        }
+    }
+    
+    console.log('✅ Modalità professionale attiva');
 }
 
 function showReviewMode() {
@@ -444,14 +473,14 @@ let exercisesData = null;
 let currentExercise = null;
 let exerciseProgress = JSON.parse(localStorage.getItem('exerciseProgress') || '{}');
 
-// Carica esercizi da JSON
+// Carica esercizi professionali da JSON
 async function loadExercises() {
     try {
-        const response = await fetch('assets/data/exercises.json');
+        const response = await fetch('assets/data/professional_exercises.json');
         exercisesData = await response.json();
-        console.log('✅ Esercizi caricati:', exercisesData);
+        console.log('✅ Esercizi professionali caricati:', exercisesData);
     } catch (error) {
-        console.error('❌ Errore caricamento esercizi:', error);
+        console.error('❌ Errore caricamento esercizi professionali:', error);
         // Fallback: carica esercizi hardcoded
         exercisesData = getHardcodedExercises();
     }
@@ -776,6 +805,1223 @@ function showSolution() {
 window.openExercise = openExercise;
 window.resetExercise = resetExercise;
 window.showSolution = showSolution;
+
+// ===== 12.1 PROFESSIONAL EXERCISES =====
+let professionalExercises = {};
+let currentProfessionalExercise = null;
+
+// Carica esercizi professionali
+async function loadProfessionalExercises() {
+    try {
+        const response = await fetch('assets/data/professional_exercises.json');
+        professionalExercises = await response.json();
+        console.log('✅ Esercizi professionali caricati:', Object.keys(professionalExercises).length, 'pattern');
+        
+        // Genera menu pattern professionali
+        generateProfessionalPatternMenu();
+    } catch (error) {
+        console.error('❌ Errore caricamento esercizi professionali:', error);
+        showNotification('⚠️ Errore nel caricamento degli esercizi professionali', 'error');
+    }
+}
+
+// Genera menu pattern professionali
+function generateProfessionalPatternMenu() {
+    const menu = document.getElementById('professional-pattern-menu');
+    if (!menu) return;
+    
+    let menuHTML = '<h3>🏆 Pattern Professionali</h3><div class="pattern-grid">';
+    
+    Object.entries(professionalExercises).forEach(([patternId, pattern], index) => {
+        const difficultyColors = {1: '#10b981', 2: '#f59e0b', 3: '#ef4444'};
+        const avgDifficulty = Math.round(
+            pattern.exercises.reduce((sum, ex) => sum + ex.difficulty, 0) / pattern.exercises.length
+        );
+        
+        menuHTML += `
+            <div class="pattern-card" style="border-left: 4px solid ${difficultyColors[avgDifficulty]};">
+                <h4>${pattern.title}</h4>
+                <p class="pattern-description">${pattern.description}</p>
+                <div class="pattern-stats">
+                    <span class="exercise-count">${pattern.exercises.length} esercizi</span>
+                    <span class="difficulty-badge" style="background: ${difficultyColors[avgDifficulty]};">
+                        ${avgDifficulty === 1 ? 'Facile' : avgDifficulty === 2 ? 'Medio' : 'Difficile'}
+                    </span>
+                </div>
+                <div class="pattern-actions">
+                    <button onclick="openProfessionalPattern('${patternId}')" class="btn-exercises">🏋️ Esercizi</button>
+                    ${addVisualizationButton(patternId)}
+                </div>
+            </div>
+        `;
+    });
+    
+    menuHTML += '</div>';
+    menu.innerHTML = menuHTML;
+}
+
+// Apri pattern professionale
+function openProfessionalPattern(patternId) {
+    const pattern = professionalExercises[patternId];
+    if (!pattern) return;
+    
+    const modal = document.getElementById('professional-exercise-modal');
+    if (!modal) return;
+    
+    let modalHTML = `
+        <div class="modal-content">
+            <span class="close" onclick="closeProfessionalModal()">&times;</span>
+            <h2>${pattern.title}</h2>
+            <p class="pattern-description">${pattern.description}</p>
+            
+            <div class="exercises-list">
+    `;
+    
+    pattern.exercises.forEach((exercise, index) => {
+        const difficultyColor = {1: '#10b981', 2: '#f59e0b', 3: '#ef4444'}[exercise.difficulty];
+        modalHTML += `
+            <div class="exercise-item" onclick="openProfessionalExercise('${patternId}', ${index})">
+                <div class="exercise-header">
+                    <h4>${exercise.title}</h4>
+                    <span class="difficulty" style="background: ${difficultyColor};">
+                        Livello ${exercise.difficulty}
+                    </span>
+                </div>
+                <p>${exercise.statement}</p>
+                <div class="exercise-meta">
+                    <span>🧪 ${exercise.tests.length} test</span>
+                    <span>⏱️ ${exercise.time_complexity}</span>
+                    <span>💾 ${exercise.space_complexity}</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    modalHTML += `
+            </div>
+        </div>
+    `;
+    
+    modal.innerHTML = modalHTML;
+    modal.style.display = 'block';
+}
+
+// Apri esercizio professionale
+function openProfessionalExercise(patternId, exerciseIndex) {
+    const exercise = professionalExercises[patternId].exercises[exerciseIndex];
+    if (!exercise) return;
+    
+    currentProfessionalExercise = exercise;
+    
+    // Chiudi modal pattern
+    closeProfessionalModal();
+    
+    // Apri modal esercizio
+    const modal = document.getElementById('professional-code-modal');
+    if (!modal) return;
+    
+    const modalHTML = `
+        <div class="modal-content professional-modal">
+            <span class="close" onclick="closeProfessionalCodeModal()">&times;</span>
+            
+            <div class="exercise-header">
+                <h2>${exercise.title}</h2>
+                <div class="exercise-badges">
+                    <span class="difficulty-badge diff-${exercise.difficulty}">Livello ${exercise.difficulty}</span>
+                    <span class="complexity-badge">⏱️ ${exercise.time_complexity}</span>
+                    <span class="complexity-badge">💾 ${exercise.space_complexity}</span>
+                </div>
+            </div>
+            
+            <div class="exercise-content">
+                <div class="problem-section">
+                    <h3>📋 Problema</h3>
+                    <p>${exercise.statement}</p>
+                    
+                    <h4>💡 Spiegazione</h4>
+                    <p class="explanation">${exercise.explanation}</p>
+                    
+                    <h4>🔍 Hint</h4>
+                    <p class="hint">${exercise.hint}</p>
+                </div>
+                
+                <div class="code-section">
+                    <div class="code-controls">
+                        <button onclick="runProfessionalTests()" class="btn-primary">🧪 Esegui Test</button>
+                        <button onclick="resetProfessionalCode()" class="btn-secondary">🔄 Reset</button>
+                        <button onclick="showProfessionalSolution()" class="btn-warning">💡 Soluzione</button>
+                        <button onclick="showOptimizedSolution()" class="btn-info">⚡ Soluzione Ottimizzata</button>
+                    </div>
+                    
+                    <div class="code-editor">
+                        <textarea id="professional-code" placeholder="Il tuo codice qui...">${exercise.template}</textarea>
+                    </div>
+                    
+                    <div class="output-section">
+                        <h4>📊 Risultati Test</h4>
+                        <div id="professional-test-results">Clicca "Esegui Test" per vedere i risultati...</div>
+                        <div id="professional-score" class="score-display"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.innerHTML = modalHTML;
+    modal.style.display = 'block';
+}
+
+// Esegui test professionali
+async function runProfessionalTests() {
+    if (!currentProfessionalExercise) return;
+    
+    const code = document.getElementById('professional-code').value;
+    const resultsDiv = document.getElementById('professional-test-results');
+    const scoreDiv = document.getElementById('professional-score');
+    
+    if (!code.trim()) {
+        resultsDiv.innerHTML = '⚠️ Inserisci del codice prima di eseguire i test!';
+        return;
+    }
+    
+    resultsDiv.innerHTML = '🔄 Esecuzione test in corso...';
+    
+    let passedTests = 0;
+    let totalTests = currentProfessionalExercise.tests.length;
+    let testResults = [];
+    
+    for (const [index, test] of currentProfessionalExercise.tests.entries()) {
+        try {
+            // Crea codice di test
+            const testCode = `
+${code}
+
+# Test ${index + 1}
+try:
+    result = eval('${currentProfessionalExercise.id.split('_').map(word => word[0].toUpperCase() + word.slice(1)).join('')}(${test.input})')
+    print(f"Test ${index + 1}: {result}")
+except Exception as e:
+    print(f"Test ${index + 1} ERRORE: {e}")
+`;
+            
+            // Esegui con Skulpt
+            const output = await runSkulptCode(testCode);
+            const resultLine = output.split('\n').find(line => line.includes(`Test ${index + 1}:`));
+            
+            if (resultLine) {
+                const actualResult = resultLine.split(': ')[1];
+                const expected = test.expected;
+                const passed = actualResult === expected;
+                
+                if (passed) passedTests++;
+                
+                testResults.push({
+                    index: index + 1,
+                    input: test.input,
+                    expected: expected,
+                    actual: actualResult,
+                    passed: passed,
+                    explanation: test.explanation
+                });
+            }
+        } catch (error) {
+            testResults.push({
+                index: index + 1,
+                input: test.input,
+                expected: test.expected,
+                actual: 'ERRORE',
+                passed: false,
+                explanation: test.explanation,
+                error: error.toString()
+            });
+        }
+    }
+    
+    // Calcola percentuale
+    const percentage = Math.round((passedTests / totalTests) * 100);
+    
+    // Mostra risultati
+    let resultsHTML = '<div class="test-results">';
+    
+    testResults.forEach(result => {
+        const statusIcon = result.passed ? '✅' : '❌';
+        const statusClass = result.passed ? 'test-passed' : 'test-failed';
+        
+        resultsHTML += `
+            <div class="test-result ${statusClass}">
+                <div class="test-header">
+                    ${statusIcon} <strong>Test ${result.index}</strong>
+                    <span class="test-explanation">${result.explanation}</span>
+                </div>
+                <div class="test-details">
+                    <div><strong>Input:</strong> <code>${result.input}</code></div>
+                    <div><strong>Atteso:</strong> <code>${result.expected}</code></div>
+                    <div><strong>Risultato:</strong> <code>${result.actual}</code></div>
+                    ${result.error ? `<div class="error"><strong>Errore:</strong> ${result.error}</div>` : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    resultsHTML += '</div>';
+    resultsDiv.innerHTML = resultsHTML;
+    
+    // Mostra score
+    const scoreClass = percentage >= 80 ? 'score-excellent' : percentage >= 60 ? 'score-good' : percentage >= 40 ? 'score-fair' : 'score-poor';
+    scoreDiv.innerHTML = `
+        <div class="score-badge ${scoreClass}">
+            <span class="score-percentage">${percentage}%</span>
+            <span class="score-text">${passedTests}/${totalTests} test superati</span>
+        </div>
+    `;
+    
+    // Mostra notifica
+    if (percentage === 100) {
+        showNotification('🎉 Perfetto! Tutti i test superati!', 'success');
+    } else if (percentage >= 80) {
+        showNotification('👍 Ottimo lavoro! Quasi tutti i test superati!', 'success');
+    } else if (percentage >= 60) {
+        showNotification('📈 Buon lavoro! Continua così!', 'warning');
+    } else {
+        showNotification('💪 Continua a provare! Studia gli errori!', 'warning');
+    }
+}
+
+// Helper per eseguire codice Skulpt
+function runSkulptCode(code) {
+    return new Promise((resolve, reject) => {
+        let output = '';
+        
+        Sk.configure({ 
+            output: (txt) => {
+                output += txt;
+            }
+        });
+        
+        Sk.misceval.asyncToPromise(() =>
+            Sk.importMainWithBody("<stdin>", false, code, true)
+        ).then(() => {
+            resolve(output);
+        }).catch(err => {
+            reject(err);
+        });
+    });
+}
+
+// Reset codice professionale
+function resetProfessionalCode() {
+    if (currentProfessionalExercise) {
+        document.getElementById('professional-code').value = currentProfessionalExercise.template;
+        document.getElementById('professional-test-results').innerHTML = 'Clicca "Esegui Test" per vedere i risultati...';
+        document.getElementById('professional-score').innerHTML = '';
+        showNotification('🔄 Codice resettato', 'info');
+    }
+}
+
+// Mostra soluzione professionale
+function showProfessionalSolution() {
+    if (currentProfessionalExercise && currentProfessionalExercise.solution) {
+        const confirmShow = confirm('Sei sicuro di voler vedere la soluzione? Prova ancora prima!');
+        if (confirmShow) {
+            document.getElementById('professional-code').value = currentProfessionalExercise.solution;
+            showNotification('💡 Soluzione base mostrata', 'warning');
+        }
+    }
+}
+
+// Mostra soluzione ottimizzata
+function showOptimizedSolution() {
+    if (currentProfessionalExercise && currentProfessionalExercise.optimized_solution) {
+        const confirmShow = confirm('Vuoi vedere la versione ottimizzata? È consigliabile prima risolvere il problema base!');
+        if (confirmShow) {
+            document.getElementById('professional-code').value = currentProfessionalExercise.optimized_solution;
+            showNotification('⚡ Soluzione ottimizzata mostrata', 'info');
+        }
+    }
+}
+
+// Chiudi modal pattern
+function closeProfessionalModal() {
+    const modal = document.getElementById('professional-exercise-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Chiudi modal codice
+function closeProfessionalCodeModal() {
+    const modal = document.getElementById('professional-code-modal');
+    if (modal) modal.style.display = 'none';
+    currentProfessionalExercise = null;
+}
+
+// Funzioni globali
+window.openProfessionalPattern = openProfessionalPattern;
+window.openProfessionalExercise = openProfessionalExercise;
+window.runProfessionalTests = runProfessionalTests;
+window.resetProfessionalCode = resetProfessionalCode;
+window.showProfessionalSolution = showProfessionalSolution;
+window.showOptimizedSolution = showOptimizedSolution;
+window.closeProfessionalModal = closeProfessionalModal;
+window.closeProfessionalCodeModal = closeProfessionalCodeModal;
+
+// ===== 12.2 ADVANCED PATTERN VISUALIZATIONS =====
+
+// Mappa delle visualizzazioni per ogni pattern
+const patternVisualizations = {
+    "fibonacci_pattern": {
+        title: "🔢 Pattern Fibonacci Visualizzato",
+        explanation: `
+            <h3>🧠 Logica Profonda del Pattern Fibonacci</h3>
+            <p><strong>Principio Fondamentale:</strong> Ogni stato dipende esattamente dai due stati precedenti.</p>
+            
+            <div class="concept-box">
+                <h4>💡 Perché Funziona?</h4>
+                <p>Il pattern Fibonacci cattura l'essenza della <em>sovrapposizione di sottoproblemi</em>:</p>
+                <ul>
+                    <li><strong>Stato:</strong> F(n) = "risultato per il problema di dimensione n"</li>
+                    <li><strong>Relazione:</strong> F(n) = F(n-1) + F(n-2)</li>
+                    <li><strong>Ottimizzazione:</strong> Da O(2^n) a O(n) eliminando calcoli ripetuti</li>
+                </ul>
+            </div>
+            
+            <div class="insight-box">
+                <h4>🎯 Quando Usarlo?</h4>
+                <p>Riconosci questo pattern quando:</p>
+                <ul>
+                    <li>Il problema può essere scomposto in due sottoproblemi più piccoli</li>
+                    <li>La soluzione combina linearmente i risultati precedenti</li>
+                    <li>Esempi: scale, percorsi, sequenze di decisioni binarie</li>
+                </ul>
+            </div>
+        `,
+        interactive: true
+    },
+    
+    "kadane_algorithm": {
+        title: "🎯 Kadane's Algorithm Visualizzato",
+        explanation: `
+            <h3>🧠 La Genialità di Kadane</h3>
+            <p><strong>Insight Chiave:</strong> In ogni posizione, decidi se "iniziare da capo" o "continuare la sequenza".</p>
+            
+            <div class="concept-box">
+                <h4>💡 Perché È Così Elegante?</h4>
+                <p>Kadane trasforma un problema O(n²) in O(n) con una semplice osservazione:</p>
+                <ul>
+                    <li><strong>Stato:</strong> max_ending_here = "migliore somma terminante qui"</li>
+                    <li><strong>Decisione:</strong> Estendere subarray esistente VS iniziare nuovo</li>
+                    <li><strong>Invariante:</strong> Mantieni sempre il massimo globale visto finora</li>
+                </ul>
+            </div>
+            
+            <div class="insight-box">
+                <h4>🔍 Intuizione Profonda</h4>
+                <p>L'algoritmo "dimentica" automaticamente i prefissi negativi:</p>
+                <ul>
+                    <li>Se max_ending_here < 0, ripartire è sempre migliore</li>
+                    <li>Questo elimina la necessità di considerare tutti i possibili start/end</li>
+                    <li>Risultato: una scansione lineare risolve completamente il problema</li>
+                </ul>
+            </div>
+        `,
+        interactive: true
+    },
+
+    "knapsack_pattern": {
+        title: "🎒 0/1 Knapsack Visualizzato", 
+        explanation: `
+            <h3>🧠 La Strategia del Knapsack</h3>
+            <p><strong>Decisione Binaria:</strong> Per ogni oggetto, hai esattamente due scelte: prenderlo o lasciarlo.</p>
+            
+            <div class="concept-box">
+                <h4>💡 Perché Funziona la Tabella DP?</h4>
+                <p>dp[i][w] codifica la risposta al sottoproblema perfettamente definito:</p>
+                <ul>
+                    <li><strong>Stato:</strong> "Migliore valore con primi i oggetti e capacità w"</li>
+                    <li><strong>Transizione:</strong> max(prendi oggetto i, non prenderlo)</li>
+                    <li><strong>Dimensionalità:</strong> 2D perché servono due parametri per definire il sottoproblema</li>
+                </ul>
+            </div>
+            
+            <div class="insight-box">
+                <h4>🎯 Ottimizzazioni Avanzate</h4>
+                <ul>
+                    <li><strong>Spazio O(W):</strong> Serve solo la riga precedente</li>
+                    <li><strong>Backward iteration:</strong> Evita sovrascritture premature</li>
+                    <li><strong>Pruning:</strong> Se peso > capacità, skippa</li>
+                </ul>
+            </div>
+        `,
+        interactive: true
+    },
+
+    "unbounded_knapsack": {
+        title: "🔄 Unbounded Knapsack Visualizzato",
+        explanation: `
+            <h3>🧠 Infinita Disponibilità</h3>
+            <p><strong>Differenza Chiave:</strong> Puoi usare ogni oggetto infinite volte!</p>
+            
+            <div class="concept-box">
+                <h4>💡 Come Cambia la Logica?</h4>
+                <ul>
+                    <li><strong>0/1 Knapsack:</strong> dp[i][w] = considera oggetti 1..i</li>
+                    <li><strong>Unbounded:</strong> dp[w] = migliore valore per capacità w</li>
+                    <li><strong>Transizione:</strong> Per ogni oggetto, prova ad aggiungerlo se possibile</li>
+                </ul>
+            </div>
+            
+            <div class="insight-box">
+                <h4>🔍 Esempi di Applicazione</h4>
+                <ul>
+                    <li><strong>Coin Change:</strong> Infinite monete di ogni tipo</li>
+                    <li><strong>Perfect Squares:</strong> Infinite copie di ogni quadrato perfetto</li>
+                    <li><strong>Rod Cutting:</strong> Tagli infiniti della stessa lunghezza</li>
+                </ul>
+            </div>
+        `,
+        interactive: true
+    },
+
+    "lcs_pattern": {
+        title: "📝 Longest Common Subsequence Visualizzato",
+        explanation: `
+            <h3>🧠 L'Arte dell'Allineamento</h3>
+            <p><strong>Principio:</strong> Allinea due sequenze trovando la migliore corrispondenza di elementi.</p>
+            
+            <div class="concept-box">
+                <h4>💡 Perché 2D?</h4>
+                <p>Servono due "puntatori" per tracciare il progresso in entrambe le stringhe:</p>
+                <ul>
+                    <li><strong>dp[i][j]:</strong> LCS di str1[0..i-1] e str2[0..j-1]</li>
+                    <li><strong>Match:</strong> Se caratteri uguali, estendi LCS precedente</li>
+                    <li><strong>Mismatch:</strong> Prendi il meglio saltando un carattere</li>
+                </ul>
+            </div>
+            
+            <div class="insight-box">
+                <h4>🎯 Varianti Potenti</h4>
+                <ul>
+                    <li><strong>Edit Distance:</strong> Conta operazioni anziché lunghezza</li>
+                    <li><strong>Longest Palindromic Subsequence:</strong> LCS(s, reverse(s))</li>
+                    <li><strong>Shortest Common Supersequence:</strong> Combina invece di trovare comune</li>
+                </ul>
+            </div>
+        `,
+        interactive: true
+    }
+};
+
+// Visualizza pattern DP con spiegazione approfondita
+function visualizePattern(patternId) {
+    const pattern = patternVisualizations[patternId];
+    if (!pattern) {
+        console.warn('Pattern visualization not found:', patternId);
+        return;
+    }
+    
+    // Crea modal per visualizzazione
+    const modal = document.createElement('div');
+    modal.className = 'modal pattern-visualization-modal';
+    modal.style.display = 'block';
+    
+    modal.innerHTML = `
+        <div class="modal-content pattern-viz-content">
+            <span class="close" onclick="closePatternVisualization()">&times;</span>
+            
+            <div class="pattern-header">
+                <h2>${pattern.title}</h2>
+            </div>
+            
+            <div class="pattern-content">
+                <div class="explanation-section">
+                    ${pattern.explanation}
+                </div>
+                
+                <div class="visualization-section">
+                    <div id="pattern-visualization-${patternId}" class="pattern-viz-container">
+                        <!-- La visualizzazione interattiva verrà inserita qui -->
+                    </div>
+                    
+                    <div class="controls-section">
+                        <button onclick="startPatternAnimation('${patternId}')" class="btn-primary">
+                            ▶️ Avvia Animazione
+                        </button>
+                        <button onclick="stepPatternAnimation('${patternId}')" class="btn-secondary">
+                            ⏭️ Step by Step
+                        </button>
+                        <button onclick="resetPatternAnimation('${patternId}')" class="btn-warning">
+                            🔄 Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Inizializza la visualizzazione specifica
+    setTimeout(() => initializePatternVisualization(patternId), 100);
+}
+
+// Inizializza visualizzazione per pattern specifico
+function initializePatternVisualization(patternId) {
+    const container = document.getElementById(`pattern-visualization-${patternId}`);
+    if (!container) return;
+    
+    switch(patternId) {
+        case 'fibonacci_pattern':
+            createFibonacciVisualization(container);
+            break;
+        case 'kadane_algorithm':
+            createKadaneVisualization(container);
+            break;
+        case 'knapsack_pattern':
+            createKnapsackVisualization(container);
+            break;
+        case 'unbounded_knapsack':
+            createUnboundedKnapsackVisualization(container);
+            break;
+        case 'lcs_pattern':
+            createLCSVisualization(container);
+            break;
+        default:
+            container.innerHTML = '<p>Visualizzazione in sviluppo per questo pattern...</p>';
+    }
+}
+
+// Visualizzazione Knapsack 0/1
+function createKnapsackVisualization(container) {
+    container.innerHTML = `
+        <div class="knapsack-viz">
+            <h3>🎒 Knapsack 0/1 Interattivo</h3>
+            <div class="input-section">
+                <div class="input-group">
+                    <label>Pesi: </label>
+                    <input type="text" id="knapsack-weights" value="2,1,3,2" placeholder="es: 2,1,3,2">
+                </div>
+                <div class="input-group">
+                    <label>Valori: </label>
+                    <input type="text" id="knapsack-values" value="12,10,20,15" placeholder="es: 12,10,20,15">
+                </div>
+                <div class="input-group">
+                    <label>Capacità: </label>
+                    <input type="number" id="knapsack-capacity" value="5" min="1" max="20">
+                </div>
+                <button onclick="updateKnapsackVisualization()">Risolvi</button>
+            </div>
+            <div class="knapsack-display">
+                <div class="items-section">
+                    <h4>📦 Oggetti Disponibili</h4>
+                    <div id="knapsack-items"></div>
+                </div>
+                <div class="dp-table-section">
+                    <h4>📊 Tabella DP</h4>
+                    <div id="knapsack-dp-table"></div>
+                </div>
+                <div class="solution-section">
+                    <h4>🎯 Soluzione Ottimale</h4>
+                    <div id="knapsack-solution"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    updateKnapsackVisualization();
+}
+
+function updateKnapsackVisualization() {
+    const weights = document.getElementById('knapsack-weights').value.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+    const values = document.getElementById('knapsack-values').value.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+    const capacity = parseInt(document.getElementById('knapsack-capacity').value) || 5;
+    
+    if (weights.length !== values.length || weights.length === 0) {
+        document.getElementById('knapsack-items').innerHTML = '<p class="error">⚠️ Pesi e valori devono avere la stessa lunghezza!</p>';
+        return;
+    }
+    
+    const n = weights.length;
+    
+    // Mostra oggetti
+    const itemsDiv = document.getElementById('knapsack-items');
+    itemsDiv.innerHTML = weights.map((w, i) => `
+        <div class="knapsack-item">
+            <div class="item-header">Oggetto ${i + 1}</div>
+            <div class="item-details">
+                <span class="weight">Peso: ${w}</span>
+                <span class="value">Valore: ${values[i]}</span>
+                <span class="ratio">Ratio: ${(values[i]/w).toFixed(2)}</span>
+            </div>
+        </div>
+    `).join('');
+    
+    // Risolvi con DP
+    const dp = Array(n + 1).fill().map(() => Array(capacity + 1).fill(0));
+    
+    for (let i = 1; i <= n; i++) {
+        for (let w = 0; w <= capacity; w++) {
+            if (weights[i-1] <= w) {
+                dp[i][w] = Math.max(
+                    dp[i-1][w], // non prende oggetto
+                    dp[i-1][w-weights[i-1]] + values[i-1] // prende oggetto
+                );
+            } else {
+                dp[i][w] = dp[i-1][w];
+            }
+        }
+    }
+    
+    // Visualizza tabella DP
+    const tableDiv = document.getElementById('knapsack-dp-table');
+    let tableHTML = '<table class="dp-table"><thead><tr><th>i\\w</th>';
+    for (let w = 0; w <= capacity; w++) {
+        tableHTML += `<th>${w}</th>`;
+    }
+    tableHTML += '</tr></thead><tbody>';
+    
+    for (let i = 0; i <= n; i++) {
+        tableHTML += `<tr><th>${i}</th>`;
+        for (let w = 0; w <= capacity; w++) {
+            const cellClass = i > 0 && weights[i-1] <= w ? 'decision-cell' : 'base-cell';
+            tableHTML += `<td class="${cellClass}">${dp[i][w]}</td>`;
+        }
+        tableHTML += '</tr>';
+    }
+    tableHTML += '</tbody></table>';
+    tableDiv.innerHTML = tableHTML;
+    
+    // Traccia soluzione
+    const solution = [];
+    let i = n, w = capacity;
+    while (i > 0 && w > 0) {
+        if (dp[i][w] !== dp[i-1][w]) {
+            solution.push(i-1);
+            w -= weights[i-1];
+        }
+        i--;
+    }
+    
+    const solutionDiv = document.getElementById('knapsack-solution');
+    const totalWeight = solution.reduce((sum, idx) => sum + weights[idx], 0);
+    const totalValue = solution.reduce((sum, idx) => sum + values[idx], 0);
+    
+    solutionDiv.innerHTML = `
+        <div class="solution-summary">
+            <p><strong>Valore Massimo:</strong> ${totalValue}</p>
+            <p><strong>Peso Totale:</strong> ${totalWeight}/${capacity}</p>
+        </div>
+        <div class="selected-items">
+            <h5>Oggetti Selezionati:</h5>
+            ${solution.length > 0 ? 
+                solution.map(idx => `
+                    <div class="selected-item">
+                        Oggetto ${idx + 1}: Peso=${weights[idx]}, Valore=${values[idx]}
+                    </div>
+                `).join('') : 
+                '<p>Nessun oggetto selezionato</p>'
+            }
+        </div>
+    `;
+}
+
+// Visualizzazione Unbounded Knapsack
+function createUnboundedKnapsackVisualization(container) {
+    container.innerHTML = `
+        <div class="unbounded-knapsack-viz">
+            <h3>🔄 Unbounded Knapsack Interattivo</h3>
+            <div class="input-section">
+                <div class="input-group">
+                    <label>Pesi: </label>
+                    <input type="text" id="unbound-weights" value="1,3,4" placeholder="es: 1,3,4">
+                </div>
+                <div class="input-group">
+                    <label>Valori: </label>
+                    <input type="text" id="unbound-values" value="1,4,5" placeholder="es: 1,4,5">
+                </div>
+                <div class="input-group">
+                    <label>Capacità: </label>
+                    <input type="number" id="unbound-capacity" value="7" min="1" max="15">
+                </div>
+                <button onclick="updateUnboundedKnapsackVisualization()">Risolvi</button>
+            </div>
+            <div class="comparison-view">
+                <div class="bounded-column">
+                    <h4>🎒 0/1 Knapsack (limitato)</h4>
+                    <div id="bounded-result"></div>
+                </div>
+                <div class="unbounded-column">
+                    <h4>🔄 Unbounded (illimitato)</h4>
+                    <div id="unbounded-result"></div>
+                </div>
+            </div>
+            <div class="algorithm-steps">
+                <h4>⚙️ Passi dell'Algoritmo</h4>
+                <div id="algorithm-steps"></div>
+            </div>
+        </div>
+    `;
+    
+    updateUnboundedKnapsackVisualization();
+}
+
+function updateUnboundedKnapsackVisualization() {
+    const weights = document.getElementById('unbound-weights').value.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+    const values = document.getElementById('unbound-values').value.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+    const capacity = parseInt(document.getElementById('unbound-capacity').value) || 7;
+    
+    if (weights.length !== values.length || weights.length === 0) return;
+    
+    // Risolvi bounded
+    const dpBounded = Array(capacity + 1).fill(0);
+    for (let i = 0; i < weights.length; i++) {
+        for (let w = capacity; w >= weights[i]; w--) {
+            dpBounded[w] = Math.max(dpBounded[w], dpBounded[w - weights[i]] + values[i]);
+        }
+    }
+    
+    // Risolvi unbounded
+    const dpUnbounded = Array(capacity + 1).fill(0);
+    const steps = [];
+    
+    for (let w = 1; w <= capacity; w++) {
+        let best = 0;
+        let bestItem = -1;
+        
+        for (let i = 0; i < weights.length; i++) {
+            if (weights[i] <= w) {
+                const value = dpUnbounded[w - weights[i]] + values[i];
+                if (value > best) {
+                    best = value;
+                    bestItem = i;
+                }
+            }
+        }
+        
+        dpUnbounded[w] = best;
+        if (bestItem !== -1) {
+            steps.push({
+                capacity: w,
+                chosenItem: bestItem,
+                value: best,
+                calculation: `dp[${w}] = dp[${w - weights[bestItem]}] + ${values[bestItem]} = ${dpUnbounded[w - weights[bestItem]]} + ${values[bestItem]} = ${best}`
+            });
+        }
+    }
+    
+    // Mostra risultati
+    document.getElementById('bounded-result').innerHTML = `
+        <div class="result-value">Valore Massimo: ${dpBounded[capacity]}</div>
+        <div class="result-note">Ogni oggetto può essere usato al massimo una volta</div>
+    `;
+    
+    document.getElementById('unbounded-result').innerHTML = `
+        <div class="result-value">Valore Massimo: ${dpUnbounded[capacity]}</div>
+        <div class="result-note">Ogni oggetto può essere usato infinite volte</div>
+    `;
+    
+    // Mostra passi
+    const stepsDiv = document.getElementById('algorithm-steps');
+    stepsDiv.innerHTML = steps.slice(-Math.min(steps.length, 8)).map(step => `
+        <div class="algorithm-step">
+            <strong>Capacità ${step.capacity}:</strong> 
+            Scegli oggetto ${step.chosenItem + 1} (peso=${weights[step.chosenItem]}, valore=${values[step.chosenItem]})
+            <br>
+            <code>${step.calculation}</code>
+        </div>
+    `).join('');
+}
+
+// Visualizzazione LCS
+function createLCSVisualization(container) {
+    container.innerHTML = `
+        <div class="lcs-viz">
+            <h3>📝 Longest Common Subsequence</h3>
+            <div class="input-section">
+                <div class="input-group">
+                    <label>Stringa 1: </label>
+                    <input type="text" id="lcs-string1" value="ABCDGH" placeholder="es: ABCDGH">
+                </div>
+                <div class="input-group">
+                    <label>Stringa 2: </label>
+                    <input type="text" id="lcs-string2" value="AEDFHR" placeholder="es: AEDFHR">
+                </div>
+                <button onclick="updateLCSVisualization()">Calcola LCS</button>
+            </div>
+            <div class="lcs-display">
+                <div class="strings-display">
+                    <div id="strings-comparison"></div>
+                </div>
+                <div class="lcs-table-container">
+                    <h4>📊 Tabella DP</h4>
+                    <div id="lcs-dp-table"></div>
+                </div>
+                <div class="lcs-result">
+                    <h4>🎯 Risultato</h4>
+                    <div id="lcs-output"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    updateLCSVisualization();
+}
+
+function updateLCSVisualization() {
+    const str1 = document.getElementById('lcs-string1').value || 'ABCDGH';
+    const str2 = document.getElementById('lcs-string2').value || 'AEDFHR';
+    
+    const m = str1.length;
+    const n = str2.length;
+    
+    // Crea tabella DP
+    const dp = Array(m + 1).fill().map(() => Array(n + 1).fill(0));
+    
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (str1[i-1] === str2[j-1]) {
+                dp[i][j] = dp[i-1][j-1] + 1;
+            } else {
+                dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+            }
+        }
+    }
+    
+    // Visualizza stringhe
+    const stringsDiv = document.getElementById('strings-comparison');
+    stringsDiv.innerHTML = `
+        <div class="string-display">
+            <span class="string-label">Stringa 1:</span>
+            <span class="string-chars">${str1.split('').map((c, i) => `<span class="char" data-str="1" data-pos="${i}">${c}</span>`).join('')}</span>
+        </div>
+        <div class="string-display">
+            <span class="string-label">Stringa 2:</span>
+            <span class="string-chars">${str2.split('').map((c, i) => `<span class="char" data-str="2" data-pos="${i}">${c}</span>`).join('')}</span>
+        </div>
+    `;
+    
+    // Visualizza tabella DP
+    const tableDiv = document.getElementById('lcs-dp-table');
+    let tableHTML = '<table class="lcs-table"><thead><tr><th></th><th></th>';
+    for (let j = 0; j < n; j++) {
+        tableHTML += `<th>${str2[j]}</th>`;
+    }
+    tableHTML += '</tr></thead><tbody>';
+    
+    for (let i = 0; i <= m; i++) {
+        tableHTML += '<tr>';
+        if (i === 0) {
+            tableHTML += '<th></th>';
+        } else {
+            tableHTML += `<th>${str1[i-1]}</th>`;
+        }
+        
+        for (let j = 0; j <= n; j++) {
+            const cellClass = i > 0 && j > 0 && str1[i-1] === str2[j-1] ? 'match-cell' : 'normal-cell';
+            tableHTML += `<td class="${cellClass}">${dp[i][j]}</td>`;
+        }
+        tableHTML += '</tr>';
+    }
+    tableHTML += '</tbody></table>';
+    tableDiv.innerHTML = tableHTML;
+    
+    // Ricostruisci LCS
+    let lcs = '';
+    let i = m, j = n;
+    const path = [];
+    
+    while (i > 0 && j > 0) {
+        if (str1[i-1] === str2[j-1]) {
+            lcs = str1[i-1] + lcs;
+            path.push({i: i-1, j: j-1, char: str1[i-1]});
+            i--; j--;
+        } else if (dp[i-1][j] > dp[i][j-1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+    
+    // Mostra risultato
+    const outputDiv = document.getElementById('lcs-output');
+    outputDiv.innerHTML = `
+        <div class="lcs-length">
+            <strong>Lunghezza LCS:</strong> ${dp[m][n]}
+        </div>
+        <div class="lcs-sequence">
+            <strong>Sequenza:</strong> "${lcs}"
+        </div>
+        <div class="lcs-path">
+            <strong>Caratteri corrispondenti:</strong>
+            ${path.reverse().map(p => `<span class="match-highlight">${p.char} (${p.i+1},${p.j+1})</span>`).join(' → ')}
+        </div>
+    `;
+    }
+}
+
+// Visualizzazione Fibonacci interattiva
+function createFibonacciVisualization(container) {
+    container.innerHTML = `
+        <div class="fibonacci-viz">
+            <h3>🔢 Albero delle Chiamate Ricorsive</h3>
+            <div class="input-section">
+                <label>Calcola F(n): </label>
+                <input type="number" id="fib-input" value="5" min="0" max="10">
+                <button onclick="updateFibonacciVisualization()">Visualizza</button>
+            </div>
+            <div class="comparison-container">
+                <div class="recursive-tree">
+                    <h4>❌ Ricorsione Ingenua</h4>
+                    <div id="fib-recursive-tree"></div>
+                    <div class="complexity-info">
+                        <p>⏱️ Complessità: <strong>O(2^n)</strong></p>
+                        <p>📊 Chiamate: <span id="recursive-calls">0</span></p>
+                    </div>
+                </div>
+                <div class="dp-table">
+                    <h4>✅ Dynamic Programming</h4>
+                    <div id="fib-dp-table"></div>
+                    <div class="complexity-info">
+                        <p>⏱️ Complessità: <strong>O(n)</strong></p>
+                        <p>📊 Calcoli: <span id="dp-calculations">0</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="optimization-steps">
+                <h4>🚀 Ottimizzazione Spazio</h4>
+                <div id="space-optimization"></div>
+            </div>
+        </div>
+    `;
+    
+    updateFibonacciVisualization();
+}
+
+// Aggiorna visualizzazione Fibonacci
+function updateFibonacciVisualization() {
+    const n = parseInt(document.getElementById('fib-input').value) || 5;
+    
+    // Visualizza albero ricorsivo
+    const recursiveTree = document.getElementById('fib-recursive-tree');
+    recursiveTree.innerHTML = generateFibonacciTree(n);
+    
+    // Conta chiamate ricorsive
+    const recursiveCalls = Math.pow(2, n) - 1;
+    document.getElementById('recursive-calls').textContent = recursiveCalls;
+    
+    // Visualizza tabella DP
+    const dpTable = document.getElementById('fib-dp-table');
+    dpTable.innerHTML = generateFibonacciDPTable(n);
+    document.getElementById('dp-calculations').textContent = n + 1;
+    
+    // Ottimizzazione spazio
+    const spaceOpt = document.getElementById('space-optimization');
+    spaceOpt.innerHTML = generateFibonacciSpaceOptimization(n);
+}
+
+// Genera albero ricorsivo Fibonacci
+function generateFibonacciTree(n, depth = 0) {
+    if (n <= 1) {
+        return `<div class="fib-node leaf" style="margin-left: ${depth * 20}px">F(${n}) = ${n}</div>`;
+    }
+    
+    return `
+        <div class="fib-node" style="margin-left: ${depth * 20}px">
+            F(${n})
+            ${generateFibonacciTree(n - 1, depth + 1)}
+            ${generateFibonacciTree(n - 2, depth + 1)}
+        </div>
+    `;
+}
+
+// Genera tabella DP Fibonacci
+function generateFibonacciDPTable(n) {
+    let html = '<div class="dp-array">';
+    const fib = [0, 1];
+    
+    for (let i = 2; i <= n; i++) {
+        fib[i] = fib[i-1] + fib[i-2];
+    }
+    
+    for (let i = 0; i <= n; i++) {
+        html += `
+            <div class="dp-cell" data-index="${i}">
+                <div class="cell-index">i=${i}</div>
+                <div class="cell-value">F(${i})=${fib[i] || 0}</div>
+            </div>
+        `;
+    }
+    
+    html += '</div>';
+    return html;
+}
+
+// Genera ottimizzazione spazio Fibonacci
+function generateFibonacciSpaceOptimization(n) {
+    let html = `
+        <div class="space-opt-explanation">
+            <p>💡 <strong>Insight:</strong> Servono solo gli ultimi 2 valori!</p>
+        </div>
+        <div class="space-opt-demo">
+    `;
+    
+    let prev2 = 0, prev1 = 1;
+    html += `<div class="space-step">
+        <span class="var">prev2=${prev2}</span>
+        <span class="var">prev1=${prev1}</span>
+        <span class="result">F(0)=${prev2}, F(1)=${prev1}</span>
+    </div>`;
+    
+    for (let i = 2; i <= Math.min(n, 6); i++) {
+        const current = prev1 + prev2;
+        html += `<div class="space-step">
+            <span class="var">current=${prev2}+${prev1}=${current}</span>
+            <span class="var">prev2=${prev1}</span>
+            <span class="var">prev1=${current}</span>
+            <span class="result">F(${i})=${current}</span>
+        </div>`;
+        prev2 = prev1;
+        prev1 = current;
+    }
+    
+    html += '</div>';
+    return html;
+}
+
+// Visualizzazione Kadane
+function createKadaneVisualization(container) {
+    container.innerHTML = `
+        <div class="kadane-viz">
+            <h3>🎯 Kadane's Algorithm in Azione</h3>
+            <div class="input-section">
+                <label>Array: </label>
+                <input type="text" id="kadane-input" value="-2,1,-3,4,-1,2,1,-5,4" placeholder="es: -2,1,-3,4,-1,2,1,-5,4">
+                <button onclick="updateKadaneVisualization()">Visualizza</button>
+            </div>
+            <div class="kadane-animation">
+                <div id="kadane-array-display"></div>
+                <div id="kadane-variables"></div>
+                <div id="kadane-decision-tree"></div>
+            </div>
+            <div class="kadane-insight">
+                <h4>🧠 Insight Chiave</h4>
+                <p>Ad ogni step, Kadane fa una <strong>decisione locale ottimale</strong>:</p>
+                <ul>
+                    <li><strong>Estendi:</strong> max_ending_here + nums[i]</li>
+                    <li><strong>Riparti:</strong> nums[i]</li>
+                </ul>
+                <p>La scelta è sempre: <code>max(extend, restart)</code></p>
+            </div>
+        </div>
+    `;
+    
+    updateKadaneVisualization();
+}
+
+// Aggiorna visualizzazione Kadane
+function updateKadaneVisualization() {
+    const input = document.getElementById('kadane-input').value;
+    const arr = input.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+    
+    if (arr.length === 0) return;
+    
+    // Visualizza array
+    const arrayDisplay = document.getElementById('kadane-array-display');
+    arrayDisplay.innerHTML = '<div class="array-container">' + 
+        arr.map((val, i) => `<div class="array-element" data-index="${i}">${val}</div>`).join('') +
+        '</div>';
+    
+    // Simula algoritmo
+    let maxSoFar = arr[0];
+    let maxEndingHere = arr[0];
+    let steps = [];
+    
+    for (let i = 1; i < arr.length; i++) {
+        const extend = maxEndingHere + arr[i];
+        const restart = arr[i];
+        const decision = extend >= restart ? 'extend' : 'restart';
+        
+        maxEndingHere = Math.max(extend, restart);
+        maxSoFar = Math.max(maxSoFar, maxEndingHere);
+        
+        steps.push({
+            index: i,
+            value: arr[i],
+            extend: extend,
+            restart: restart,
+            decision: decision,
+            maxEndingHere: maxEndingHere,
+            maxSoFar: maxSoFar
+        });
+    }
+    
+    // Visualizza variabili
+    const variablesDiv = document.getElementById('kadane-variables');
+    variablesDiv.innerHTML = `
+        <div class="variables-header">
+            <h4>📊 Tracciamento Variabili</h4>
+        </div>
+        <div class="variables-table">
+            <div class="var-row header">
+                <div>i</div><div>nums[i]</div><div>extend</div><div>restart</div><div>decisione</div><div>max_ending_here</div><div>max_so_far</div>
+            </div>
+            <div class="var-row">
+                <div>0</div><div>${arr[0]}</div><div>-</div><div>-</div><div>init</div><div>${arr[0]}</div><div>${arr[0]}</div>
+            </div>
+            ${steps.map(step => `
+                <div class="var-row ${step.decision}">
+                    <div>${step.index}</div>
+                    <div>${step.value}</div>
+                    <div>${step.extend}</div>
+                    <div>${step.restart}</div>
+                    <div class="decision-${step.decision}">${step.decision}</div>
+                    <div>${step.maxEndingHere}</div>
+                    <div class="max-highlight">${step.maxSoFar}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Chiudi modal visualizzazione pattern
+function closePatternVisualization() {
+    const modal = document.querySelector('.pattern-visualization-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Funzioni per animazioni
+function startPatternAnimation(patternId) {
+    showNotification('🎬 Animazione avviata per ' + patternId, 'info');
+}
+
+function stepPatternAnimation(patternId) {
+    showNotification('⏭️ Step successivo per ' + patternId, 'info');
+}
+
+function resetPatternAnimation(patternId) {
+    // Reinizializza la visualizzazione
+    initializePatternVisualization(patternId);
+    showNotification('🔄 Visualizzazione resettata', 'info');
+}
+
+// Aggiungi pulsante visualizzazione ai pattern professionali
+function addVisualizationButton(patternId) {
+    if (patternVisualizations[patternId]) {
+        return `<button onclick="visualizePattern('${patternId}')" class="btn-visualization">🎨 Visualizza Pattern</button>`;
+    }
+    return '';
+}
+
+// Esponi funzioni globalmente
+window.visualizePattern = visualizePattern;
+window.closePatternVisualization = closePatternVisualization;
+window.startPatternAnimation = startPatternAnimation;
+window.stepPatternAnimation = stepPatternAnimation;
+window.resetPatternAnimation = resetPatternAnimation;
+window.updateFibonacciVisualization = updateFibonacciVisualization;
+window.updateKadaneVisualization = updateKadaneVisualization;
+window.updateKnapsackVisualization = updateKnapsackVisualization;
+window.updateUnboundedKnapsackVisualization = updateUnboundedKnapsackVisualization;
+window.updateLCSVisualization = updateLCSVisualization;
 
 // ===== 13. FUNZIONI INTERATTIVE AGGIUNTIVE =====
 
@@ -1229,6 +2475,9 @@ window.addEventListener("DOMContentLoaded", () => {
     
     // Carica esercizi
     loadExercises();
+    
+    // Carica esercizi professionali
+    loadProfessionalExercises();
     
     // Inizializza modalità learn di default
     setMode('learn');

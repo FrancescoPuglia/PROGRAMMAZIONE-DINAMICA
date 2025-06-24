@@ -1,0 +1,708 @@
+{
+    "fibonacci_pattern": {
+        "title": "🔢 Pattern Fibonacci",
+        "description": "Problemi che seguono la relazione ricorsiva classica F(n) = F(n-1) + F(n-2)",
+        "exercises": [
+            {
+                "id": "climbing_stairs",
+                "title": "Climbing Stairs (LeetCode 70)",
+                "difficulty": 1,
+                "statement": "Hai una scala con n gradini. Puoi salire 1 o 2 gradini alla volta. In quanti modi diversi puoi raggiungere la cima?",
+                "explanation": "Questo è un classico problema Fibonacci! Per arrivare al gradino n, puoi venire dal gradino (n-1) con 1 passo o dal gradino (n-2) con 2 passi. Quindi: ways(n) = ways(n-1) + ways(n-2)",
+                "template": "def climbStairs(n):\n    # Caso base\n    if n <= 2:\n        return n\n    \n    # Il tuo codice qui\n    # dp[i] = numero di modi per arrivare al gradino i\n    pass",
+                "solution": "def climbStairs(n):\n    # Caso base\n    if n <= 2:\n        return n\n    \n    # Approccio DP bottom-up\n    dp = [0] * (n + 1)\n    dp[1] = 1  # 1 modo per arrivare al gradino 1\n    dp[2] = 2  # 2 modi per arrivare al gradino 2\n    \n    # Riempi la tabella DP\n    for i in range(3, n + 1):\n        dp[i] = dp[i-1] + dp[i-2]\n    \n    return dp[n]",
+                "optimized_solution": "def climbStairs(n):\n    # Versione ottimizzata O(1) spazio\n    if n <= 2:\n        return n\n    \n    prev2, prev1 = 1, 2\n    for i in range(3, n + 1):\n        current = prev1 + prev2\n        prev2, prev1 = prev1, current\n    \n    return prev1",
+                "tests": [
+                    {"input": "2", "expected": "2", "explanation": "1+1 o 2"},
+                    {"input": "3", "expected": "3", "explanation": "1+1+1, 1+2, 2+1"},
+                    {"input": "4", "expected": "5", "explanation": "5 combinazioni diverse"},
+                    {"input": "5", "expected": "8", "explanation": "Segue sequenza Fibonacci"},
+                    {"input": "10", "expected": "89", "explanation": "Test performance"},
+                    {"input": "1", "expected": "1", "explanation": "Caso base"},
+                    {"input": "20", "expected": "10946", "explanation": "Test grande"}
+                ],
+                "hint": "Pensa alla sequenza di Fibonacci: ogni step dipende dai due precedenti",
+                "time_complexity": "O(n)",
+                "space_complexity": "O(1) con ottimizzazione, O(n) versione base"
+            },
+            {
+                "id": "fibonacci_number",
+                "title": "Fibonacci Number (LeetCode 509)", 
+                "difficulty": 1,
+                "statement": "Calcola l'n-esimo numero di Fibonacci. F(0) = 0, F(1) = 1, F(n) = F(n-1) + F(n-2) per n > 1.",
+                "explanation": "Il numero di Fibonacci è la definizione classica della programmazione dinamica. Evita la ricorsione ingenua che ha complessità esponenziale usando la memoization o l'approccio bottom-up.",
+                "template": "def fib(n):\n    # Gestisci casi base\n    if n <= 1:\n        return n\n    \n    # Il tuo codice qui\n    # Usa DP per evitare calcoli ripetuti\n    pass",
+                "solution": "def fib(n):\n    # Gestisci casi base\n    if n <= 1:\n        return n\n    \n    # Approccio DP bottom-up\n    dp = [0] * (n + 1)\n    dp[0] = 0\n    dp[1] = 1\n    \n    for i in range(2, n + 1):\n        dp[i] = dp[i-1] + dp[i-2]\n    \n    return dp[n]",
+                "optimized_solution": "def fib(n):\n    # Versione O(1) spazio\n    if n <= 1:\n        return n\n    \n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    \n    return b",
+                "tests": [
+                    {"input": "0", "expected": "0", "explanation": "F(0) = 0 per definizione"},
+                    {"input": "1", "expected": "1", "explanation": "F(1) = 1 per definizione"},
+                    {"input": "2", "expected": "1", "explanation": "F(2) = F(1) + F(0) = 1 + 0 = 1"},
+                    {"input": "3", "expected": "2", "explanation": "F(3) = F(2) + F(1) = 1 + 1 = 2"},
+                    {"input": "4", "expected": "3", "explanation": "F(4) = F(3) + F(2) = 2 + 1 = 3"},
+                    {"input": "10", "expected": "55", "explanation": "F(10) = 55"},
+                    {"input": "15", "expected": "610", "explanation": "Test performance"}
+                ],
+                "hint": "Ricorda che ogni numero di Fibonacci è la somma dei due precedenti",
+                "time_complexity": "O(n)",
+                "space_complexity": "O(1)"
+            },
+            {
+                "id": "min_cost_climbing_stairs",
+                "title": "Min Cost Climbing Stairs (LeetCode 746)",
+                "difficulty": 2,
+                "statement": "Hai un array cost dove cost[i] è il costo per salire l'i-esimo gradino. Puoi iniziare dal gradino 0 o 1. Trova il costo minimo per raggiungere la cima.",
+                "explanation": "Variazione del climbing stairs con costi. Per ogni gradino, scegli il percorso che minimizza il costo totale. dp[i] = cost[i] + min(dp[i-1], dp[i-2])",
+                "template": "def minCostClimbingStairs(cost):\n    n = len(cost)\n    \n    # Il tuo codice qui\n    # dp[i] = costo minimo per arrivare al gradino i\n    # Puoi partire da gradino 0 o 1\n    pass",
+                "solution": "def minCostClimbingStairs(cost):\n    n = len(cost)\n    \n    # dp[i] = costo minimo per arrivare al gradino i\n    dp = [0] * n\n    dp[0] = cost[0]\n    dp[1] = cost[1]\n    \n    # Per ogni gradino, scegli il percorso con costo minimo\n    for i in range(2, n):\n        dp[i] = cost[i] + min(dp[i-1], dp[i-2])\n    \n    # Puoi saltare dall'ultimo o penultimo gradino\n    return min(dp[n-1], dp[n-2])",
+                "optimized_solution": "def minCostClimbingStairs(cost):\n    # Versione O(1) spazio\n    prev2 = cost[0]\n    prev1 = cost[1]\n    \n    for i in range(2, len(cost)):\n        current = cost[i] + min(prev1, prev2)\n        prev2, prev1 = prev1, current\n    \n    return min(prev1, prev2)",
+                "tests": [
+                    {"input": "[10, 15, 20]", "expected": "15", "explanation": "Parti dal gradino 1 (costo 15), salta alla cima"},
+                    {"input": "[1, 100, 1, 1, 1, 100, 1, 1, 100, 1]", "expected": "6", "explanation": "Percorso ottimale evita costi alti"},
+                    {"input": "[0, 0, 0, 1]", "expected": "0", "explanation": "Costi zero all'inizio"},
+                    {"input": "[1, 2]", "expected": "1", "explanation": "Parti dal gradino con costo minore"},
+                    {"input": "[5, 10, 15, 20]", "expected": "15", "explanation": "Gradini 0->2->top"}
+                ],
+                "hint": "Per ogni gradino, considera da dove puoi arrivare e scegli il percorso con costo minimo",
+                "time_complexity": "O(n)",
+                "space_complexity": "O(1)"
+            }
+        ]
+    },
+    "kadane_algorithm": {
+        "title": "🎯 Kadane's Algorithm",
+        "description": "Algoritmo per trovare il subarray contiguo con somma massima",
+        "exercises": [
+            {
+                "id": "maximum_subarray",
+                "title": "Maximum Subarray (LeetCode 53)",
+                "difficulty": 2,
+                "statement": "Dato un array di interi, trova il subarray contiguo con la somma più grande e restituisci la somma.",
+                "explanation": "Kadane's Algorithm: mantieni la somma massima terminante in ogni posizione. max_ending_here = max(nums[i], max_ending_here + nums[i]). La risposta è il massimo tra tutti i max_ending_here.",
+                "template": "def maxSubArray(nums):\n    # Implementa Kadane's Algorithm\n    # max_ending_here = somma massima del subarray che termina qui\n    # max_so_far = somma massima vista finora\n    \n    # Il tuo codice qui\n    pass",
+                "solution": "def maxSubArray(nums):\n    # Kadane's Algorithm\n    max_ending_here = nums[0]\n    max_so_far = nums[0]\n    \n    for i in range(1, len(nums)):\n        # Scegli: inizia nuovo subarray o estendi quello esistente\n        max_ending_here = max(nums[i], max_ending_here + nums[i])\n        # Aggiorna il massimo globale\n        max_so_far = max(max_so_far, max_ending_here)\n    \n    return max_so_far",
+                "optimized_solution": "def maxSubArray(nums):\n    # Versione più concisa\n    current_sum = max_sum = nums[0]\n    \n    for num in nums[1:]:\n        current_sum = max(num, current_sum + num)\n        max_sum = max(max_sum, current_sum)\n    \n    return max_sum",
+                "tests": [
+                    {"input": "[-2,1,-3,4,-1,2,1,-5,4]", "expected": "6", "explanation": "Subarray [4,-1,2,1] ha somma 6"},
+                    {"input": "[1]", "expected": "1", "explanation": "Array di un elemento"},
+                    {"input": "[5,4,-1,7,8]", "expected": "23", "explanation": "Tutto l'array"},
+                    {"input": "[-2,-1]", "expected": "-1", "explanation": "Tutti negativi, prendi il massimo"},
+                    {"input": "[-1,-2,-3,-4]", "expected": "-1", "explanation": "Il meno negativo"},
+                    {"input": "[1,2,3,4,5]", "expected": "15", "explanation": "Tutti positivi"}
+                ],
+                "hint": "Per ogni elemento, decidi se iniziare un nuovo subarray o estendere quello esistente",
+                "time_complexity": "O(n)",
+                "space_complexity": "O(1)"
+            },
+            {
+                "id": "maximum_sum_circular_subarray",
+                "title": "Maximum Sum Circular Subarray (LeetCode 918)",
+                "difficulty": 3,
+                "statement": "Dato un array circolare di interi, trova il subarray contiguo con la somma più grande.",
+                "explanation": "Due casi: 1) Subarray normale (usa Kadane), 2) Subarray che 'avvolge' (somma totale - subarray minimo). La risposta è il massimo tra i due.",
+                "template": "def maxSubarraySumCircular(nums):\n    def kadane_max(arr):\n        # Kadane normale per massimo\n        pass\n    \n    def kadane_min(arr):\n        # Kadane per minimo\n        pass\n    \n    # Il tuo codice qui\n    # Considera entrambi i casi: lineare e circolare\n    pass",
+                "solution": "def maxSubarraySumCircular(nums):\n    def kadane_max(arr):\n        current = maximum = arr[0]\n        for i in range(1, len(arr)):\n            current = max(arr[i], current + arr[i])\n            maximum = max(maximum, current)\n        return maximum\n    \n    def kadane_min(arr):\n        current = minimum = arr[0]\n        for i in range(1, len(arr)):\n            current = min(arr[i], current + arr[i])\n            minimum = min(minimum, current)\n        return minimum\n    \n    # Caso 1: subarray normale\n    max_kadane = kadane_max(nums)\n    \n    # Caso 2: subarray circolare = total - min_subarray\n    total_sum = sum(nums)\n    min_kadane = kadane_min(nums)\n    max_circular = total_sum - min_kadane\n    \n    # Caso speciale: tutti elementi negativi\n    if max_circular == 0:\n        return max_kadane\n    \n    return max(max_kadane, max_circular)",
+                "tests": [
+                    {"input": "[1,-2,3,-2]", "expected": "3", "explanation": "Subarray [3]"},
+                    {"input": "[5,-3,5]", "expected": "10", "explanation": "Subarray circolare [5,5]"},
+                    {"input": "[3,-1,2,-1]", "expected": "4", "explanation": "Subarray circolare [2,-1,3]"},
+                    {"input": "[-2,-3,-1]", "expected": "-1", "explanation": "Tutti negativi"},
+                    {"input": "[2,1,3]", "expected": "6", "explanation": "Tutto l'array"}
+                ],
+                "hint": "Considera che il subarray massimo può essere normale o 'avvolgente'",
+                "time_complexity": "O(n)",
+                "space_complexity": "O(1)"
+            }
+        ]
+    },
+    "knapsack_01": {
+        "title": "🎒 0/1 Knapsack",
+        "description": "Ogni oggetto può essere preso una sola volta - decisione binaria",
+        "exercises": [
+            {
+                "id": "partition_equal_subset_sum",
+                "title": "Partition Equal Subset Sum (LeetCode 416)",
+                "difficulty": 2,
+                "statement": "Dato un array di interi positivi, determina se può essere partizionato in due sottoinsiemi con somma uguale.",
+                "explanation": "Questo è un problema 0/1 knapsack mascherato! Dobbiamo trovare un sottoinsieme con somma = total_sum/2. dp[i][j] = possiamo ottenere somma j usando i primi i elementi?",
+                "template": "def canPartition(nums):\n    total_sum = sum(nums)\n    \n    # Se la somma è dispari, impossibile\n    if total_sum % 2 != 0:\n        return False\n    \n    target = total_sum // 2\n    \n    # Il tuo codice qui\n    # dp[i][j] = possiamo ottenere somma j usando primi i elementi\n    pass",
+                "solution": "def canPartition(nums):\n    total_sum = sum(nums)\n    \n    # Se dispari, impossibile partizionare equamente\n    if total_sum % 2 != 0:\n        return False\n    \n    target = total_sum // 2\n    n = len(nums)\n    \n    # dp[i][j] = possiamo ottenere somma j usando primi i elementi\n    dp = [[False] * (target + 1) for _ in range(n + 1)]\n    \n    # Caso base: somma 0 sempre possibile (non prendere nulla)\n    for i in range(n + 1):\n        dp[i][0] = True\n    \n    for i in range(1, n + 1):\n        for j in range(1, target + 1):\n            # Non prendere l'elemento i-1\n            dp[i][j] = dp[i-1][j]\n            \n            # Prendere l'elemento i-1 (se possibile)\n            if nums[i-1] <= j:\n                dp[i][j] = dp[i][j] or dp[i-1][j - nums[i-1]]\n    \n    return dp[n][target]",
+                "optimized_solution": "def canPartition(nums):\n    total_sum = sum(nums)\n    if total_sum % 2 != 0:\n        return False\n    \n    target = total_sum // 2\n    \n    # Versione 1D ottimizzata\n    dp = [False] * (target + 1)\n    dp[0] = True\n    \n    for num in nums:\n        # Itera all'indietro per evitare sovrascrizioni\n        for j in range(target, num - 1, -1):\n            dp[j] = dp[j] or dp[j - num]\n    \n    return dp[target]",
+                "tests": [
+                    {"input": "[1,5,11,5]", "expected": "true", "explanation": "Partiziona in [1,5,5] e [11]"},
+                    {"input": "[1,2,3,5]", "expected": "false", "explanation": "Somma 11, non partizionabile"},
+                    {"input": "[1,1]", "expected": "true", "explanation": "[1] e [1]"},
+                    {"input": "[1,2,5]", "expected": "false", "explanation": "Somma dispari"},
+                    {"input": "[2,2,1,1]", "expected": "true", "explanation": "[2,1] e [2,1]"}
+                ],
+                "hint": "Se puoi trovare un sottoinsieme con somma = total/2, l'altro avrà automaticamente la stessa somma",
+                "time_complexity": "O(n * sum)",
+                "space_complexity": "O(sum)"
+            },
+            {
+                "id": "target_sum",
+                "title": "Target Sum (LeetCode 494)",
+                "difficulty": 2,
+                "statement": "Dato un array di interi e un target, conta quanti modi ci sono per assegnare simboli + e - agli elementi per raggiungere il target.",
+                "explanation": "Trasforma in problema subset sum: se P è subset positivo e N negativo, P - N = target e P + N = sum. Quindi P = (target + sum) / 2. Conta quanti modi per formare P.",
+                "template": "def findTargetSumWays(nums, target):\n    total_sum = sum(nums)\n    \n    # Verifica se è possibile\n    if target > total_sum or target < -total_sum or (target + total_sum) % 2 != 0:\n        return 0\n    \n    # Trasforma in problema subset sum\n    subset_sum = (target + total_sum) // 2\n    \n    # Il tuo codice qui\n    # Conta quanti modi per ottenere subset_sum\n    pass",
+                "solution": "def findTargetSumWays(nums, target):\n    total_sum = sum(nums)\n    \n    # Verifica validità\n    if target > total_sum or target < -total_sum or (target + total_sum) % 2 != 0:\n        return 0\n    \n    subset_sum = (target + total_sum) // 2\n    \n    # dp[j] = numero di modi per ottenere somma j\n    dp = [0] * (subset_sum + 1)\n    dp[0] = 1  # Un modo per ottenere somma 0: non prendere nulla\n    \n    for num in nums:\n        # Itera all'indietro\n        for j in range(subset_sum, num - 1, -1):\n            dp[j] += dp[j - num]\n    \n    return dp[subset_sum]",
+                "tests": [
+                    {"input": "[1,1,1,1,1], 3", "expected": "5", "explanation": "5 modi diversi per ottenere +3"},
+                    {"input": "[1], 1", "expected": "1", "explanation": "Solo +1"},
+                    {"input": "[1], 2", "expected": "0", "explanation": "Impossibile"},
+                    {"input": "[1,0], 1", "expected": "2", "explanation": "+1+0 o +1-0"},
+                    {"input": "[7,9,3,8,0,2,4,8,3,9], 0", "expected": "0", "explanation": "Test complesso"}
+                ],
+                "hint": "Trasforma il problema: trovare un subset P tale che sum(P) - sum(resto) = target",
+                "time_complexity": "O(n * sum)",
+                "space_complexity": "O(sum)"
+            }
+        ]
+    },
+    "unbounded_knapsack": {
+        "title": "♾️ Unbounded Knapsack", 
+        "description": "Ogni oggetto può essere usato infinite volte",
+        "exercises": [
+            {
+                "id": "coin_change",
+                "title": "Coin Change (LeetCode 322)",
+                "difficulty": 2,
+                "statement": "Dato un array di denominazioni di monete e un importo, trova il numero minimo di monete per formare quell'importo. Ritorna -1 se impossibile.",
+                "explanation": "Unbounded knapsack dove minimizziamo il numero di oggetti. dp[amount] = numero minimo di monete per formare amount. Per ogni amount, prova tutte le monete possibili.",
+                "template": "def coinChange(coins, amount):\n    # dp[i] = numero minimo di monete per formare importo i\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0  # 0 monete per importo 0\n    \n    # Il tuo codice qui\n    # Per ogni importo, prova tutte le monete\n    pass",
+                "solution": "def coinChange(coins, amount):\n    # dp[i] = numero minimo di monete per formare importo i\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0  # 0 monete per importo 0\n    \n    for i in range(1, amount + 1):\n        for coin in coins:\n            if coin <= i:\n                dp[i] = min(dp[i], dp[i - coin] + 1)\n    \n    return dp[amount] if dp[amount] != float('inf') else -1",
+                "optimized_solution": "def coinChange(coins, amount):\n    # Versione con early termination\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0\n    \n    for coin in coins:\n        for i in range(coin, amount + 1):\n            if dp[i - coin] != float('inf'):\n                dp[i] = min(dp[i], dp[i - coin] + 1)\n    \n    return dp[amount] if dp[amount] != float('inf') else -1",
+                "tests": [
+                    {"input": "[1,3,4], 6", "expected": "2", "explanation": "6 = 3 + 3"},
+                    {"input": "[2], 3", "expected": "-1", "explanation": "Impossibile con solo monete da 2"},
+                    {"input": "[1], 0", "expected": "0", "explanation": "0 monete per importo 0"},
+                    {"input": "[1,2,5], 11", "expected": "3", "explanation": "11 = 5 + 5 + 1"},
+                    {"input": "[5,10,25], 30", "expected": "2", "explanation": "30 = 25 + 5"}
+                ],
+                "hint": "Per ogni importo, prova a sottrarre ogni tipo di moneta e prendi il minimo",
+                "time_complexity": "O(amount * coins)",
+                "space_complexity": "O(amount)"
+            },
+            {
+                "id": "coin_change_2",
+                "title": "Coin Change 2 (LeetCode 518)",
+                "difficulty": 2,
+                "statement": "Conta il numero di combinazioni che formano l'importo usando le monete date.",
+                "explanation": "Conta i modi invece di trovare il minimo. dp[amount] = numero di modi per formare amount. Importante: processa le monete nell'ordine esterno per evitare permutazioni duplicate.",
+                "template": "def change(amount, coins):\n    # dp[i] = numero di modi per formare importo i\n    dp = [0] * (amount + 1)\n    dp[0] = 1  # Un modo per formare 0: non prendere nulla\n    \n    # Il tuo codice qui\n    # IMPORTANTE: processa monete nell'ordine esterno\n    pass",
+                "solution": "def change(amount, coins):\n    # dp[i] = numero di modi per formare importo i\n    dp = [0] * (amount + 1)\n    dp[0] = 1  # Un modo per formare 0\n    \n    # Processa monete nell'ordine esterno per evitare duplicati\n    for coin in coins:\n        for i in range(coin, amount + 1):\n            dp[i] += dp[i - coin]\n    \n    return dp[amount]",
+                "tests": [
+                    {"input": "5, [1,2,5]", "expected": "4", "explanation": "4 modi: [5], [2,2,1], [2,1,1,1], [1,1,1,1,1]"},
+                    {"input": "3, [2]", "expected": "0", "explanation": "Impossibile formare 3 con monete da 2"},
+                    {"input": "10, [10]", "expected": "1", "explanation": "Solo un modo: [10]"},
+                    {"input": "4, [1,2,3]", "expected": "4", "explanation": "[1,1,1,1], [1,1,2], [2,2], [1,3]"},
+                    {"input": "0, [1,2]", "expected": "1", "explanation": "Un modo per formare 0"}
+                ],
+                "hint": "Processa le monete nell'ordine esterno per contare combinazioni, non permutazioni",
+                "time_complexity": "O(amount * coins)",
+                "space_complexity": "O(amount)"
+            }
+        ]
+    },
+    "lcs_pattern": {
+        "title": "🔗 Longest Common Subsequence (LCS)",
+        "description": "Trova la sottosequenza comune più lunga tra due sequenze",
+        "exercises": [
+            {
+                "id": "longest_common_subsequence", 
+                "title": "Longest Common Subsequence (LeetCode 1143)",
+                "difficulty": 2,
+                "statement": "Date due stringhe text1 e text2, restituisci la lunghezza della loro sottosequenza comune più lunga.",
+                "explanation": "LCS classico: dp[i][j] = LCS di text1[0:i] e text2[0:j]. Se caratteri uguali: dp[i][j] = dp[i-1][j-1] + 1, altrimenti: dp[i][j] = max(dp[i-1][j], dp[i][j-1])",
+                "template": "def longestCommonSubsequence(text1, text2):\n    m, n = len(text1), len(text2)\n    \n    # dp[i][j] = LCS di text1[0:i] e text2[0:j]\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    # Il tuo codice qui\n    pass",
+                "solution": "def longestCommonSubsequence(text1, text2):\n    m, n = len(text1), len(text2)\n    \n    # dp[i][j] = LCS di text1[0:i] e text2[0:j]\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if text1[i-1] == text2[j-1]:\n                # Caratteri uguali: estendi LCS\n                dp[i][j] = dp[i-1][j-1] + 1\n            else:\n                # Caratteri diversi: prendi il massimo\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n    \n    return dp[m][n]",
+                "optimized_solution": "def longestCommonSubsequence(text1, text2):\n    # Versione ottimizzata O(min(m,n)) spazio\n    if len(text1) < len(text2):\n        text1, text2 = text2, text1\n    \n    prev = [0] * (len(text2) + 1)\n    \n    for char1 in text1:\n        curr = [0] * (len(text2) + 1)\n        for j, char2 in enumerate(text2, 1):\n            if char1 == char2:\n                curr[j] = prev[j-1] + 1\n            else:\n                curr[j] = max(curr[j-1], prev[j])\n        prev = curr\n    \n    return prev[-1]",
+                "tests": [
+                    {"input": "\"abcde\", \"ace\"", "expected": "3", "explanation": "LCS è 'ace'"},
+                    {"input": "\"abc\", \"abc\"", "expected": "3", "explanation": "Stringhe identiche"},
+                    {"input": "\"abc\", \"def\"", "expected": "0", "explanation": "Nessun carattere comune"},
+                    {"input": "\"abcdgh\", \"aedfhr\"", "expected": "3", "explanation": "LCS è 'adh'"},
+                    {"input": "\"a\", \"a\"", "expected": "1", "explanation": "Un carattere comune"}
+                ],
+                "hint": "Se i caratteri sono uguali, estendi la LCS precedente, altrimenti prendi il massimo",
+                "time_complexity": "O(m * n)",
+                "space_complexity": "O(m * n), ottimizzabile a O(min(m,n))"
+            }
+        ]
+    },
+    "lis_pattern": {
+        "title": "📈 Longest Increasing Subsequence (LIS)",
+        "description": "Trova la sottosequenza crescente più lunga",
+        "exercises": [
+            {
+                "id": "longest_increasing_subsequence",
+                "title": "Longest Increasing Subsequence (LeetCode 300)", 
+                "difficulty": 2,
+                "statement": "Dato un array di interi, trova la lunghezza della sottosequenza crescente più lunga.",
+                "explanation": "Due approcci: 1) DP O(n²): dp[i] = LIS che termina in i. 2) Binary Search O(n log n): mantieni array delle code più piccole per ogni lunghezza.",
+                "template": "def lengthOfLIS(nums):\n    # Approccio DP O(n²)\n    # dp[i] = lunghezza LIS che termina all'indice i\n    \n    n = len(nums)\n    dp = [1] * n  # Ogni elemento forma LIS di lunghezza 1\n    \n    # Il tuo codice qui\n    pass",
+                "solution": "def lengthOfLIS(nums):\n    # Approccio DP O(n²)\n    n = len(nums)\n    dp = [1] * n  # Ogni elemento forma LIS di lunghezza 1\n    \n    for i in range(1, n):\n        for j in range(i):\n            if nums[j] < nums[i]:\n                dp[i] = max(dp[i], dp[j] + 1)\n    \n    return max(dp)",
+                "optimized_solution": "def lengthOfLIS(nums):\n    # Approccio Binary Search O(n log n)\n    import bisect\n    \n    tails = []  # tails[i] = coda più piccola per LIS di lunghezza i+1\n    \n    for num in nums:\n        # Trova posizione dove inserire num\n        pos = bisect.bisect_left(tails, num)\n        \n        if pos == len(tails):\n            tails.append(num)  # Estendi LIS\n        else:\n            tails[pos] = num   # Sostituisci per coda più piccola\n    \n    return len(tails)",
+                "tests": [
+                    {"input": "[10,9,2,5,3,7,101,18]", "expected": "4", "explanation": "LIS: [2,3,7,18]"},
+                    {"input": "[0,1,0,3,2,3]", "expected": "4", "explanation": "LIS: [0,1,2,3]"},
+                    {"input": "[7,7,7,7,7,7]", "expected": "1", "explanation": "Tutti elementi uguali"},
+                    {"input": "[1,3,6,7,9,4,10,5,6]", "expected": "6", "explanation": "LIS crescente"},
+                    {"input": "[9,8,7,6,5]", "expected": "1", "explanation": "Array decrescente"}
+                ],
+                "hint": "Per ogni elemento, guarda tutti gli elementi precedenti più piccoli",
+                "time_complexity": "O(n²) versione DP, O(n log n) versione binary search",
+                "space_complexity": "O(n)"
+            }
+        ]
+    },
+    "palindrome_pattern": {
+        "title": "🪞 Palindromic Subsequence",
+        "description": "Pattern per problemi con palindromi",
+        "exercises": [
+            {
+                "id": "longest_palindromic_subsequence",
+                "title": "Longest Palindromic Subsequence (LeetCode 516)",
+                "difficulty": 2,
+                "statement": "Data una stringa, trova la lunghezza della sottosequenza palindroma più lunga.",
+                "explanation": "dp[i][j] = lunghezza LPS nella sottostringa s[i:j+1]. Se s[i] == s[j]: dp[i][j] = dp[i+1][j-1] + 2, altrimenti: dp[i][j] = max(dp[i+1][j], dp[i][j-1])",
+                "template": "def longestPalindromeSubseq(s):\n    n = len(s)\n    # dp[i][j] = LPS nella sottostringa s[i:j+1]\n    dp = [[0] * n for _ in range(n)]\n    \n    # Ogni carattere singolo è palindromo di lunghezza 1\n    for i in range(n):\n        dp[i][i] = 1\n    \n    # Il tuo codice qui\n    # Riempi per lunghezza crescente\n    pass",
+                "solution": "def longestPalindromeSubseq(s):\n    n = len(s)\n    # dp[i][j] = LPS nella sottostringa s[i:j+1]\n    dp = [[0] * n for _ in range(n)]\n    \n    # Ogni carattere singolo è palindromo di lunghezza 1\n    for i in range(n):\n        dp[i][i] = 1\n    \n    # Riempi per lunghezza crescente\n    for length in range(2, n + 1):\n        for i in range(n - length + 1):\n            j = i + length - 1\n            \n            if s[i] == s[j]:\n                dp[i][j] = dp[i+1][j-1] + 2\n            else:\n                dp[i][j] = max(dp[i+1][j], dp[i][j-1])\n    \n    return dp[0][n-1]",
+                "optimized_solution": "def longestPalindromeSubseq(s):\n    # Versione ottimizzata spazio\n    n = len(s)\n    prev = [0] * n\n    \n    for i in range(n-1, -1, -1):\n        curr = [0] * n\n        curr[i] = 1  # Carattere singolo\n        \n        for j in range(i+1, n):\n            if s[i] == s[j]:\n                curr[j] = prev[j-1] + 2\n            else:\n                curr[j] = max(curr[j-1], prev[j])\n        \n        prev = curr\n    \n    return prev[n-1]",
+                "tests": [
+                    {"input": "\"bbbab\"", "expected": "4", "explanation": "LPS è 'bbbb'"},
+                    {"input": "\"cbbd\"", "expected": "2", "explanation": "LPS è 'bb'"},
+                    {"input": "\"a\"", "expected": "1", "explanation": "Carattere singolo"},
+                    {"input": "\"ac\"", "expected": "1", "explanation": "Nessun palindromo > 1"},
+                    {"input": "\"aaa\"", "expected": "3", "explanation": "Tutta la stringa"}
+                ],
+                "hint": "Se i caratteri agli estremi sono uguali, estendi il palindromo interno",
+                "time_complexity": "O(n²)",
+                "space_complexity": "O(n²), ottimizzabile a O(n)"
+            }
+        ]
+    },
+    "edit_distance": {
+        "title": "✏️ Edit Distance",
+        "description": "Trasformare una sequenza in un'altra con operazioni minime",
+        "exercises": [
+            {
+                "id": "edit_distance_classic",
+                "title": "Edit Distance (LeetCode 72)",
+                "difficulty": 3,
+                "statement": "Date due stringhe word1 e word2, trova il numero minimo di operazioni (inserisci, cancella, sostituisci) per trasformare word1 in word2.",
+                "explanation": "dp[i][j] = edit distance tra word1[0:i] e word2[0:j]. Se caratteri uguali: dp[i][j] = dp[i-1][j-1], altrimenti: dp[i][j] = 1 + min(insert, delete, replace)",
+                "template": "def minDistance(word1, word2):\n    m, n = len(word1), len(word2)\n    \n    # dp[i][j] = edit distance tra word1[0:i] e word2[0:j]\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    # Casi base: trasformare stringa vuota\n    for i in range(m + 1):\n        dp[i][0] = i  # i cancellazioni\n    for j in range(n + 1):\n        dp[0][j] = j  # j inserimenti\n    \n    # Il tuo codice qui\n    pass",
+                "solution": "def minDistance(word1, word2):\n    m, n = len(word1), len(word2)\n    \n    # dp[i][j] = edit distance tra word1[0:i] e word2[0:j]\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    # Casi base\n    for i in range(m + 1):\n        dp[i][0] = i\n    for j in range(n + 1):\n        dp[0][j] = j\n    \n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if word1[i-1] == word2[j-1]:\n                # Caratteri uguali: nessuna operazione\n                dp[i][j] = dp[i-1][j-1]\n            else:\n                # Tre operazioni possibili\n                dp[i][j] = 1 + min(\n                    dp[i-1][j],     # cancella da word1\n                    dp[i][j-1],     # inserisci in word1\n                    dp[i-1][j-1]    # sostituisci in word1\n                )\n    \n    return dp[m][n]",
+                "optimized_solution": "def minDistance(word1, word2):\n    # Versione O(min(m,n)) spazio\n    if len(word1) < len(word2):\n        word1, word2 = word2, word1\n    \n    m, n = len(word1), len(word2)\n    prev = list(range(n + 1))\n    \n    for i in range(1, m + 1):\n        curr = [i] + [0] * n\n        for j in range(1, n + 1):\n            if word1[i-1] == word2[j-1]:\n                curr[j] = prev[j-1]\n            else:\n                curr[j] = 1 + min(prev[j], curr[j-1], prev[j-1])\n        prev = curr\n    \n    return prev[n]",
+                "tests": [
+                    {"input": "\"horse\", \"ros\"", "expected": "3", "explanation": "horse -> rorse -> rose -> ros"},
+                    {"input": "\"intention\", \"execution\"", "expected": "5", "explanation": "5 operazioni minime"},
+                    {"input": "\"abc\", \"abc\"", "expected": "0", "explanation": "Stringhe identiche"},
+                    {"input": "\"\", \"abc\"", "expected": "3", "explanation": "3 inserimenti"},
+                    {"input": "\"abc\", \"\"", "expected": "3", "explanation": "3 cancellazioni"}
+                ],
+                "hint": "Considera tre operazioni: inserisci, cancella, sostituisci",
+                "time_complexity": "O(m * n)",
+                "space_complexity": "O(m * n), ottimizzabile a O(min(m,n))"
+            }
+        ]
+    },
+    "dp_on_grids": {
+        "title": "🏁 DP on Grids",
+        "description": "Programmazione dinamica su griglie 2D",
+        "exercises": [
+            {
+                "id": "unique_paths",
+                "title": "Unique Paths (LeetCode 62)",
+                "difficulty": 1,
+                "statement": "Un robot è in una griglia m x n. Conta i percorsi unici dall'angolo in alto a sinistra a quello in basso a destra. Puoi muoverti solo destra o giù.",
+                "explanation": "dp[i][j] = numero di percorsi per arrivare alla cella (i,j). dp[i][j] = dp[i-1][j] + dp[i][j-1]. Prima riga e colonna hanno tutti 1 percorso.",
+                "template": "def uniquePaths(m, n):\n    # dp[i][j] = numero di percorsi per arrivare a (i,j)\n    dp = [[1] * n for _ in range(m)]\n    \n    # Il tuo codice qui\n    # Prima riga e colonna sono già inizializzate a 1\n    pass",
+                "solution": "def uniquePaths(m, n):\n    # dp[i][j] = numero di percorsi per arrivare a (i,j)\n    dp = [[1] * n for _ in range(m)]\n    \n    # Riempi la griglia\n    for i in range(1, m):\n        for j in range(1, n):\n            dp[i][j] = dp[i-1][j] + dp[i][j-1]\n    \n    return dp[m-1][n-1]",
+                "optimized_solution": "def uniquePaths(m, n):\n    # Versione O(n) spazio\n    dp = [1] * n\n    \n    for i in range(1, m):\n        for j in range(1, n):\n            dp[j] += dp[j-1]\n    \n    return dp[n-1]",
+                "mathematical_solution": "def uniquePaths(m, n):\n    # Soluzione matematica: C(m+n-2, m-1)\n    from math import comb\n    return comb(m + n - 2, m - 1)",
+                "tests": [
+                    {"input": "3, 7", "expected": "28", "explanation": "Griglia 3x7 ha 28 percorsi"},
+                    {"input": "3, 2", "expected": "3", "explanation": "Piccola griglia"},
+                    {"input": "1, 1", "expected": "1", "explanation": "Una cella"},
+                    {"input": "1, 10", "expected": "1", "explanation": "Una riga"},
+                    {"input": "10, 1", "expected": "1", "explanation": "Una colonna"}
+                ],
+                "hint": "Per ogni cella, puoi arrivarci dalla cella sopra o da sinistra",
+                "time_complexity": "O(m * n)",
+                "space_complexity": "O(m * n), ottimizzabile a O(n)"
+            },
+            {
+                "id": "minimum_path_sum",
+                "title": "Minimum Path Sum (LeetCode 64)",
+                "difficulty": 2,
+                "statement": "Data una griglia m x n con numeri non negativi, trova un percorso dall'alto-sinistra al basso-destra che minimizzi la somma. Puoi muoverti solo destra o giù.",
+                "explanation": "dp[i][j] = somma minima per arrivare a (i,j). dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]). Inizializza prima riga e colonna come somme cumulative.",
+                "template": "def minPathSum(grid):\n    m, n = len(grid), len(grid[0])\n    \n    # dp[i][j] = somma minima per arrivare a (i,j)\n    dp = [[0] * n for _ in range(m)]\n    \n    # Inizializza prima cella\n    dp[0][0] = grid[0][0]\n    \n    # Il tuo codice qui\n    # Inizializza prima riga e colonna\n    # Poi riempi il resto\n    pass",
+                "solution": "def minPathSum(grid):\n    m, n = len(grid), len(grid[0])\n    \n    # Usa la griglia stessa per risparmiare spazio\n    # Inizializza prima riga\n    for j in range(1, n):\n        grid[0][j] += grid[0][j-1]\n    \n    # Inizializza prima colonna\n    for i in range(1, m):\n        grid[i][0] += grid[i-1][0]\n    \n    # Riempi il resto\n    for i in range(1, m):\n        for j in range(1, n):\n            grid[i][j] += min(grid[i-1][j], grid[i][j-1])\n    \n    return grid[m-1][n-1]",
+                "optimized_solution": "def minPathSum(grid):\n    # Versione che non modifica input\n    m, n = len(grid), len(grid[0])\n    dp = [float('inf')] * n\n    dp[0] = 0\n    \n    for i in range(m):\n        dp[0] += grid[i][0]\n        for j in range(1, n):\n            dp[j] = grid[i][j] + min(dp[j], dp[j-1])\n    \n    return dp[n-1]",
+                "tests": [
+                    {"input": "[[1,3,1],[1,5,1],[4,2,1]]", "expected": "7", "explanation": "Percorso 1→3→1→1→1 = 7"},
+                    {"input": "[[1,2,3],[4,5,6]]", "expected": "12", "explanation": "Percorso 1→2→3→6 = 12"},
+                    {"input": "[[1]]", "expected": "1", "explanation": "Una cella"},
+                    {"input": "[[1,2],[1,1]]", "expected": "3", "explanation": "Percorso 1→2→1 = 4 o 1→1→1 = 3"}
+                ],
+                "hint": "Per ogni cella, scegli il percorso con somma minore tra sopra e sinistra",
+                "time_complexity": "O(m * n)",
+                "space_complexity": "O(1) se modifichiamo input, O(n) altrimenti"
+            }
+        ]
+    },
+    "string_partition": {
+        "title": "🔤 String Partition",
+        "description": "Problemi di partizione di stringhe con condizioni specifiche",
+        "exercises": [
+            {
+                "id": "palindrome_partitioning",
+                "title": "Palindrome Partitioning (LeetCode 131)",
+                "difficulty": 2,
+                "statement": "Data una stringa s, partizionala in modo che ogni sottostringa sia un palindromo. Restituisci tutte le possibili partizioni palindromiche.",
+                "explanation": "Usa backtracking con DP per pre-calcolare se una sottostringa è palindromo. dp[i][j] = true se s[i:j+1] è palindromo.",
+                "template": "def partition(s):\n    # Pre-calcola palindromi\n    n = len(s)\n    is_palindrome = [[False] * n for _ in range(n)]\n    \n    # Il tuo codice qui\n    # Riempi is_palindrome e usa backtracking\n    pass",
+                "solution": "def partition(s):\n    n = len(s)\n    is_palindrome = [[False] * n for _ in range(n)]\n    \n    # Pre-calcola tutti i palindromi\n    for i in range(n):\n        is_palindrome[i][i] = True\n    \n    for length in range(2, n + 1):\n        for i in range(n - length + 1):\n            j = i + length - 1\n            if s[i] == s[j]:\n                if length == 2:\n                    is_palindrome[i][j] = True\n                else:\n                    is_palindrome[i][j] = is_palindrome[i+1][j-1]\n    \n    def backtrack(start, path):\n        if start == n:\n            result.append(path[:])\n            return\n        \n        for end in range(start, n):\n            if is_palindrome[start][end]:\n                path.append(s[start:end+1])\n                backtrack(end + 1, path)\n                path.pop()\n    \n    result = []\n    backtrack(0, [])\n    return result",
+                "optimized_solution": "def partition(s):\n    def is_palindrome(start, end):\n        while start < end:\n            if s[start] != s[end]:\n                return False\n            start += 1\n            end -= 1\n        return True\n    \n    def backtrack(start, path):\n        if start == len(s):\n            result.append(path[:])\n            return\n        \n        for end in range(start, len(s)):\n            if is_palindrome(start, end):\n                path.append(s[start:end+1])\n                backtrack(end + 1, path)\n                path.pop()\n    \n    result = []\n    backtrack(0, [])\n    return result",
+                "tests": [
+                    {"input": "\"aab\"", "expected": "[[\"a\",\"a\",\"b\"],[\"aa\",\"b\"]]", "explanation": "Due modi per partizionare"},
+                    {"input": "\"raceacar\"", "expected": "[[\"r\",\"a\",\"c\",\"e\",\"a\",\"c\",\"a\",\"r\"],[\"r\",\"a\",\"c\",\"e\",\"aca\",\"r\"],[\"r\",\"a\",\"ce\",\"a\",\"c\",\"a\",\"r\"],[\"r\",\"ace\",\"c\",\"a\",\"r\"],[\"race\",\"a\",\"car\"],[\"raceacar\"]]", "explanation": "Multipli palindromi"},
+                    {"input": "\"aba\"", "expected": "[[\"a\",\"b\",\"a\"],[\"aba\"]]", "explanation": "String palindromo"},
+                    {"input": "\"a\"", "expected": "[[\"a\"]]", "explanation": "Singolo carattere"}
+                ],
+                "hint": "Pre-calcola quali sottostringhe sono palindromi per ottimizzare",
+                "time_complexity": "O(N * 2^N) dove N è la lunghezza della stringa",
+                "space_complexity": "O(N^2) per la tabella palindromi"
+            },
+            {
+                "id": "word_break",
+                "title": "Word Break (LeetCode 139)",
+                "difficulty": 2,
+                "statement": "Data una stringa s e un dizionario wordDict, determina se s può essere segmentata in sequenza di una o più parole del dizionario.",
+                "explanation": "DP classico: dp[i] = true se s[0:i] può essere segmentata. Per ogni posizione i, controlla tutte le parole che terminano in i.",
+                "template": "def wordBreak(s, wordDict):\n    n = len(s)\n    dp = [False] * (n + 1)\n    dp[0] = True  # stringa vuota\n    \n    # Il tuo codice qui\n    # dp[i] = true se s[0:i] può essere segmentata\n    pass",
+                "solution": "def wordBreak(s, wordDict):\n    n = len(s)\n    dp = [False] * (n + 1)\n    dp[0] = True\n    word_set = set(wordDict)\n    \n    for i in range(1, n + 1):\n        for j in range(i):\n            if dp[j] and s[j:i] in word_set:\n                dp[i] = True\n                break\n    \n    return dp[n]",
+                "optimized_solution": "def wordBreak(s, wordDict):\n    dp = [False] * (len(s) + 1)\n    dp[0] = True\n    word_set = set(wordDict)\n    max_len = max(len(word) for word in wordDict)\n    \n    for i in range(1, len(s) + 1):\n        for j in range(max(0, i - max_len), i):\n            if dp[j] and s[j:i] in word_set:\n                dp[i] = True\n                break\n    \n    return dp[len(s)]",
+                "tests": [
+                    {"input": "\"leetcode\", [\"leet\",\"code\"]", "expected": "true", "explanation": "\"leet\" + \"code\""},
+                    {"input": "\"applepenapple\", [\"apple\",\"pen\"]", "expected": "true", "explanation": "\"apple\" + \"pen\" + \"apple\""},
+                    {"input": "\"catsandog\", [\"cats\",\"dog\",\"sand\",\"and\",\"cat\"]", "expected": "false", "explanation": "Impossibile segmentare"},
+                    {"input": "\"a\", [\"a\"]", "expected": "true", "explanation": "Caso semplice"},
+                    {"input": "\"\", []", "expected": "true", "explanation": "Stringa vuota"}
+                ],
+                "hint": "Usa un set per lookup O(1) delle parole nel dizionario",
+                "time_complexity": "O(N^2 * M) dove M è lunghezza media parole",
+                "space_complexity": "O(N)"
+            }
+        ]
+    },
+    "catalan_numbers": {
+        "title": "🔢 Catalan Numbers",
+        "description": "Problemi che seguono i numeri di Catalan C(n) = C(0)*C(n-1) + C(1)*C(n-2) + ... + C(n-1)*C(0)",
+        "exercises": [
+            {
+                "id": "unique_binary_search_trees",
+                "title": "Unique Binary Search Trees (LeetCode 96)",
+                "difficulty": 2,
+                "statement": "Dato n, quanti BST (Binary Search Trees) strutturalmente unici esistono che memorizzano valori 1...n?",
+                "explanation": "Numero di Catalan! Per ogni radice i, hai C(i-1) BST a sinistra e C(n-i) a destra. dp[n] = sum(dp[i-1] * dp[n-i]) per i da 1 a n",
+                "template": "def numTrees(n):\n    # dp[i] = numero di BST unici con i nodi\n    # Segue i numeri di Catalan\n    \n    # Il tuo codice qui\n    pass",
+                "solution": "def numTrees(n):\n    dp = [0] * (n + 1)\n    dp[0] = dp[1] = 1\n    \n    for nodes in range(2, n + 1):\n        for root in range(1, nodes + 1):\n            left = root - 1\n            right = nodes - root\n            dp[nodes] += dp[left] * dp[right]\n    \n    return dp[n]",
+                "optimized_solution": "def numTrees(n):\n    # Formula diretta per numeri di Catalan\n    if n <= 1:\n        return 1\n    \n    catalan = 1\n    for i in range(n):\n        catalan = catalan * (n + i + 1) // (i + 1)\n    \n    return catalan // (n + 1)",
+                "tests": [
+                    {"input": "3", "expected": "5", "explanation": "5 BST diversi con nodi 1,2,3"},
+                    {"input": "1", "expected": "1", "explanation": "Solo un nodo"},
+                    {"input": "4", "expected": "14", "explanation": "Quarto numero di Catalan"},
+                    {"input": "5", "expected": "42", "explanation": "Quinto numero di Catalan"},
+                    {"input": "0", "expected": "1", "explanation": "Convenzione C(0) = 1"}
+                ],
+                "hint": "Per ogni possibile radice, moltiplica i BST del sottoalbero sinistro per quello destro",
+                "time_complexity": "O(n^2)",
+                "space_complexity": "O(n)"
+            },
+            {
+                "id": "valid_parentheses_combinations",
+                "title": "Generate Parentheses (LeetCode 22)",
+                "difficulty": 2,
+                "statement": "Dato n coppie di parentesi, scrivi una funzione per generare tutte le combinazioni di parentesi ben formate.",
+                "explanation": "Backtracking con condizioni: aggiungi '(' se open < n, aggiungi ')' se close < open. Il numero totale è il numero di Catalan C(n).",
+                "template": "def generateParenthesis(n):\n    result = []\n    \n    def backtrack(current, open_count, close_count):\n        # Condizioni per aggiungere '(' e ')'\n        # Il tuo codice qui\n        pass\n    \n    backtrack('', 0, 0)\n    return result",
+                "solution": "def generateParenthesis(n):\n    result = []\n    \n    def backtrack(current, open_count, close_count):\n        if len(current) == 2 * n:\n            result.append(current)\n            return\n        \n        if open_count < n:\n            backtrack(current + '(', open_count + 1, close_count)\n        \n        if close_count < open_count:\n            backtrack(current + ')', open_count, close_count + 1)\n    \n    backtrack('', 0, 0)\n    return result",
+                "optimized_solution": "def generateParenthesis(n):\n    def generate(open_rem, close_rem, current):\n        if open_rem == 0 and close_rem == 0:\n            return [current]\n        \n        result = []\n        if open_rem > 0:\n            result.extend(generate(open_rem - 1, close_rem, current + '('))\n        if close_rem > open_rem:\n            result.extend(generate(open_rem, close_rem - 1, current + ')'))\n        \n        return result\n    \n    return generate(n, n, '')",
+                "tests": [
+                    {"input": "3", "expected": "[\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]", "explanation": "5 combinazioni (C(3) = 5)"},
+                    {"input": "1", "expected": "[\"()\"]", "explanation": "Solo una combinazione"},
+                    {"input": "2", "expected": "[\"(())\",\"()()\"]", "explanation": "2 combinazioni (C(2) = 2)"},
+                    {"input": "4", "expected": "14 combinazioni", "explanation": "C(4) = 14 combinazioni"}
+                ],
+                "hint": "Usa backtracking: aggiungi '(' se ne hai ancora, ')' se bilanciato",
+                "time_complexity": "O(4^n / sqrt(n)) - n-esimo numero di Catalan",
+                "space_complexity": "O(n) per profondità ricorsione"
+            }
+        ]
+    },
+    "matrix_chain_multiplication": {
+        "title": "⚡ Matrix Chain Multiplication",
+        "description": "Ottimizzazione della moltiplicazione di catene di matrici",
+        "exercises": [
+            {
+                "id": "matrix_chain_order",
+                "title": "Matrix Chain Multiplication (Classic)",
+                "difficulty": 3,
+                "statement": "Date le dimensioni di n matrici, trova l'ordine di moltiplicazione che minimizza il numero di moltiplicazioni scalari.",
+                "explanation": "DP classico con intervalli. dp[i][j] = costo minimo per moltiplicare matrici da i a j. dp[i][j] = min(dp[i][k] + dp[k+1][j] + cost) per k da i a j-1",
+                "template": "def matrixChainOrder(p):\n    # p[i-1] x p[i] sono le dimensioni della matrice i\n    # dp[i][j] = costo minimo per moltiplicare matrici da i a j\n    n = len(p) - 1\n    \n    # Il tuo codice qui\n    pass",
+                "solution": "def matrixChainOrder(p):\n    n = len(p) - 1\n    dp = [[0] * n for _ in range(n)]\n    \n    # l è la lunghezza della catena\n    for l in range(2, n + 1):\n        for i in range(n - l + 1):\n            j = i + l - 1\n            dp[i][j] = float('inf')\n            \n            for k in range(i, j):\n                cost = dp[i][k] + dp[k+1][j] + p[i] * p[k+1] * p[j+1]\n                dp[i][j] = min(dp[i][j], cost)\n    \n    return dp[0][n-1]",
+                "optimized_solution": "def matrixChainOrder(p):\n    n = len(p) - 1\n    memo = {}\n    \n    def solve(i, j):\n        if i == j:\n            return 0\n        \n        if (i, j) in memo:\n            return memo[(i, j)]\n        \n        result = float('inf')\n        for k in range(i, j):\n            cost = solve(i, k) + solve(k+1, j) + p[i] * p[k+1] * p[j+1]\n            result = min(result, cost)\n        \n        memo[(i, j)] = result\n        return result\n    \n    return solve(0, n-1)",
+                "tests": [
+                    {"input": "[1, 2, 3, 4, 5]", "expected": "38", "explanation": "Matrici 1x2, 2x3, 3x4, 4x5"},
+                    {"input": "[40, 20, 30, 10, 30]", "expected": "26000", "explanation": "Ottimizzazione complessa"},
+                    {"input": "[5, 4, 6, 2, 7]", "expected": "158", "explanation": "Caso medio"},
+                    {"input": "[1, 2, 3]", "expected": "6", "explanation": "Due matrici 1x2, 2x3"}
+                ],
+                "hint": "Prova tutti i possibili punti di divisione e scegli il minimo",
+                "time_complexity": "O(n^3)",
+                "space_complexity": "O(n^2)"
+            },
+            {
+                "id": "burst_balloons",
+                "title": "Burst Balloons (LeetCode 312)", 
+                "difficulty": 3,
+                "statement": "Hai n palloncini con numeri. Scoppiando un palloncino i ottieni nums[i-1] * nums[i] * nums[i+1] monete. Trova il massimo di monete ottenibili.",
+                "explanation": "Simile a matrix chain! Aggiungi 1 agli estremi. dp[i][j] = massime monete scoppiando tutti i palloncini nell'intervallo (i,j) esclusivo.",
+                "template": "def maxCoins(nums):\n    # Aggiungi 1 agli estremi per semplificare\n    nums = [1] + nums + [1]\n    n = len(nums)\n    \n    # dp[i][j] = massime monete scoppiando palloncini in (i,j)\n    # Il tuo codice qui\n    pass",
+                "solution": "def maxCoins(nums):\n    nums = [1] + nums + [1]\n    n = len(nums)\n    dp = [[0] * n for _ in range(n)]\n    \n    for length in range(2, n):\n        for i in range(n - length):\n            j = i + length\n            for k in range(i + 1, j):\n                dp[i][j] = max(dp[i][j], \n                              dp[i][k] + dp[k][j] + nums[i] * nums[k] * nums[j])\n    \n    return dp[0][n-1]",
+                "optimized_solution": "def maxCoins(nums):\n    nums = [1] + nums + [1]\n    memo = {}\n    \n    def dp(i, j):\n        if i + 1 == j:\n            return 0\n        \n        if (i, j) in memo:\n            return memo[(i, j)]\n        \n        result = 0\n        for k in range(i + 1, j):\n            result = max(result, \n                        dp(i, k) + dp(k, j) + nums[i] * nums[k] * nums[j])\n        \n        memo[(i, j)] = result\n        return result\n    \n    return dp(0, len(nums) - 1)",
+                "tests": [
+                    {"input": "[3,1,5,8]", "expected": "167", "explanation": "Ordine ottimale di scoppio"},
+                    {"input": "[1,5]", "expected": "10", "explanation": "Due palloncini"},
+                    {"input": "[9,76,64,21]", "expected": "1086424", "explanation": "Numeri grandi"},
+                    {"input": "[7,9,8,0,2]", "expected": "686", "explanation": "Con zero"}
+                ],
+                "hint": "Pensa all'ultimo palloncino da scoppiare nell'intervallo",
+                "time_complexity": "O(n^3)",
+                "space_complexity": "O(n^2)"
+            }
+        ]
+    },
+    "count_distinct_ways": {
+        "title": "🔢 Count Distinct Ways",
+        "description": "Contare il numero di modi distinti per raggiungere un obiettivo",
+        "exercises": [
+            {
+                "id": "target_sum",
+                "title": "Target Sum (LeetCode 494)",
+                "difficulty": 2,
+                "statement": "Hai un array di interi e un target. Assegna '+' o '-' a ogni numero per raggiungere il target. Conta i modi.",
+                "explanation": "Trasforma in Subset Sum: se sum(positivi) = P e sum(negativi) = N, allora P - N = target e P + N = total. Quindi P = (target + total) / 2",
+                "template": "def findTargetSumWays(nums, target):\n    total = sum(nums)\n    # Controlla se è possibile\n    if target > total or target < -total or (target + total) % 2 == 1:\n        return 0\n    \n    # Trasforma in subset sum\n    # Il tuo codice qui\n    pass",
+                "solution": "def findTargetSumWays(nums, target):\n    total = sum(nums)\n    if target > total or target < -total or (target + total) % 2 == 1:\n        return 0\n    \n    subset_sum = (target + total) // 2\n    dp = [0] * (subset_sum + 1)\n    dp[0] = 1\n    \n    for num in nums:\n        for j in range(subset_sum, num - 1, -1):\n            dp[j] += dp[j - num]\n    \n    return dp[subset_sum]",
+                "optimized_solution": "def findTargetSumWays(nums, target):\n    from collections import defaultdict\n    memo = defaultdict(int)\n    memo[0] = 1\n    \n    for num in nums:\n        next_memo = defaultdict(int)\n        for sum_val, count in memo.items():\n            next_memo[sum_val + num] += count\n            next_memo[sum_val - num] += count\n        memo = next_memo\n    \n    return memo[target]",
+                "tests": [
+                    {"input": "[1,1,1,1,1], 3", "expected": "5", "explanation": "5 modi per ottenere +3"},
+                    {"input": "[1], 1", "expected": "1", "explanation": "Solo +1"},
+                    {"input": "[1], 2", "expected": "0", "explanation": "Impossibile"},
+                    {"input": "[1,0], 1", "expected": "2", "explanation": "+1+0 e +1-0"},
+                    {"input": "[100], -200", "expected": "0", "explanation": "Target irraggiungibile"}
+                ],
+                "hint": "Trasforma in problema subset sum: trova quanti subset sommano a (target + total) / 2",
+                "time_complexity": "O(n * sum)",
+                "space_complexity": "O(sum)"
+            },
+            {
+                "id": "coin_change_ways",
+                "title": "Coin Change 2 (LeetCode 518)",
+                "difficulty": 2,
+                "statement": "Hai monete di diversi valori e un importo. Conta i modi diversi per formare l'importo usando le monete.",
+                "explanation": "DP classico per contare modi. dp[i] = numero di modi per formare importo i. Per ogni moneta, aggiungi i modi precedenti.",
+                "template": "def change(amount, coins):\n    # dp[i] = numero di modi per formare importo i\n    dp = [0] * (amount + 1)\n    dp[0] = 1  # un modo per formare 0\n    \n    # Il tuo codice qui\n    # Processa una moneta alla volta per evitare duplicati\n    pass",
+                "solution": "def change(amount, coins):\n    dp = [0] * (amount + 1)\n    dp[0] = 1\n    \n    # Processa una moneta alla volta\n    for coin in coins:\n        for i in range(coin, amount + 1):\n            dp[i] += dp[i - coin]\n    \n    return dp[amount]",
+                "optimized_solution": "def change(amount, coins):\n    memo = {}\n    \n    def dp(i, remaining):\n        if remaining == 0:\n            return 1\n        if i >= len(coins) or remaining < 0:\n            return 0\n        \n        if (i, remaining) in memo:\n            return memo[(i, remaining)]\n        \n        # Include current coin vs skip\n        result = dp(i, remaining - coins[i]) + dp(i + 1, remaining)\n        memo[(i, remaining)] = result\n        return result\n    \n    return dp(0, amount)",
+                "tests": [
+                    {"input": "5, [1,2,5]", "expected": "4", "explanation": "4 modi: [5], [2,2,1], [2,1,1,1], [1,1,1,1,1]"},
+                    {"input": "3, [2]", "expected": "0", "explanation": "Impossibile formare 3 con monete da 2"},
+                    {"input": "10, [10]", "expected": "1", "explanation": "Solo un modo"},
+                    {"input": "4, [1,2,3]", "expected": "4", "explanation": "[1,1,1,1], [1,1,2], [2,2], [1,3]"},
+                    {"input": "0, [1,2]", "expected": "1", "explanation": "Un modo per formare 0"}
+                ],
+                "hint": "Processa una moneta alla volta per evitare combinazioni duplicate",
+                "time_complexity": "O(amount * coins)",
+                "space_complexity": "O(amount)"
+            }
+        ]
+    },
+    "dp_on_trees": {
+        "title": "🌳 DP on Trees",
+        "description": "Programmazione dinamica su strutture ad albero",
+        "exercises": [
+            {
+                "id": "house_robber_tree",
+                "title": "House Robber III (LeetCode 337)",
+                "difficulty": 3,
+                "statement": "Case disposte ad albero binario. Non puoi rapinare due case direttamente connesse. Massimizza il bottino.",
+                "explanation": "Per ogni nodo, hai due scelte: rapinarlo (non puoi rapinare figli) o non rapinarlo (puoi rapinare figli). dp[node] = (rob_node, not_rob_node)",
+                "template": "def rob(root):\n    def dfs(node):\n        if not node:\n            return (0, 0)  # (rob, not_rob)\n        \n        # Il tuo codice qui\n        # Calcola per sottoalberi sinistro e destro\n        # Ritorna (max se rapini nodo, max se non rapini nodo)\n        pass\n    \n    return max(dfs(root))",
+                "solution": "def rob(root):\n    def dfs(node):\n        if not node:\n            return (0, 0)  # (rob_node, not_rob_node)\n        \n        left_rob, left_not_rob = dfs(node.left)\n        right_rob, right_not_rob = dfs(node.right)\n        \n        # Se rapino questo nodo, non posso rapinare i figli\n        rob_current = node.val + left_not_rob + right_not_rob\n        \n        # Se non rapino questo nodo, posso prendere il max dai figli\n        not_rob_current = max(left_rob, left_not_rob) + max(right_rob, right_not_rob)\n        \n        return (rob_current, not_rob_current)\n    \n    return max(dfs(root))",
+                "optimized_solution": "def rob(root):\n    memo = {}\n    \n    def dp(node):\n        if not node:\n            return 0\n        if node in memo:\n            return memo[node]\n        \n        # Opzione 1: rapina questo nodo\n        rob_current = node.val\n        if node.left:\n            rob_current += dp(node.left.left) + dp(node.left.right)\n        if node.right:\n            rob_current += dp(node.right.left) + dp(node.right.right)\n        \n        # Opzione 2: non rapinare questo nodo\n        not_rob_current = dp(node.left) + dp(node.right)\n        \n        memo[node] = max(rob_current, not_rob_current)\n        return memo[node]\n    \n    return dp(root)",
+                "tests": [
+                    {"input": "[3,2,3,null,3,null,1]", "expected": "7", "explanation": "Rapina 3 + 3 + 1 = 7"},
+                    {"input": "[3,4,5,1,3,null,1]", "expected": "9", "explanation": "Rapina 4 + 5 = 9"},
+                    {"input": "[1]", "expected": "1", "explanation": "Solo radice"},
+                    {"input": "[2,1,3,null,4]", "expected": "7", "explanation": "Rapina 2 + 4 + 1 = 7"}
+                ],
+                "hint": "Per ogni nodo, confronta rapinarlo vs non rapinarlo e prendere il massimo dai figli",
+                "time_complexity": "O(n)",
+                "space_complexity": "O(h) dove h è l'altezza dell'albero"
+            },
+            {
+                "id": "diameter_binary_tree",
+                "title": "Diameter of Binary Tree (LeetCode 543)",
+                "difficulty": 2,
+                "statement": "Trova la lunghezza del percorso più lungo tra due nodi qualsiasi nell'albero. Il percorso può non passare per la radice.",
+                "explanation": "Per ogni nodo, il diametro massimo è altezza_sinistra + altezza_destra. Aggiorna il diametro globale durante il calcolo delle altezze.",
+                "template": "def diameterOfBinaryTree(root):\n    max_diameter = 0\n    \n    def height(node):\n        nonlocal max_diameter\n        if not node:\n            return 0\n        \n        # Il tuo codice qui\n        # Calcola altezza e aggiorna diametro massimo\n        pass\n    \n    height(root)\n    return max_diameter",
+                "solution": "def diameterOfBinaryTree(root):\n    max_diameter = 0\n    \n    def height(node):\n        nonlocal max_diameter\n        if not node:\n            return 0\n        \n        left_height = height(node.left)\n        right_height = height(node.right)\n        \n        # Diametro passante per questo nodo\n        current_diameter = left_height + right_height\n        max_diameter = max(max_diameter, current_diameter)\n        \n        # Ritorna altezza di questo sottoalbero\n        return 1 + max(left_height, right_height)\n    \n    height(root)\n    return max_diameter",
+                "optimized_solution": "def diameterOfBinaryTree(root):\n    def dfs(node):\n        if not node:\n            return 0, 0  # (height, diameter)\n        \n        left_height, left_diameter = dfs(node.left)\n        right_height, right_diameter = dfs(node.right)\n        \n        current_height = 1 + max(left_height, right_height)\n        current_diameter = max(left_diameter, right_diameter, left_height + right_height)\n        \n        return current_height, current_diameter\n    \n    return dfs(root)[1]",
+                "tests": [
+                    {"input": "[1,2,3,4,5]", "expected": "3", "explanation": "Percorso 4->2->1->3 o 5->2->1->3"},
+                    {"input": "[1,2]", "expected": "1", "explanation": "Percorso 2->1"},
+                    {"input": "[1]", "expected": "0", "explanation": "Solo un nodo"},
+                    {"input": "[1,2,3,4,5,null,null,6,7]", "expected": "4", "explanation": "Percorso più lungo"}
+                ],
+                "hint": "Il diametro per ogni nodo è somma delle altezze dei sottoalberi sinistro e destro",
+                "time_complexity": "O(n)",
+                "space_complexity": "O(h)"
+            }
+        ]
+    },
+    "dp_on_graphs": {
+        "title": "🕸️ DP on Graphs",
+        "description": "Programmazione dinamica su grafi",
+        "exercises": [
+            {
+                "id": "cheapest_flights_k_stops",
+                "title": "Cheapest Flights Within K Stops (LeetCode 787)",
+                "difficulty": 2,
+                "statement": "Trova il prezzo del volo più economico da src a dst con al massimo k fermate intermedie.",
+                "explanation": "DP con stati (città, fermate_usate). dp[i][j] = costo minimo per raggiungere città i con j fermate. Bellman-Ford modificato.",
+                "template": "def findCheapestPrice(n, flights, src, dst, k):\n    # dp[i] = costo minimo per raggiungere città i\n    # Esegui k+1 iterazioni (al massimo k fermate)\n    \n    # Il tuo codice qui\n    pass",
+                "solution": "def findCheapestPrice(n, flights, src, dst, k):\n    # Bellman-Ford modificato\n    dp = [float('inf')] * n\n    dp[src] = 0\n    \n    # Al massimo k fermate = k+1 edges\n    for _ in range(k + 1):\n        temp = dp[:]\n        for u, v, price in flights:\n            if dp[u] != float('inf'):\n                temp[v] = min(temp[v], dp[u] + price)\n        dp = temp\n    \n    return dp[dst] if dp[dst] != float('inf') else -1",
+                "optimized_solution": "def findCheapestPrice(n, flights, src, dst, k):\n    from collections import defaultdict, deque\n    \n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n    \n    # BFS con limite di fermate\n    queue = deque([(src, 0, 0)])  # (città, costo, fermate)\n    min_cost = defaultdict(lambda: float('inf'))\n    \n    while queue:\n        city, cost, stops = queue.popleft()\n        \n        if stops > k + 1 or cost > min_cost[(city, stops)]:\n            continue\n        \n        min_cost[(city, stops)] = cost\n        \n        if city == dst:\n            continue\n        \n        for next_city, price in graph[city]:\n            if stops < k + 1:\n                queue.append((next_city, cost + price, stops + 1))\n    \n    result = float('inf')\n    for stops in range(k + 2):\n        result = min(result, min_cost[(dst, stops)])\n    \n    return result if result != float('inf') else -1",
+                "tests": [
+                    {"input": "4, [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], 0, 3, 1", "expected": "700", "explanation": "0->1->3 con 1 fermata"},
+                    {"input": "3, [[0,1,100],[1,2,100],[0,2,500]], 0, 2, 1", "expected": "200", "explanation": "0->1->2 vs 0->2"},
+                    {"input": "3, [[0,1,100],[1,2,100],[0,2,500]], 0, 2, 0", "expected": "500", "explanation": "Solo volo diretto"},
+                    {"input": "4, [[0,1,1],[0,2,5],[1,2,1],[2,3,1]], 0, 3, 1", "expected": "6", "explanation": "0->2->3"}
+                ],
+                "hint": "Usa Bellman-Ford limitando il numero di edge a k+1",
+                "time_complexity": "O(k * E) dove E è il numero di voli",
+                "space_complexity": "O(n)"
+            }
+        ]
+    },
+    "digit_dp": {
+        "title": "🔢 Digit DP",
+        "description": "Programmazione dinamica su cifre di numeri",
+        "exercises": [
+            {
+                "id": "count_numbers_with_unique_digits",
+                "title": "Count Numbers with Unique Digits (LeetCode 357)",
+                "difficulty": 2,
+                "statement": "Conta numeri con cifre uniche da 0 a 10^n - 1.",
+                "explanation": "Digit DP: per ogni posizione, conta scelte valide. dp[i][used_mask] = numeri validi con i cifre usando cifre in used_mask.",
+                "template": "def countNumbersWithUniqueDigits(n):\n    if n == 0:\n        return 1\n    \n    # Il tuo codice qui\n    # Conta numeri con cifre uniche per ogni lunghezza\n    pass",
+                "solution": "def countNumbersWithUniqueDigits(n):\n    if n == 0:\n        return 1\n    \n    result = 1  # per il numero 0\n    \n    for length in range(1, n + 1):\n        if length == 1:\n            result += 9  # 1-9\n        else:\n            count = 9  # prima cifra (1-9)\n            for i in range(1, length):\n                count *= (10 - i)  # cifre rimanenti disponibili\n            result += count\n    \n    return result",
+                "optimized_solution": "def countNumbersWithUniqueDigits(n):\n    if n == 0:\n        return 1\n    if n == 1:\n        return 10\n    \n    # f(n) = f(n-1) + 9 * P(9, n-1)\n    # dove P(9, n-1) = 9! / (9-n+1)!\n    result = 10  # f(1)\n    unique_digits = 9  # 9 * P(9, 0)\n    \n    for i in range(2, n + 1):\n        unique_digits *= (10 - i + 1)\n        result += unique_digits\n    \n    return result",
+                "tests": [
+                    {"input": "2", "expected": "91", "explanation": "0-99, esclusi numeri con cifre ripetute"},
+                    {"input": "0", "expected": "1", "explanation": "Solo 0"},
+                    {"input": "1", "expected": "10", "explanation": "0-9"},
+                    {"input": "3", "expected": "739", "explanation": "0-999 con cifre uniche"},
+                    {"input": "8", "expected": "2345851", "explanation": "Massimo pratico (10 cifre diverse)"}
+                ],
+                "hint": "Per lunghezza n: prima cifra ha 9 scelte, seconda ha 9, terza ha 8, etc.",
+                "time_complexity": "O(n)",
+                "space_complexity": "O(1)"
+            }
+        ]
+    },
+    "bitmasking_dp": {
+        "title": "🎭 Bitmasking DP",
+        "description": "DP con bitmask per tenere traccia di stati complessi",
+        "exercises": [
+            {
+                "id": "traveling_salesman",
+                "title": "Traveling Salesman Problem (TSP)",
+                "difficulty": 3,
+                "statement": "Trova il percorso più corto che visita tutte le città esattamente una volta e torna all'origine.",
+                "explanation": "dp[mask][i] = costo minimo per visitare città in mask terminando in città i. mask è bitmask delle città visitate.",
+                "template": "def tsp(dist):\n    n = len(dist)\n    # dp[mask][i] = costo minimo con città in mask, terminando in i\n    dp = [[float('inf')] * n for _ in range(1 << n)]\n    \n    # Il tuo codice qui\n    pass",
+                "solution": "def tsp(dist):\n    n = len(dist)\n    dp = [[float('inf')] * n for _ in range(1 << n)]\n    \n    # Caso base: inizia dalla città 0\n    dp[1][0] = 0  # mask=1 (solo città 0), posizione 0\n    \n    for mask in range(1 << n):\n        for u in range(n):\n            if not (mask & (1 << u)) or dp[mask][u] == float('inf'):\n                continue\n            \n            for v in range(n):\n                if mask & (1 << v):  # città già visitata\n                    continue\n                \n                new_mask = mask | (1 << v)\n                dp[new_mask][v] = min(dp[new_mask][v], dp[mask][u] + dist[u][v])\n    \n    # Torna alla città 0\n    result = float('inf')\n    final_mask = (1 << n) - 1\n    for i in range(1, n):\n        if dp[final_mask][i] != float('inf'):\n            result = min(result, dp[final_mask][i] + dist[i][0])\n    \n    return result",
+                "optimized_solution": "def tsp(dist):\n    n = len(dist)\n    memo = {}\n    \n    def dp(mask, pos):\n        if mask == (1 << n) - 1:\n            return dist[pos][0]  # torna all'origine\n        \n        if (mask, pos) in memo:\n            return memo[(mask, pos)]\n        \n        result = float('inf')\n        for next_city in range(n):\n            if mask & (1 << next_city):\n                continue\n            \n            new_mask = mask | (1 << next_city)\n            result = min(result, dist[pos][next_city] + dp(new_mask, next_city))\n        \n        memo[(mask, pos)] = result\n        return result\n    \n    return dp(1, 0)  # inizia dalla città 0",
+                "tests": [
+                    {"input": "[[0,10,15,20],[10,0,35,25],[15,35,0,30],[20,25,30,0]]", "expected": "80", "explanation": "Percorso ottimale 4 città"},
+                    {"input": "[[0,1,2],[1,0,3],[2,3,0]]", "expected": "6", "explanation": "3 città: 0->1->2->0"},
+                    {"input": "[[0,5],[5,0]]", "expected": "10", "explanation": "2 città: 0->1->0"}
+                ],
+                "hint": "Usa bitmask per rappresentare set di città visitate",
+                "time_complexity": "O(n^2 * 2^n)",
+                "space_complexity": "O(n * 2^n)"
+            }
+        ]
+    },
+    "probability_dp": {
+        "title": "🎲 Probability DP",
+        "description": "DP per calcolare probabilità e valori attesi",
+        "exercises": [
+            {
+                "id": "new_21_game",
+                "title": "New 21 Game (LeetCode 837)",
+                "difficulty": 3,
+                "statement": "Parti con 0 punti. Ogni turno peschi carta con valore 1-maxPts se punti < k. Vinci se punti finali ≤ n. Trova probabilità di vittoria.",
+                "explanation": "dp[i] = probabilità di vincere partendo da i punti. Se i ≥ k, smetti. Se i + maxPts > n, perdi. dp[i] = (1/maxPts) * sum(dp[i+1] a dp[i+maxPts])",
+                "template": "def new21Game(n, k, maxPts):\n    if k == 0 or n >= k + maxPts:\n        return 1.0\n    \n    # dp[i] = probabilità di vincere con i punti\n    # Il tuo codice qui\n    pass",
+                "solution": "def new21Game(n, k, maxPts):\n    if k == 0 or n >= k + maxPts:\n        return 1.0\n    \n    dp = [0.0] * (n + 1)\n    dp[0] = 1.0\n    window_sum = 1.0\n    \n    for i in range(1, n + 1):\n        dp[i] = window_sum / maxPts\n        \n        if i < k:\n            window_sum += dp[i]\n        if i - maxPts >= 0:\n            window_sum -= dp[i - maxPts]\n    \n    return sum(dp[k:n+1])",
+                "optimized_solution": "def new21Game(n, k, maxPts):\n    if k == 0 or n >= k + maxPts:\n        return 1.0\n    \n    dp = [0.0] * (k + maxPts)\n    \n    # Casi base: se i ≥ k e i ≤ n, vinci\n    for i in range(k, min(n + 1, k + maxPts)):\n        dp[i] = 1.0\n    \n    # Calcola backward\n    for i in range(k - 1, -1, -1):\n        for j in range(1, maxPts + 1):\n            dp[i] += dp[i + j] / maxPts\n    \n    return dp[0]",
+                "tests": [
+                    {"input": "10, 1, 10", "expected": "1.0", "explanation": "Sempre vinci"},
+                    {"input": "6, 1, 10", "expected": "0.6", "explanation": "6/10 carte vincenti"},
+                    {"input": "21, 17, 10", "expected": "0.73278", "explanation": "Caso complesso"},
+                    {"input": "0, 0, 1", "expected": "1.0", "explanation": "k=0, sempre vinci"}
+                ],
+                "hint": "Calcola probabilità backward da stati finali a stato iniziale",
+                "time_complexity": "O(n * maxPts)",
+                "space_complexity": "O(n)"
+            }
+        ]
+    },
+    "state_machine_dp": {
+        "title": "🤖 State Machine DP",
+        "description": "DP con macchine a stati finiti",
+        "exercises": [
+            {
+                "id": "best_time_to_buy_sell_stock_with_cooldown",
+                "title": "Best Time to Buy/Sell Stock with Cooldown (LeetCode 309)",
+                "difficulty": 2,
+                "statement": "Compra/vendi azioni per massimo profitto. Dopo vendita hai 1 giorno di cooldown. Al massimo 1 azione alla volta.",
+                "explanation": "Stati: hold (possiedi), sold (appena venduto), rest (riposo). Transizioni: hold->sold (vendi), sold->rest (cooldown), rest->hold (compra) o rest->rest.",
+                "template": "def maxProfit(prices):\n    # Stati: hold, sold, rest\n    # hold[i] = max profitto al giorno i possedendo azione\n    # sold[i] = max profitto al giorno i avendo appena venduto\n    # rest[i] = max profitto al giorno i in riposo\n    \n    # Il tuo codice qui\n    pass",
+                "solution": "def maxProfit(prices):\n    if not prices:\n        return 0\n    \n    n = len(prices)\n    hold = [-prices[0]] * n\n    sold = [0] * n\n    rest = [0] * n\n    \n    for i in range(1, n):\n        hold[i] = max(hold[i-1], rest[i-1] - prices[i])\n        sold[i] = hold[i-1] + prices[i]\n        rest[i] = max(rest[i-1], sold[i-1])\n    \n    return max(sold[n-1], rest[n-1])",
+                "optimized_solution": "def maxProfit(prices):\n    if not prices:\n        return 0\n    \n    # Ottimizzazione spazio O(1)\n    hold = -prices[0]\n    sold = 0\n    rest = 0\n    \n    for i in range(1, len(prices)):\n        prev_hold = hold\n        prev_sold = sold\n        prev_rest = rest\n        \n        hold = max(prev_hold, prev_rest - prices[i])\n        sold = prev_hold + prices[i]\n        rest = max(prev_rest, prev_sold)\n    \n    return max(sold, rest)",
+                "tests": [
+                    {"input": "[1,2,3,0,2]", "expected": "3", "explanation": "Compra[0], vendi[2], cooldown[3], compra[3], vendi[4]"},
+                    {"input": "[1]", "expected": "0", "explanation": "Un solo giorno"},
+                    {"input": "[1,2,4]", "expected": "3", "explanation": "Compra[0], vendi[2]"},
+                    {"input": "[2,1,4]", "expected": "3", "explanation": "Compra[1], vendi[2]"},
+                    {"input": "[3,2,1]", "expected": "0", "explanation": "Prezzi decrescenti"}
+                ],
+                "hint": "Definisci stati chiari e transizioni valide tra di essi",
+                "time_complexity": "O(n)",
+                "space_complexity": "O(1)"
+            }
+        ]
+    }
+}
