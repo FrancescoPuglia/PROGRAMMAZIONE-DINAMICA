@@ -280,16 +280,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Chapter Management
 function loadChapter(chapterId) {
+    console.log(`🔄 Loading chapter: ${chapterId}`);
+    
     // Update state
     appState.currentChapter = chapterId;
     
-    // Update UI
+    // Hide all chapters first
     document.querySelectorAll('.chapter-content').forEach(content => {
+        content.style.display = 'none';
         content.classList.remove('active');
     });
-    document.getElementById(chapterId).classList.add('active');
     
-    // Update navigation
+    // Show the selected chapter
+    const targetChapter = document.getElementById(chapterId);
+    if (targetChapter) {
+        targetChapter.style.display = 'block';
+        targetChapter.classList.add('active');
+        console.log(`✅ Chapter ${chapterId} displayed`);
+    } else {
+        console.error(`❌ Chapter element not found: ${chapterId}`);
+        return;
+    }
+    
+    // Update navigation highlighting
     document.querySelectorAll('.chapter-link').forEach(link => {
         link.classList.remove('active');
         if (link.dataset.chapter === chapterId) {
@@ -316,35 +329,195 @@ function loadChapter(chapterId) {
     // Save state
     saveState();
     
+    // Ensure we're in learn mode
+    if (appState.currentMode !== 'learn') {
+        setMode('learn');
+    }
+    
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// DEBUG: Global functions for testing chapter navigation
+window.debugChapters = function() {
+    console.log('🔍 DEBUGGING CHAPTERS:');
+    const chapters = document.querySelectorAll('.chapter-content');
+    chapters.forEach(chapter => {
+        console.log(`Chapter ${chapter.id}:`, {
+            display: getComputedStyle(chapter).display,
+            hasActiveClass: chapter.classList.contains('active'),
+            element: chapter
+        });
+    });
+}
+
+window.testChapterNavigation = function() {
+    console.log('🧪 Testing chapter navigation...');
+    const testChapters = ['prologo', 'cap1', 'cap2', 'cap3'];
+    
+    testChapters.forEach((chapterId, index) => {
+        setTimeout(() => {
+            console.log(`Testing chapter: ${chapterId}`);
+            loadChapter(chapterId);
+            debugChapters();
+        }, index * 2000);
+    });
+}
+
+// DEBUG: Global function for testing mode switching
+window.debugModes = function() {
+    console.log('🔍 DEBUGGING MODES:');
+    console.log('Current mode:', appState.currentMode);
+    
+    const modes = ['learn', 'practice', 'review'];
+    modes.forEach(mode => {
+        console.log(`Testing mode: ${mode}`);
+        setMode(mode);
+        
+        // Check what's visible
+        setTimeout(() => {
+            const hero = document.getElementById('heroHeader');
+            console.log(`${mode} mode:`, {
+                heroVisible: hero ? getComputedStyle(hero).display : 'not found',
+                practiceVisible: document.getElementById('practiceMode') ? getComputedStyle(document.getElementById('practiceMode')).display : 'not found',
+                reviewVisible: document.getElementById('reviewMode') ? getComputedStyle(document.getElementById('reviewMode')).display : 'not found'
+            });
+        }, 500);
+    });
+}
+
 // Mode Management
-function setMode(mode) {
+function setMode(mode, clickedElement = null) {
+    console.log(`🔄 Switching to mode: ${mode}`);
     appState.currentMode = mode;
     
-    // Update UI
+    // Update UI - remove active from all mode buttons
     document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
     
-    // Show/hide content
-    document.querySelectorAll('.mode-content').forEach(content => {
-        content.style.display = 'none';
-    });
-    document.getElementById(`${mode}Mode`).style.display = 'block';
-    
-    // Mode-specific initialization
-    if (mode === 'practice') {
-        initializePracticeMode();
-    } else if (mode === 'review') {
-        initializeReviewMode();
+    // Add active to clicked button (try multiple approaches)
+    if (clickedElement) {
+        clickedElement.classList.add('active');
+    } else {
+        // Fallback: find button by mode
+        const targetBtn = document.querySelector(`[onclick*="${mode}"]`);
+        if (targetBtn) {
+            targetBtn.classList.add('active');
+        }
     }
     
-    // Update hero visibility
-    document.getElementById('heroHeader').style.display = mode === 'learn' ? 'block' : 'none';
+    // Handle content area display based on mode
+    const contentArea = document.querySelector('.content-area');
+    const heroHeader = document.getElementById('heroHeader');
+    
+    if (!contentArea) {
+        console.error('❌ Content area not found!');
+        return;
+    }
+    
+    if (mode === 'learn') {
+        // Show main learning content
+        if (heroHeader) heroHeader.style.display = 'block';
+        
+        // Hide practice/review mode content
+        const practiceMode = document.getElementById('practiceMode');
+        const reviewMode = document.getElementById('reviewMode');
+        if (practiceMode) practiceMode.style.display = 'none';
+        if (reviewMode) reviewMode.style.display = 'none';
+        
+        // Show the current chapter
+        const currentChapter = appState.currentChapter || 'prologo';
+        document.querySelectorAll('.chapter-content').forEach(content => {
+            content.style.display = 'none';
+            content.classList.remove('active');
+        });
+        
+        const activeChapter = document.getElementById(currentChapter);
+        if (activeChapter) {
+            activeChapter.style.display = 'block';
+            activeChapter.classList.add('active');
+        }
+        
+        console.log(`✅ Learn mode activated - showing chapter: ${currentChapter}`);
+        
+    } else if (mode === 'practice') {
+        // Show practice mode content
+        if (heroHeader) heroHeader.style.display = 'none';
+        
+        // Create practice mode content if not exists
+        let practiceMode = document.getElementById('practiceMode');
+        if (!practiceMode) {
+            practiceMode = document.createElement('div');
+            practiceMode.id = 'practiceMode';
+            practiceMode.className = 'mode-content';
+            practiceMode.innerHTML = `
+                <div style="padding: 40px; text-align: center;">
+                    <h2>🏋️ Modalità Pratica</h2>
+                    <p>Esercizi interattivi di Programmazione Dinamica</p>
+                    <div class="practice-mode-selector">
+                        <h3>Scegli il tipo di pratica:</h3>
+                        <div class="practice-options">
+                            <div class="practice-option" onclick="startPractice('mixed')">
+                                <h4>🔀 Pratica Mista</h4>
+                                <p>Problemi di diversi capitoli mescolati</p>
+                            </div>
+                            <div class="practice-option" onclick="startPractice('focused')">
+                                <h4>🎯 Pratica Focalizzata</h4>
+                                <p>Concentrati su un argomento specifico</p>
+                            </div>
+                            <div class="practice-option" onclick="startPractice('adaptive')">
+                                <h4>🧠 Pratica Adattiva</h4>
+                                <p>Difficoltà basata sulle tue performance</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            contentArea.appendChild(practiceMode);
+        }
+        
+        // Hide chapter content, show practice content
+        document.querySelectorAll('.chapter-content').forEach(content => {
+            content.style.display = 'none';
+        });
+        practiceMode.style.display = 'block';
+        
+        console.log('✅ Practice mode activated');
+        
+    } else if (mode === 'review') {
+        // Show review mode content
+        if (heroHeader) heroHeader.style.display = 'none';
+        
+        // Create review mode content if not exists
+        let reviewMode = document.getElementById('reviewMode');
+        if (!reviewMode) {
+            reviewMode = document.createElement('div');
+            reviewMode.id = 'reviewMode';
+            reviewMode.className = 'mode-content';
+            reviewMode.innerHTML = `
+                <div style="padding: 40px;">
+                    <h2>📊 Modalità Ripasso</h2>
+                    <p>Dashboard metacognitivo e spaced repetition</p>
+                    <!-- Content will be populated by initializeReviewMode -->
+                </div>
+            `;
+            contentArea.appendChild(reviewMode);
+        }
+        
+        // Hide chapter content, show review content
+        document.querySelectorAll('.chapter-content').forEach(content => {
+            content.style.display = 'none';
+        });
+        reviewMode.style.display = 'block';
+        
+        // Initialize review mode
+        initializeReviewMode();
+        console.log('✅ Review mode activated');
+    }
+    
+    // Save state
+    saveState();
 }
 
 // Python Code Execution with Educational Features
@@ -1272,20 +1445,7 @@ function loadAdaptivePractice() {
     displayPracticeProblems(problems);
 }
 
-// Metacognitive Dashboard
-function initializeReviewMode() {
-    // Generate heatmap
-    generateProgressHeatmap();
-    
-    // Generate strength chart
-    generateStrengthChart();
-    
-    // Generate learning trend
-    generateLearningTrend();
-    
-    // Identify weaknesses
-    identifyWeaknesses();
-}
+// Metacognitive Dashboard - function removed (duplicate)
 
 function generateProgressHeatmap() {
     const heatmap = document.getElementById('progressHeatmap');
@@ -2424,6 +2584,68 @@ window.debugPlatform = function() {
     console.log('- Loading Overlay:', document.getElementById('loadingOverlay')?.style.display);
     console.log('- App State:', appState);
     forceHideLoading();
+};
+
+// Enhanced debug function for chapter navigation
+window.debugChapters = function() {
+    console.log('🔍 CHAPTER DEBUG:');
+    console.log('- Current Chapter:', appState.currentChapter);
+    
+    // Check if all chapter divs exist
+    const chapters = ['prologo', 'cap1', 'cap2', 'cap3', 'cap4', 'cap5', 'cap6', 'epilogo'];
+    chapters.forEach(chapterId => {
+        const div = document.getElementById(chapterId);
+        const link = document.querySelector(`[data-chapter="${chapterId}"]`);
+        console.log(`- ${chapterId}:`, {
+            div: !!div,
+            link: !!link,
+            divClasses: div?.className,
+            linkClasses: link?.className,
+            hasContent: div && div.innerHTML.length > 100
+        });
+    });
+    
+    // Test loadChapter function
+    console.log('- loadChapter function available:', typeof window.loadChapter);
+    return 'Debug completed';
+};
+
+// Test function for chapter navigation
+window.testChapterNavigation = function(chapterId = 'cap1') {
+    console.log(`🧪 Testing chapter navigation to: ${chapterId}`);
+    
+    try {
+        // Manual test of the loadChapter logic
+        console.log('1. Removing active from all chapter-content');
+        document.querySelectorAll('.chapter-content').forEach(content => {
+            content.classList.remove('active');
+            console.log(`   - Removed active from: ${content.id}`);
+        });
+        
+        console.log('2. Adding active to target chapter');
+        const targetDiv = document.getElementById(chapterId);
+        if (targetDiv) {
+            targetDiv.classList.add('active');
+            console.log(`   - Added active to: ${chapterId}`);
+        } else {
+            console.error(`   - ERROR: Chapter div not found: ${chapterId}`);
+        }
+        
+        console.log('3. Updating navigation links');
+        document.querySelectorAll('.chapter-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.chapter === chapterId) {
+                link.classList.add('active');
+                console.log(`   - Activated link for: ${chapterId}`);
+            }
+        });
+        
+        console.log('✅ Manual test completed');
+        return true;
+    } catch (error) {
+        console.error('❌ Test failed:', error);
+        return false;
+    }
 };
 
 // Make functions globally available for HTML onclick handlers
